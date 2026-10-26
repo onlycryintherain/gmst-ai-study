@@ -70,7 +70,7 @@
 
     /* ---------- 상단 ---------- */
     .topbar { background: var(--surface); border-bottom: 1px solid var(--line); }
-    .topbar-inner { max-width: 1180px; margin: 0 auto; padding: 18px 20px 0; }
+    .topbar-inner { max-width: 1240px; margin: 0 auto; padding: 18px 20px 0; }
     .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #a855f7); display: grid; place-items: center; color: white; font-weight: 800; font-size: .95rem; letter-spacing: -.02em; }
@@ -91,7 +91,7 @@
     .tab .n { font-size: .72rem; font-weight: 700; color: var(--ink-3); margin-right: 4px; }
     .tab.active .n { color: var(--accent); }
 
-    main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 80px; }
+    main { max-width: 1240px; margin: 0 auto; padding: 24px 20px 80px; }
     .section { display: none; }
     .section.active { display: block; }
 
@@ -172,22 +172,27 @@
     .given { color: #9ca3af; }
 
     /* ---------- 빈칸 실전 레이아웃 ---------- */
-    .quiz-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
-    .side { position: sticky; top: 16px; }
-    .side .card { padding: 16px; }
-    .side h4 { margin: 0 0 8px; font-size: .8rem; color: var(--ink-3); font-weight: 700; letter-spacing: .02em; }
-    .side h4 + * { margin-bottom: 14px; }
-    .words { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .word { font-family: var(--mono); font-size: .74rem; background: var(--surface-2); border-radius: 6px; padding: 4px 6px; text-align: center; color: var(--ink-2); }
+    .quiz-layout { display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 16px; align-items: start; }
+    .quiz-layout > * { min-width: 0; }
+    .side { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: var(--radius); }
+    .side .card { padding: 18px; margin-bottom: 0; }
+    .sheet > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 1.02rem; font-weight: 700; margin-bottom: 14px; pointer-events: none; }
+    .sheet > summary::-webkit-details-marker { display: none; }
+    .sheet > summary .chev { display: none; }
+    .side h4 { margin: 0 0 8px; font-size: .82rem; color: var(--ink-3); font-weight: 700; letter-spacing: .02em; }
+    .side h4 + * { margin-bottom: 16px; }
+    .words { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .word { font-family: var(--mono); font-size: .8rem; background: var(--surface-2); border-radius: 6px; padding: 5px 6px; text-align: center; color: var(--ink); }
     .word.decoy { text-decoration: line-through; opacity: .45; }
-    .mini-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-    .mini-table td { border: 1px solid var(--line); padding: 5px 7px; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+    .mini-table td { border: 1px solid var(--line); padding: 6px 8px; }
     .mini-table td:nth-child(odd) { color: var(--ink-3); font-weight: 600; white-space: nowrap; }
     .mini-table td:nth-child(even) { font-family: var(--mono); }
-    .hero-wrap { overflow-x: auto; margin-top: 8px; }
-    .hero-table { border-collapse: collapse; font-size: .7rem; font-family: var(--mono); white-space: nowrap; }
-    .hero-table th, .hero-table td { border: 1px solid var(--line); padding: 3px 6px; }
-    .hero-table th { background: var(--surface-2); }
+    /* 시험지처럼 긴 열 이름은 _ 뒤에서 줄바꿈해서 가로 스크롤 없이 표시 */
+    .hero-table { width: 100%; border-collapse: collapse; font-size: .76rem; font-variant-numeric: tabular-nums; table-layout: auto; }
+    .hero-table th, .hero-table td { border: 1px solid var(--line); padding: 4px 3px; text-align: center; }
+    .hero-table th { background: var(--surface-2); font-size: .66rem; font-weight: 700; line-height: 1.25; color: var(--ink-2); }
+    .hero-table td:first-child { text-align: left; padding-left: 6px; line-height: 1.3; }
 
     .status { display: flex; align-items: center; gap: 14px; font-size: .85rem; color: var(--ink-2); font-weight: 600; }
     .status .t { font-family: var(--mono); font-variant-numeric: tabular-nums; }
@@ -303,8 +308,17 @@
 
     @media (max-width: 980px) {
       .quiz-layout { grid-template-columns: 1fr; }
-      .side { position: static; order: -1; }
-      .side .card { margin-bottom: 0; }
+      .side { position: static; order: -1; max-height: none; overflow: visible; }
+      .sheet > summary { pointer-events: auto; cursor: pointer; margin-bottom: 0; }
+      .sheet[open] > summary { margin-bottom: 14px; }
+      .sheet > summary .chev { display: inline-block; color: var(--ink-3); transition: transform .15s; }
+      .sheet[open] > summary .chev { transform: rotate(180deg); }
+      .words { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .word { font-size: .64rem; padding: 4px 2px; overflow-wrap: anywhere; }
+      .hero-table { font-size: .66rem; }
+      .hero-table th { font-size: .56rem; word-break: break-all; }
+      .hero-table th, .hero-table td { padding: 3px 1px; }
+      .hero-table td:first-child { padding-left: 3px; }
     }
     @media (max-width: 640px) {
       .topbar-inner { padding: 14px 14px 0; }
@@ -418,7 +432,7 @@
   <section id="tab-quiz" class="section">
     <div class="page-head">
       <h2>빈칸 실전</h2>
-      <p>실제 시험처럼 46개 중 15개가 랜덤으로 출제됩니다. 오른쪽 시험지 1페이지는 시험 중에도 볼 수 있어요.</p>
+      <p>실제 시험처럼 46개 중 15개가 랜덤으로 출제됩니다. 시험지 1페이지는 시험 중에도 볼 수 있어요.</p>
     </div>
     <div class="toolbar">
       <div class="seg" id="quiz-seg">
@@ -460,7 +474,7 @@
         </div>
       </div>
       <aside class="side">
-        <div class="card" id="exam-sheet"></div>
+        <details class="card sheet" id="exam-sheet" open></details>
       </aside>
     </div>
   </section>
@@ -785,10 +799,10 @@
 
   function renderExamSheet() {
     const words = hintWords.map(w => `<div class="word${decoyWords.includes(w) ? ' decoy' : ''}">${escapeHtml(w)}</div>`).join('');
-    const heroHead = featureNames.slice(0, 10).map(f => `<th>${f}</th>`).join('');
+    const heroHead = featureNames.slice(0, 10).map(f => `<th>${f.replace(/_/g, '_<br>').replace('teamwork', 'team<br>work')}</th>`).join('');
     const heroBody = heroRows.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td>hero</td></tr>`).join('');
     document.getElementById('exam-sheet').innerHTML = `
-      <div class="card-title" style="margin-bottom:12px;">시험지 1페이지 <span class="muted">시험 중 참고 가능</span></div>
+      <summary><span>시험지 1페이지 <span class="muted">시험 중 참고 가능</span></span><span class="chev">▾</span></summary>
       <h4>명령어 보기 <span style="font-weight:500;">(취소선 = 함정)</span></h4>
       <div class="words">${words}</div>
       <h4>데이터 특성</h4>
@@ -799,11 +813,19 @@
         <tr><td>문자열</td><td colspan="3">object / string / category</td></tr>
         <tr><td>논리</td><td colspan="3">bool</td></tr>
       </tbody></table>
-      <details style="margin-top:12px;">
-        <summary class="muted" style="cursor:pointer;">구글 드라이브 데이터 (일부 발췌)</summary>
-        <div class="hero-wrap"><table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table></div>
-      </details>`;
+      <h4 style="margin-top:16px;">구글 드라이브 데이터 (일부 발췌)</h4>
+      <table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table>`;
   }
+
+  // 컴퓨터에서는 항상 펼침, 모바일에서는 접었다 폈다 (처음엔 접힘)
+  const mobileQuery = window.matchMedia('(max-width: 980px)');
+  function syncSheet() {
+    document.getElementById('exam-sheet').open = !mobileQuery.matches;
+  }
+  mobileQuery.addEventListener('change', syncSheet);
+  document.getElementById('exam-sheet').addEventListener('click', e => {
+    if (e.target.closest('summary') && !mobileQuery.matches) e.preventDefault();
+  });
 
   /* ================= 02 빈칸 실전 ================= */
   let activeBlankIds = [];
@@ -1416,6 +1438,7 @@
   document.getElementById('all-count').textContent = `${theoryPool.length}문제를 섞어서`;
   renderStudyBlocks();
   renderExamSheet();
+  syncSheet();
   renderTheory();
   startQuiz('exam');
   updateMastery();
