@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인공지능 일반 수행평가 100점 마스터 (암기 강화판)</title>
+  <title>인공지능 일반 수행평가 마스터</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -14,270 +14,285 @@
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1e293b;
+      --muted: #64748b;
+      --line: #e2e8f0;
     }
     * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 15px; background-color: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 1020px; margin: 0 auto; }
+    .container { max-width: 1040px; margin: 0 auto; }
     h1 { text-align: center; color: var(--primary-dark); margin-bottom: 5px; font-size: 1.6rem; }
-    .subtitle { text-align: center; color: #64748b; margin-bottom: 20px; font-size: 0.9rem; }
-    
+    .subtitle { text-align: center; color: var(--muted); margin-bottom: 14px; font-size: 0.9rem; }
+    code { background: #f1f5f9; padding: 0 4px; border-radius: 4px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; }
+
+    /* 시험 구성 안내 */
+    .exam-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 16px; }
+    .exam-info div { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 0.86rem; }
+    .exam-info strong { color: var(--primary-dark); }
+
     /* 탭 메뉴 */
     .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn { padding: 12px 20px; border: none; border-radius: 8px; background: #e2e8f0; color: #475569; font-weight: bold; cursor: pointer; font-size: 0.95rem; transition: 0.2s; }
+    .tab-btn { padding: 11px 18px; border: none; border-radius: 8px; background: #e2e8f0; color: #475569; font-weight: bold; cursor: pointer; font-size: 0.93rem; transition: 0.2s; }
     .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
-    
+
     .section { display: none; }
     .section.active { display: block; }
-    
+
     /* 카드 공통 */
-    .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--line); }
     .card h3 { margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; color: #0f172a; font-size: 1.1rem; }
-    
+    details.card > summary { cursor: pointer; font-weight: bold; font-size: 1.05rem; color: #0f172a; }
+    details.card[open] > summary { margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+
     /* 컨트롤 패널 */
     .controls { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #eff6ff; padding: 14px; border-radius: 10px; margin-bottom: 18px; border: 1px solid #bfdbfe; }
+    .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn { padding: 9px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-success { background: var(--success); color: white; }
     .btn-warning { background: var(--warning); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-outline { background: white; color: var(--primary); border: 1px solid var(--primary); }
-    .btn-outline.active-filter { background: var(--primary-dark); color: white; }
-    .score-board { font-size: 1.05rem; font-weight: bold; color: var(--primary-dark); }
+    .score-board { font-size: 1.05rem; font-weight: bold; color: var(--primary-dark); width: 100%; }
+    .timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; margin-left: 8px; }
 
-    /* 암기장 전용 스타일 (클릭 토글 토큰) */
+    /* 암기장 (클릭 토글 토큰) */
     .study-block { background: #1e293b; color: #f8fafc; padding: 18px; border-radius: 10px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; line-height: 2.2; margin-bottom: 15px; overflow-x: auto; }
-    .study-header { display: flex; justify-content: space-between; align-items: center; background: #334155; color: #fff; padding: 8px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 0.95rem; margin-top: 15px; }
+    .study-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; background: #334155; color: #fff; padding: 8px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 0.95rem; margin-top: 15px; }
     .study-header + .study-block { border-radius: 0 0 10px 10px; margin-top: 0; }
     .tip-box { background: #fefce8; border-left: 4px solid #eab308; padding: 10px 14px; margin: 8px 0 15px 0; font-size: 0.88rem; color: #713f12; border-radius: 0 6px 6px 0; }
-    
-    .token { display: inline-block; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 1px 8px; border-radius: 5px; cursor: pointer; user-select: none; transition: 0.15s; border: 2px solid #38bdf8; margin: 0 2px; line-height: 1.4; }
+
+    .token { display: inline-block; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 1px 8px; border-radius: 5px; cursor: pointer; user-select: none; transition: 0.15s; border: 2px solid #38bdf8; margin: 0 2px; line-height: 1.4; position: relative; }
     .token .num-tag { font-size: 0.75rem; background: #0284c7; color: white; padding: 1px 4px; border-radius: 3px; margin-right: 4px; }
     .token.masked { background: #334155; color: transparent; border: 2px dashed #94a3b8; }
     .token.masked .num-tag { color: #f8fafc; background: #64748b; }
+    .token.weak::after { content: ''; position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; border-radius: 50%; background: #f43f5e; border: 2px solid #1e293b; }
     .token:hover { transform: translateY(-1px); }
 
     /* 실전 코드 입력 영역 */
     .code-box { background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 10px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; overflow-x: auto; line-height: 2.2; }
     .comment { color: #94a3b8; font-weight: bold; display: block; margin-top: 12px; }
     .comment:first-child { margin-top: 0; }
-    .code-input { background: #ffffff; color: #0f172a; border: 2px solid #94a3b8; border-radius: 4px; padding: 3px 6px; font-family: inherit; font-size: 0.9rem; font-weight: bold; margin: 2px; }
+    .layer-note { color: #64748b; font-size: 0.8rem; margin-left: 10px; }
+    .code-input { background: #ffffff; color: #0f172a; border: 2px solid #94a3b8; border-radius: 4px; padding: 3px 6px; font-family: inherit; font-size: 0.9rem; font-weight: bold; margin: 2px; max-width: 100%; }
     .code-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3); }
     .code-input.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
     .code-input.wrong { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
-    .ans-badge { display: inline-block; background: #fef08a; color: #854d0e; font-size: 0.8rem; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-weight: bold; }
+    .ans-badge { display: inline-block; background: #fef08a; color: #854d0e; font-size: 0.8rem; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-weight: bold; line-height: 1.5; }
+    .trap-badge { display: inline-block; background: #fecdd3; color: #9f1239; font-size: 0.75rem; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-family: 'Pretendard', sans-serif; line-height: 1.5; }
     .filled-blank { color: #cbd5e1; padding: 2px 4px; }
+    .code-box *:not(.comment), .study-block *:not(.comment):not(.layer-note) { font-family: 'Consolas', 'Monaco', monospace; }
 
-    /* 보기 상자 */
-    .hint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; font-family: monospace; font-size: 0.85rem; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; }
-    .hint-item { background: white; padding: 3px 6px; border-radius: 4px; border: 1px solid #e2e8f0; text-align: center; }
-
-    /* 1과제 이론 카드 */
-    .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-    .flashcard { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; cursor: pointer; transition: 0.2s; }
-    .flashcard:hover { border-color: var(--primary); background: #eff6ff; }
-    .flashcard .q { font-weight: bold; color: #0f172a; margin-bottom: 8px; font-size: 0.95rem; }
-    .flashcard .a { color: var(--primary-dark); font-weight: bold; background: #dbeafe; padding: 8px 10px; border-radius: 6px; display: none; margin-top: 8px; font-size: 0.9rem; }
-    .flashcard.revealed .a { display: block; }
-    .flashcard .tag { font-size: 0.75rem; background: #e2e8f0; color: #475569; padding: 2px 6px; border-radius: 4px; float: right; }
+    /* 시험지 1페이지 */
+    .hint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-family: monospace; font-size: 0.85rem; background: #faf5ff; padding: 10px; border-radius: 8px; border: 1px solid #c4b5fd; }
+    .hint-item { background: white; padding: 3px 6px; border-radius: 4px; border: 1px dashed #c4b5fd; text-align: center; }
+    .hint-item.decoy { text-decoration: line-through; color: #94a3b8; }
+    .sheet-sub { font-weight: bold; margin: 14px 0 6px; color: #6d28d9; }
+    .table-wrap { overflow-x: auto; }
+    .hero-table td, .hero-table th { padding: 4px 6px; font-size: 0.8rem; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
     th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; }
     th { background: #f1f5f9; font-weight: bold; }
     .hidden-cell { background: #cbd5e1; color: transparent; cursor: pointer; user-select: none; border-radius: 4px; transition: 0.2s; }
     .hidden-cell.show { background: #dcfce7; color: #166534; font-weight: bold; }
+
+    /* 이론 정리 */
+    .term-table td:first-child { font-family: 'Consolas', 'Monaco', monospace; font-weight: bold; white-space: nowrap; text-align: left; width: 1%; }
+    .term-table td:last-child { text-align: left; }
+    .kw { background: #dbeafe; color: #1e40af; font-weight: bold; padding: 0 4px; border-radius: 4px; cursor: pointer; transition: 0.15s; }
+    .kw.hide { background: #cbd5e1; color: transparent; user-select: none; }
+    .sheet-code { background: #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 8px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.88rem; line-height: 1.9; overflow-x: auto; white-space: pre; }
+    .note { font-size: 0.88rem; color: #475569; background: #f8fafc; border-left: 3px solid #a78bfa; padding: 6px 12px; border-radius: 0 6px 6px 0; margin: 8px 0; }
+    .act-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+    .act-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 0.88rem; }
+    .act-card h4 { margin: 0 0 6px; }
+    .formula { font-family: 'Times New Roman', serif; font-size: 1.05rem; font-style: italic; margin: 6px 0 8px; }
+    .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 2px; }
+    .frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 3px; }
+
+    /* 이론 퀴즈 */
+    .q-card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+    .q-card.ok { border-color: #22c55e; background: #f0fdf4; }
+    .q-card.ng { border-color: #ef4444; background: #fef2f2; }
+    .q-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    .q-text { font-weight: bold; margin-bottom: 10px; }
+    .q-text .mono { font-family: 'Consolas', 'Monaco', monospace; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
+    .q-blank { display: inline-block; min-width: 70px; border-bottom: 2px solid #0f172a; margin: 0 3px; }
+    .choices { display: grid; gap: 6px; }
+    .choice { text-align: left; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 0.9rem; color: var(--text); }
+    .choice:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
+    .choice.picked-ok, .choice.answer { background: #dcfce7; border-color: #22c55e; color: #166534; font-weight: bold; }
+    .choice.picked-ng { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+    .choice:disabled { cursor: default; }
+    .q-input { width: 100%; max-width: 360px; padding: 8px 10px; border: 2px solid #94a3b8; border-radius: 6px; font-size: 0.95rem; }
+    .q-feedback { margin-top: 8px; font-size: 0.86rem; }
+
+    /* 오답노트 */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+    .stat-cell { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 0.8rem; background: white; }
+    .stat-cell .sid { font-weight: bold; }
+    .stat-cell .sans { font-family: monospace; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .bar > span { display: block; height: 100%; }
+    .empty { color: var(--muted); font-size: 0.9rem; }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      h1 { font-size: 1.3rem; }
+      .hint-grid { grid-template-columns: repeat(2, 1fr); }
+      .tab-btn { flex: 1 1 45%; padding: 10px 8px; font-size: 0.85rem; }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>🚀 인공지능 일반 수행평가 마스터 (암기 강화판)</h1>
-  <div class="subtitle">1단계: 단계별 암기장으로 눈으로 외우기 👉 2단계: 후반부 집중 타이핑 연습 👉 3단계: 1과제 이론 마무리</div>
+  <h1>🚀 인공지능 일반 수행평가 마스터</h1>
+  <div class="subtitle">암기장으로 외우기 → 빈칸 15문제 실전 → 활동지 이론 정리 → 이론 퀴즈 → 오답노트로 약점 보완</div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('tab-study', this)">📖 1단계: 2과제 단계별 암기장 (깜지 모드)</button>
-    <button class="tab-btn" onclick="switchTab('tab-quiz', this)">🎯 2단계: 2과제 타이핑 테스트 (구간별/실전)</button>
-    <button class="tab-btn" onclick="switchTab('tab-theory', this)">🧠 3단계: 1과제 이론 & 오탈자 (20점)</button>
+  <div class="exam-info">
+    <div>✍️ <strong>코드 빈칸</strong>: 최종본 빈칸 46개(1~45, 22-1·22-2) 중 <strong>15개</strong> 출제</div>
+    <div>🧠 <strong>이론 20점</strong>: 인공지능 활동지(#1~#9-3, 활성화 함수) 내용에서 출제</div>
+    <div>📄 <strong>시험 중 참고 가능</strong>: 최종본 1페이지 (명령어 보기 · 데이터 · 특성 · 타입)</div>
   </div>
 
-  <!-- ================= 1단계: 단계별 암기장 섹션 ================= -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-study">📖 빈칸 암기장</button>
+    <button class="tab-btn" data-tab="tab-quiz">🎯 빈칸 실전</button>
+    <button class="tab-btn" data-tab="tab-theory">📚 활동지 이론 정리</button>
+    <button class="tab-btn" data-tab="tab-tquiz">🧠 이론 퀴즈 (20점)</button>
+    <button class="tab-btn" data-tab="tab-stats">📊 오답노트</button>
+  </div>
+
+  <!-- ================= 빈칸 암기장 ================= -->
   <div id="tab-study" class="section active">
     <div class="controls">
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="maskAllTokens(true)">🙈 빈칸 모두 가리기 (암기 테스트)</button>
-        <button class="btn btn-outline" onclick="maskAllTokens(false)">👀 정답 모두 펼치기</button>
-        <button class="btn btn-warning" onclick="maskPartTokens('part3')">🔥 후반부(15~45번)만 가리기</button>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="maskTokens(() => true)">🙈 모두 가리기</button>
+        <button class="btn btn-outline" onclick="maskTokens(() => false)">👀 모두 펼치기</button>
+        <button class="btn btn-warning" onclick="maskTokens(p => p !== 1)">🔥 15~45번만 가리기</button>
+        <button class="btn btn-success" onclick="maskRandom15()">🎲 시험처럼 랜덤 15개 가리기</button>
+        <button class="btn btn-danger" onclick="maskWeak()">❗ 자주 틀린 것만 가리기</button>
       </div>
-      <div style="font-size:0.88rem; color:#1e40af; font-weight:bold;">
-        💡 파란색 빈칸 박스를 클릭하면 하나씩 가려지거나 정답이 보입니다!
+      <div style="font-size:0.86rem; color:#1e40af; font-weight:bold;">
+        💡 파란 박스를 클릭하면 하나씩 가려지거나 보입니다. 빨간 점 = 빈칸 실전에서 틀린 적 있는 빈칸
       </div>
     </div>
 
-    <!-- Part 1: 초반부 (1~14번) -->
     <div class="study-header">
-      <span>🟢 초반부 (#1 ~ #5, 빈칸 1~14번): 드라이브 연결 & 데이터 전처리</span>
-      <div>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-1', true)">이 구간 가리기</button>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-1', false)">펼치기</button>
-      </div>
+      <span>🟢 #1 ~ #5 (빈칸 1~14번): 드라이브 연결 & 데이터 전처리</span>
+      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 1 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 1 ? false : null)">펼치기</button></div>
     </div>
     <div class="study-block" id="block-1"></div>
     <div class="tip-box">
-      <strong>💡 초반부 암기 꿀팁:</strong> <code>[10] columns</code>(열 이름 확인)와 <code>[11] dtypes</code>(데이터 타입 확인)는 보기 상자에 <code>~.columns</code>로 나와 있으니 <strong>앞에 <code>~.</code>을 빼고</strong> 적으세요! <code>[13] 'category'</code>는 작은따옴표 필수!
+      <strong>💡 보기와 다르게 써야 하는 것 (함정!):</strong> 보기에는 <code>read_csv</code>지만 답은 <strong><code>pd.read_csv</code></strong> · 보기 <code>index_col</code> → 답 <strong><code>index_col=0</code></strong> ·
+      <code>~.columns</code> / <code>~.dtypes</code> / <code>~.astype</code>는 코드에 이미 점(<code>.</code>)이 있으니 <strong><code>columns</code>, <code>dtypes</code>, <code>astype</code></strong>만 ·
+      <code>[13] 'category'</code>는 <strong>보기에 없음!</strong> 시험지 1페이지 '데이터 타입' 표에서 찾고 작은따옴표 필수.
     </div>
 
-    <!-- Part 2: 중후반부 (15~22-2번) -->
     <div class="study-header" style="background:#b45309;">
-      <span>🟠 중후반부 (#6 ~ #7, 빈칸 15~22-2번): 변수 선언 & 데이터 분리 (★헷갈리는 구간!)</span>
-      <div>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-2', true)">이 구간 가리기</button>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-2', false)">펼치기</button>
-      </div>
+      <span>🟠 #6 ~ #7 (빈칸 15~22-2번): 변수 선언 & 데이터 분리</span>
+      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 2 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 2 ? false : null)">펼치기</button></div>
     </div>
     <div class="study-block" id="block-2"></div>
     <div class="tip-box">
-      <strong>🔥 중후반부 초압축 암기 공식:</strong><br>
-      1. <strong>변수 선언(15~18번):</strong> 왼쪽은 <strong>텐-수</strong>(<code>tendency</code> / <code>suitability</code>), 오른쪽은 둘 다 <strong><code>encoding[[' ... ']]</code> (대괄호 2개!)</strong>.<br>
-      &nbsp;&nbsp;• <code>16번</code> 안의 특성 8개는 외우지 말고 <strong>시험지 1페이지 '데이터 특성' 표에서 <code>name</code>과 <code>label</code>만 빼고 그대로 베껴 쓰기!</strong><br>
-      &nbsp;&nbsp;• <code>18번</code>은 <code>label</code>과 <code>hero</code>, <code>villain</code>을 언더바(<code>_</code>)로 합쳐서 <strong><code>encoding[['label_hero', 'label_villain']]</code></strong>!<br>
-      2. <strong>데이터 분리(19~22-2번):</strong> <code>19, 20번</code>은 둘 다 <strong><code>train_test_split</code></strong>! 뒤의 옵션 3개는 앞글자 따서 <strong>"셔-스-테"</strong>로 암기!<br>
-      &nbsp;&nbsp;• <strong>셔(21):</strong> <code>shuffle=True</code> (T 대문자!) &nbsp;|&nbsp; <strong>스(22-1):</strong> <code>stratify=suitability</code> (따옴표 없음!) &nbsp;|&nbsp; <strong>테(22-2):</strong> <code>test_size=0.2</code>
+      <strong>🔥 변수 선언(15~18):</strong> 왼쪽은 <strong>텐-수</strong>(<code>tendency</code> / <code>suitability</code>), 오른쪽은 둘 다 <strong><code>encoding[[' ... ']]</code> (대괄호 2개!)</strong>.<br>
+      &nbsp;&nbsp;• <code>16번</code> 특성 8개는 시험지 1페이지 <strong>'데이터 특성' 표에서 <code>name</code>, <code>label</code>, <code>hero</code>, <code>villain</code>만 빼고 순서대로</strong> 베껴 쓰기!<br>
+      &nbsp;&nbsp;• <code>18번</code>은 <code>label</code> + <code>hero</code>/<code>villain</code>을 언더바로 합쳐 <strong><code>encoding[['label_hero', 'label_villain']]</code></strong><br>
+      <strong>🔥 데이터 분리(19~22-2):</strong> <code>19, 20번</code> 둘 다 <strong><code>train_test_split</code></strong>, 옵션은 <strong>"셔-스-테"</strong>: <code>shuffle=True</code>(T 대문자) · <code>stratify=suitability</code>(따옴표 없음) · <code>test_size=0.2</code>
     </div>
 
-    <!-- Part 3: 최후반부 (23~45번) -->
     <div class="study-header" style="background:#be123c;">
-      <span>🔴 최후반부 (#8 ~ #9, 빈칸 23~45번): 딥러닝 모델 & 인공신경망 층 쌓기 (★점수 밭!)</span>
-      <div>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-3', true)">이 구간 가리기</button>
-        <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="toggleBlock('block-3', false)">펼치기</button>
-      </div>
+      <span>🔴 #8 ~ #9 (빈칸 23~45번): 모델 & 신경망 층 쌓기 (★23문제, 점수 밭!)</span>
+      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 3 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 3 ? false : null)">펼치기</button></div>
     </div>
     <div class="study-block" id="block-3"></div>
     <div class="tip-box">
-      <strong>🔥 최후반부(23~45번) 거저먹기 패턴:</strong> 무려 23개 빈칸이지만 외울 단어는 딱 5개뿐입니다!<br>
-      1. <strong>#8 라이브러리(23~31번):</strong> 첫 줄은 <code>import tensorflow as</code> tf / 둘째·셋째 줄은 똑같이 <strong><code>from keras import</code></strong> 2번 반복!<br>
-      2. <strong>#9 모델 생성(32번):</strong> <strong><code>models.Sequential()</code></strong> (S 대문자 + 맨 뒤에 빈 괄호 <code>()</code> 꼭 붙이기!)<br>
-      3. <strong>#9 층 쌓기 4줄(33~45번):</strong><br>
-      &nbsp;&nbsp;• 맨 앞(<code>33, 37, 40, 43</code>)은 무조건 <strong><code>model.add</code></strong> (4번 반복)<br>
-      &nbsp;&nbsp;• 괄호 안(<code>34, 38, 41, 44</code>)은 무조건 <strong><code>layers.Dense</code></strong> (D 대문자, 4번 반복)<br>
-      &nbsp;&nbsp;• 첫 번째 층(입력층)에만 특성 8개를 뜻하는 <strong><code>[35] input_dim=8</code></strong> 추가!<br>
-      &nbsp;&nbsp;• 활성화 함수는 위 3줄(<code>36, 39, 42</code>) 모두 <strong><code>activation='relu'</code></strong>, 맨 마지막 출력층(<code>45</code>)만 <strong><code>activation='softmax'</code></strong>!
+      <strong>🔥 23개 빈칸, 외울 건 5개뿐:</strong><br>
+      1. <strong>#8 (23~31):</strong> <code>import tensorflow as</code> tf / <strong><code>from keras import</code></strong> 2번 반복<br>
+      2. <strong>#9 (32):</strong> <strong><code>models.Sequential()</code></strong> — 보기엔 괄호가 없지만 <strong>빈 괄호 <code>()</code>까지</strong> 써야 함!<br>
+      3. <strong>층 4줄 (33~45):</strong> 맨 앞 <code>33·37·40·43</code> = <strong><code>model.add</code></strong>, 괄호 안 <code>34·38·41·44</code> = <strong><code>layers.Dense</code></strong><br>
+      &nbsp;&nbsp;• 첫 층에만 <strong><code>[35] input_dim=8</code></strong> (특성 8개) · <code>36·39·42</code> = <strong><code>activation='relu'</code></strong> · 마지막 <code>45</code>만 <strong><code>activation='softmax'</code></strong><br>
+      4. 보기의 <code>sigmoid</code>, <code>tanh</code>, <code>~.shape</code>는 <strong>빈칸에 안 쓰이는 함정 보기</strong>!
     </div>
   </div>
 
-  <!-- ================= 2단계: 실전 & 구간별 타이핑 섹션 ================= -->
+  <!-- ================= 빈칸 실전 ================= -->
   <div id="tab-quiz" class="section">
-    <div class="card">
-      <h3>📋 시험지 제공 보기 상자 & 데이터 특성 (참고용)</h3>
-      <div class="hint-grid">
-        <div class="hint-item">from</div><div class="hint-item">import</div><div class="hint-item">read_csv</div><div class="hint-item">suitability</div>
-        <div class="hint-item">train_test_split</div><div class="hint-item">input_dim</div><div class="hint-item">stratify</div><div class="hint-item">model.add</div>
-        <div class="hint-item">~.astype</div><div class="hint-item">layers.Dense</div><div class="hint-item">tendency</div><div class="hint-item">relu</div>
-        <div class="hint-item">pandas</div><div class="hint-item">test_size</div><div class="hint-item">activation</div><div class="hint-item">layers</div>
-        <div class="hint-item">shuffle</div><div class="hint-item">sigmoid</div><div class="hint-item">import ~ as</div><div class="hint-item">models.Sequential</div>
-        <div class="hint-item">tanh</div><div class="hint-item">~.dtypes</div><div class="hint-item">softmax</div><div class="hint-item">encoding</div>
-        <div class="hint-item">index_col</div><div class="hint-item">/content/drive</div><div class="hint-item">tensorflow</div><div class="hint-item">~.shape</div>
-        <div class="hint-item">~.columns</div><div class="hint-item">mount</div><div class="hint-item">pd.get_dummies</div><div class="hint-item">keras</div>
-        <div class="hint-item">models</div>
-      </div>
-      <div style="margin-top: 10px; font-size: 0.88rem; background:#f1f5f9; padding:8px 12px; border-radius:6px;">
-        <strong>📊 데이터 특성 (순서대로):</strong> <code>name</code> | <code>justice</code> | <code>empathy</code> | <code>self_control</code> | <code>teamwork</code> | <code>power_desire</code> | <code>rule_respect</code> | <code>sacrifice</code> | <code>revenge</code> | <code>label</code> (<code>hero</code>, <code>villain</code>)
-      </div>
-    </div>
+    <details class="card" open>
+      <summary>📄 시험지 1페이지 (시험 중 볼 수 있음)</summary>
+      <div id="exam-sheet"></div>
+    </details>
 
     <div class="controls">
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn btn-warning" onclick="startRangeQuiz('back')">🔥 후반부 집중 연습 (#6~#9, 15~45번)</button>
-        <button class="btn btn-outline" onclick="startRangeQuiz('front')">🟢 초반부 연습 (#1~#5, 1~14번)</button>
-        <button class="btn btn-primary" onclick="startQuiz(15)">🎲 실전 랜덤 15문제</button>
-        <button class="btn btn-outline" onclick="startQuiz(45)">전체 45문제</button>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startQuiz('exam')">🎲 실전 랜덤 15문제</button>
+        <button class="btn btn-danger" onclick="startQuiz('weak')">❗ 약점 집중 15문제</button>
+        <button class="btn btn-warning" onclick="startQuiz('back')">🔥 15~45번</button>
+        <button class="btn btn-outline" onclick="startQuiz('front')">🟢 1~14번</button>
+        <button class="btn btn-outline" onclick="startQuiz('all')">전체 46문제</button>
       </div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
+      <div class="btn-row">
         <button class="btn btn-success" onclick="checkAnswers()">✅ 채점하기</button>
-        <button class="btn btn-danger" id="btn-retry" style="display:none;" onclick="retryWrong()">🔄 틀린 문제만 다시 풀기</button>
+        <button class="btn btn-danger" id="btn-retry" style="display:none;" onclick="retryWrong()">🔄 틀린 문제만 다시</button>
         <button class="btn btn-outline" onclick="showAllAnswers()">👀 정답 채우기</button>
       </div>
-      <div class="score-board" id="score-display" style="width:100%; margin-top:6px;">원하는 연습 모드를 선택하세요!</div>
+      <div class="score-board"><span id="score-display">원하는 연습 모드를 선택하세요!</span><span class="timer" id="timer"></span></div>
+      <div style="font-size:0.82rem; color:#475569;">⌨️ <strong>Enter</strong> = 다음 빈칸으로, 마지막 빈칸에서 Enter = 채점</div>
     </div>
 
     <div class="code-box" id="code-container"></div>
   </div>
 
-  <!-- ================= 3단계: 1과제 이론 섹션 ================= -->
+  <!-- ================= 활동지 이론 정리 ================= -->
   <div id="tab-theory" class="section">
     <div class="controls">
-      <div><strong>💡 사용법:</strong> 회색 칸이나 카드를 클릭하면 정답이 나타납니다!</div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" onclick="toggleAllTheory(true)">전체 정답 열기</button>
-        <button class="btn btn-outline" onclick="toggleAllTheory(false)">전체 정답 가리기</button>
+      <div><strong>💡 사용법:</strong> 파란 핵심어·회색 칸을 클릭하면 가려지거나 보입니다. 핵심어를 가리고 설명을 입으로 말해보세요!</div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="toggleTheory(false)">🙈 핵심어 모두 가리기</button>
+        <button class="btn btn-outline" onclick="toggleTheory(true)">👀 모두 보기</button>
       </div>
     </div>
+    <div id="theory-container"></div>
+  </div>
 
-    <div class="card">
-      <h3>🔥 1순위 출제 유력: 한눈에 보는 활성화 함수 비교 (활동지 4p)</h3>
-      <p style="font-size:0.9rem; color:#475569;"><strong>활성화 함수(Activation Function)란?</strong> 신경망에서 입력 신호를 변환하여 <span class="hidden-cell" onclick="this.classList.toggle('show')">비선형성</span>을 부여하고, 모델이 더 복잡한 패턴을 학습할 수 있도록 도와주는 함수.</p>
-      <table>
-        <thead>
-          <tr><th>종류</th><th>수식 / 특징</th><th>출력 범위</th><th>주요 특징 및 한계</th><th>그래프 형태</th><th>주요 용도</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>시그모이드<br>(Sigmoid)</strong></td><td>$f(x) = \frac{1}{1+e^{-x}}$</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">0 ~ 1</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">오차 역전파 시 기울기가 0에 수렴하는<br>[기울기 소실(Vanishing Gradient)] 문제 발생</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">S자 곡선</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">이진 분류<br>(과거에 많이 사용)</td>
-          </tr>
-          <tr>
-            <td><strong>렐루<br>(ReLU)</strong></td><td>$f(x) = \max(0, x)$</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">0 ~ 무한대</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">임계값 이상만 전달,<br>[기울기 소실 문제 해결(완화)], 연산 효율 높음</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">계단형<br>(음수 구간 0)</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">은닉층<br>(현재 가장 많이 사용)</td>
-          </tr>
-          <tr>
-            <td><strong>소프트맥스<br>(Softmax)</strong></td><td>출력 총합 = 1</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">0 ~ 1<br>(모든 출력 합계 1)</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">최종 연산 결과를<br>[다중 클래스 확률값]으로 변환</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">확률 분포 형태<br>(막대 그래프)</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">다중 클래스 분류 문제<br>(출력층)</td>
-          </tr>
-          <tr>
-            <td><strong>탄젠트 하이퍼볼릭<br>(tanh)</strong></td><td>$f(x) = \tanh(x)$</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">-1 ~ 1</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">0을 중심으로 분포,<br>기울기 소실 가능</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">S자 곡선</td>
-            <td class="hidden-cell" onclick="this.classList.toggle('show')">이진 분류,<br>은닉층(특정 상황)</td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- ================= 이론 퀴즈 ================= -->
+  <div id="tab-tquiz" class="section">
+    <div class="controls">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startTheoryQuiz('random')">🎲 랜덤 10문제 (20점)</button>
+        <button class="btn btn-danger" onclick="startTheoryQuiz('weak')">❗ 약점 집중 10문제</button>
+        <button class="btn btn-warning" onclick="startTheoryQuiz('act')">⚡ 활성화 함수 집중</button>
+        <button class="btn btn-outline" onclick="startTheoryQuiz('all')">📚 전체 문제 다 풀기</button>
+      </div>
+      <button class="btn btn-danger" id="btn-tretry" style="display:none;" onclick="retryTheoryWrong()">🔄 틀린 문제만 다시</button>
+      <div class="score-board" id="tscore-display">객관식은 누르는 즉시, 주관식은 Enter로 채점됩니다.</div>
     </div>
+    <div id="tquiz-container"></div>
+  </div>
 
-    <div class="card">
-      <h3>📊 주요 데이터 타입 비교표 (활동지 2p & 최종본 1p)</h3>
-      <p style="font-size:0.9rem; color:#475569;"><strong>데이터 타입을 확인/변환하는 이유:</strong> 인공지능 모델은 <span class="hidden-cell" onclick="this.classList.toggle('show')">문자 자체를 그대로 입력하여 학습할 수 없기 때문</span>에 확인 필수!</p>
-      <table>
-        <thead>
-          <tr><th>의미</th><th>파이썬 자료형</th><th>예시</th><th>pandas 표시</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>정수</strong></td><td class="hidden-cell" onclick="this.classList.toggle('show')">int</td><td>10, 25</td><td class="hidden-cell" onclick="this.classList.toggle('show')">int64</td></tr>
-          <tr><td><strong>실수</strong></td><td class="hidden-cell" onclick="this.classList.toggle('show')">float</td><td>0.92, 3.14</td><td class="hidden-cell" onclick="this.classList.toggle('show')">float64</td></tr>
-          <tr><td rowspan="2"><strong>문자열</strong></td><td rowspan="2" class="hidden-cell" onclick="this.classList.toggle('show')">str</td><td>"Thor", "Hulk" (일반 문자열)</td><td class="hidden-cell" onclick="this.classList.toggle('show')">object / string</td></tr>
-          <tr><td>"hero", "villain" (범주형)</td><td class="hidden-cell" onclick="this.classList.toggle('show')">category</td></tr>
-          <tr><td><strong>논리(참/거짓)</strong></td><td class="hidden-cell" onclick="this.classList.toggle('show')">bool</td><td>true, false</td><td class="hidden-cell" onclick="this.classList.toggle('show')">bool</td></tr>
-        </tbody>
-      </table>
+  <!-- ================= 오답노트 ================= -->
+  <div id="tab-stats" class="section">
+    <div class="controls">
+      <div>📊 이 브라우저에 저장된 풀이 기록입니다. 많이 틀린 순서로 정렬됩니다.</div>
+      <button class="btn btn-danger" onclick="resetStats()">🗑️ 기록 초기화</button>
     </div>
-
     <div class="card">
-      <h3>🃏 활동지 전체 명령어 & 핵심 개념 플래시카드</h3>
-      <div class="flashcard-grid" id="flashcard-container"></div>
+      <h3>✍️ 코드 빈칸 (틀린 비율)</h3>
+      <div id="stats-blanks"></div>
+    </div>
+    <div class="card">
+      <h3>🧠 이론 (틀린 적 있는 개념)</h3>
+      <div id="stats-theory"></div>
     </div>
   </div>
 </div>
 
 <script>
+  /* ================= 데이터: 최종본 빈칸 ================= */
+  // trap: 보기 상자와 다르게 써야 하는 부분 (틀렸을 때 표시)
   const blanksData = [
     { id: "1", ans: "from", width: 60, part: 1 },
     { id: "2", ans: "import", width: 70, part: 1 },
@@ -286,21 +301,21 @@
     { id: "5", ans: "import", width: 70, part: 1 },
     { id: "6", ans: "pandas", width: 75, part: 1 },
     { id: "7", ans: "as", width: 45, part: 1 },
-    { id: "8", ans: "pd.read_csv", width: 110, part: 1 },
-    { id: "9", ans: "index_col=0", width: 110, part: 1 },
-    { id: "10", ans: "columns", width: 85, part: 1 },
-    { id: "11", ans: "dtypes", width: 75, part: 1 },
-    { id: "12", ans: "astype", width: 75, part: 1 },
-    { id: "13", ans: "'category'", width: 100, part: 1 },
+    { id: "8", ans: "pd.read_csv", width: 110, part: 1, trap: "보기는 read_csv, 답은 pd. 붙이기" },
+    { id: "9", ans: "index_col=0", width: 110, part: 1, trap: "=0까지 써야 함" },
+    { id: "10", ans: "columns", width: 85, part: 1, trap: "~. 빼고 쓰기" },
+    { id: "11", ans: "dtypes", width: 75, part: 1, trap: "~. 빼고 쓰기" },
+    { id: "12", ans: "astype", width: 75, part: 1, trap: "~. 빼고 쓰기" },
+    { id: "13", ans: "'category'", alt: ["\"category\""], width: 100, part: 1, trap: "보기에 없음! 데이터 타입 표 + 따옴표" },
     { id: "14", ans: "pd.get_dummies", width: 135, part: 1 },
     { id: "15", ans: "tendency", width: 90, part: 2 },
-    { id: "16", ans: "encoding[['justice', 'empathy', 'self_control', 'teamwork', 'power_desire', 'rule_respect', 'sacrifice', 'revenge']]", width: 520, part: 2 },
+    { id: "16", ans: "encoding[['justice', 'empathy', 'self_control', 'teamwork', 'power_desire', 'rule_respect', 'sacrifice', 'revenge']]", width: 520, part: 2, trap: "데이터 특성 표에서 name·label·hero·villain 빼고 순서대로, 대괄호 2개" },
     { id: "17", ans: "suitability", width: 95, part: 2 },
-    { id: "18", ans: "encoding[['label_hero', 'label_villain']]", width: 290, part: 2 },
+    { id: "18", ans: "encoding[['label_hero', 'label_villain']]", width: 290, part: 2, trap: "label_ + hero/villain, 대괄호 2개" },
     { id: "19", ans: "train_test_split", width: 135, part: 2 },
     { id: "20", ans: "train_test_split", width: 135, part: 2 },
-    { id: "21", ans: "shuffle=True", alt: ["shuffleTrue"], width: 115, part: 2 },
-    { id: "22-1", ans: "stratify=suitability", alt: ["stratifysuitability"], width: 160, part: 2 },
+    { id: "21", ans: "shuffle=True", width: 115, part: 2, trap: "True는 T 대문자" },
+    { id: "22-1", ans: "stratify=suitability", width: 160, part: 2, trap: "따옴표 없음" },
     { id: "22-2", ans: "test_size=0.2", width: 120, part: 2 },
     { id: "23", ans: "import", width: 70, part: 3 },
     { id: "24", ans: "tensorflow", width: 95, part: 3 },
@@ -311,285 +326,722 @@
     { id: "29", ans: "from", width: 60, part: 3 },
     { id: "30", ans: "keras", width: 65, part: 3 },
     { id: "31", ans: "import", width: 70, part: 3 },
-    { id: "32", ans: "models.Sequential()", width: 165, part: 3 },
+    { id: "32", ans: "models.Sequential()", width: 165, part: 3, trap: "빈 괄호 () 까지" },
     { id: "33", ans: "model.add", width: 95, part: 3 },
     { id: "34", ans: "layers.Dense", width: 110, part: 3 },
-    { id: "35", ans: "input_dim=8", width: 105, part: 3 },
-    { id: "36", ans: "activation='relu'", alt: ["activation'relu'"], width: 145, part: 3 },
+    { id: "35", ans: "input_dim=8", width: 105, part: 3, trap: "=8 (특성 8개)" },
+    { id: "36", ans: "activation='relu'", width: 145, part: 3 },
     { id: "37", ans: "model.add", width: 95, part: 3 },
     { id: "38", ans: "layers.Dense", width: 110, part: 3 },
-    { id: "39", ans: "activation='relu'", alt: ["activation'relu'"], width: 145, part: 3 },
+    { id: "39", ans: "activation='relu'", width: 145, part: 3 },
     { id: "40", ans: "model.add", width: 95, part: 3 },
     { id: "41", ans: "layers.Dense", width: 110, part: 3 },
-    { id: "42", ans: "activation='relu'", alt: ["activation'relu'"], width: 145, part: 3 },
+    { id: "42", ans: "activation='relu'", width: 145, part: 3 },
     { id: "43", ans: "model.add", width: 95, part: 3 },
     { id: "44", ans: "layers.Dense", width: 110, part: 3 },
-    { id: "45", ans: "activation='softmax'", alt: ["activation'softmax'"], width: 165, part: 3 }
+    { id: "45", ans: "activation='softmax'", width: 165, part: 3, trap: "출력층만 softmax" }
+  ];
+  const blankById = Object.fromEntries(blanksData.map(x => [x.id, x]));
+
+  // 최종본 2페이지 코드. {id} = 빈칸, memo = 암기장에서만 보이는 암기 문구
+  const codeSections = [
+    { part: 1, title: "#1 구글 드라이브 연결하기", lines: ["{1} google.colab {2} drive", "drive.{3}('{4}')"] },
+    { part: 1, title: "#2 학습 데이터 준비하기", lines: ["{5} {6} {7} pd", "hero_villain = {8}('/content/drive/MyDrive/2026AI/hero_villain/hero_villain.csv', {9})", "print(hero_villain.{10})", "hero_villain"] },
+    { part: 1, title: "#3 데이터 타입 확인하기", lines: ["print(hero_villain.{11})"] },
+    { part: 1, title: "#4 데이터 타입 변환하기", lines: ["hero_villain['label'] = hero_villain['label'].{12}({13})"] },
+    { part: 1, title: "#5 원 핫 인코딩", lines: ["encoding = {14}(hero_villain)"] },
+    { part: 2, title: "#6 변수 선언", memo: "텐-수 / 대괄호 2개!", lines: ["{15} = {16}", "{17} = {18}"] },
+    { part: 2, title: "#7 데이터 분리", memo: "트-트 / 셔-스-테!", lines: ["from sklearn.model_selection import {19}", "tendency_train, tendency_test, suitability_train, suitability_test = {20}(tendency, suitability, {21}, {22-1}, {22-2})"] },
+    { part: 3, title: "#8 인공지능 모델 만들기", memo: "임-텐-애 / 프-케-임 2번!", lines: ["{23} {24} {25} tf", "{26} {27} {28} models", "{29} {30} {31} layers"] },
+    { part: 3, title: "#9 인공신경망 만들기", memo: "Sequential() → add + Dense 4번!", lines: ["model = {32}", "{33}({34}(8, {35}, {36}))", "{37}({38}(12, {39}))", "{40}({41}(4, {42}))", "{43}({44}(2, {45}))"],
+      notes: [null, "입력층", "은닉층", "은닉층", "출력층"] }
   ];
 
-  // 1단계: 암기장 렌더링 함수
+  const escapeHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // 코드 템플릿을 렌더링. blankFn(id) → 빈칸 HTML
+  function renderCodeHtml(sections, blankFn, withMemo) {
+    return sections.map(sec => {
+      const title = withMemo && sec.memo ? `${sec.title} (${sec.memo})` : sec.title;
+      const lines = sec.lines.map((line, i) => {
+        const html = line.split(/(\{[\d-]+\})/).map(seg => {
+          const m = seg.match(/^\{([\d-]+)\}$/);
+          return m ? blankFn(m[1]) : escapeHtml(seg);
+        }).join('');
+        const note = withMemo && sec.notes && sec.notes[i] ? `<span class="layer-note">← ${sec.notes[i]}</span>` : '';
+        return html + note;
+      }).join('<br>');
+      return `<span class="comment">${title}</span>${lines}`;
+    }).join('');
+  }
+
+  /* ================= 기록 저장 (localStorage) ================= */
+  const STORE_KEY = 'gmst-ai-study-v2';
+  let stats = { blanks: {}, theory: {} };
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (saved && saved.blanks && saved.theory) stats = saved;
+  } catch (e) {}
+
+  function saveStats() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch (e) {}
+  }
+
+  function record(kind, key, correct) {
+    const s = stats[kind][key] || (stats[kind][key] = { n: 0, w: 0 });
+    s.n++;
+    if (!correct) s.w++;
+    saveStats();
+  }
+
+  // 틀린 횟수가 많을수록, 안 풀어본 것일수록 자주 나오도록
+  function weakWeight(kind, key) {
+    const s = stats[kind][key];
+    if (!s) return 2;
+    return 1 + (s.w * 4) / s.n + s.w;
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function weightedSample(items, count, weightFn) {
+    const pool = items.map(it => ({ it, w: weightFn(it) }));
+    const out = [];
+    while (out.length < count && pool.length) {
+      let r = Math.random() * pool.reduce((t, p) => t + p.w, 0);
+      let idx = 0;
+      while (idx < pool.length - 1 && (r -= pool[idx].w) > 0) idx++;
+      out.push(pool.splice(idx, 1)[0].it);
+    }
+    return out;
+  }
+
+  /* ================= 빈칸 암기장 ================= */
   function renderStudyBlocks() {
     const t = (id) => {
-      const item = blanksData.find(x => x.id === id);
-      return `<span class="token" data-part="part${item.part}" onclick="this.classList.toggle('masked')"><span class="num-tag">${id}</span>${item.ans}</span>`;
+      const item = blankById[id];
+      const s = stats.blanks[id];
+      const weak = s && s.w > 0 ? ' weak' : '';
+      return `<span class="token${weak}" data-id="${id}" data-part="${item.part}" onclick="this.classList.toggle('masked')"><span class="num-tag">${id}</span>${escapeHtml(item.ans)}</span>`;
     };
-
-    document.getElementById('block-1').innerHTML = `
-<span class="comment">#1 구글 드라이브 연결하기</span>
-${t("1")} google.colab ${t("2")} drive<br>
-drive.${t("3")}('${t("4")}')<br>
-<span class="comment">#2 학습 데이터 준비하기</span>
-${t("5")} ${t("6")} ${t("7")} pd<br>
-hero_villain = ${t("8")}('/content/drive/MyDrive/2026AI/hero_villain/hero_villain.csv', ${t("9")})<br>
-print(hero_villain.${t("10")})<br>
-hero_villain<br>
-<span class="comment">#3 데이터 타입 확인하기</span>
-print(hero_villain.${t("11")})<br>
-<span class="comment">#4 데이터 타입 변환하기</span>
-hero_villain['label'] = hero_villain['label'].${t("12")}(${t("13")})<br>
-<span class="comment">#5 원 핫 인코딩</span>
-encoding = ${t("14")}(hero_villain)
-    `;
-
-    document.getElementById('block-2').innerHTML = `
-<span class="comment">#6 변수 선언 (텐-수 / 대괄호 2개!)</span>
-${t("15")} = ${t("16")}<br>
-${t("17")} = ${t("18")}<br>
-<span class="comment">#7 데이터 분리 (트-트 / 셔-스-테!)</span>
-from sklearn.model_selection import ${t("19")}<br>
-tendency_train, tendency_test, suitability_train, suitability_test = ${t("20")}(tendency, suitability, ${t("21")}, ${t("22-1")}, ${t("22-2")})
-    `;
-
-    document.getElementById('block-3').innerHTML = `
-<span class="comment">#8 인공지능 모델 만들기 (임-텐-애 / 프-케-임 2번!)</span>
-${t("23")} ${t("24")} ${t("25")} tf<br>
-${t("26")} ${t("27")} ${t("28")} models<br>
-${t("29")} ${t("30")} ${t("31")} layers<br>
-<span class="comment">#9 인공신경망 만들기 (Sequential() -> add + Dense 4번 반복!)</span>
-model = ${t("32")}<br>
-${t("33")}(${t("34")}(8, ${t("35")}, ${t("36")}))<br>
-${t("37")}(${t("38")}(12, ${t("39")}))<br>
-${t("40")}(${t("41")}(4, ${t("42")}))<br>
-${t("43")}(${t("44")}(2, ${t("45")}))
-    `;
+    [1, 2, 3].forEach(p => {
+      document.getElementById(`block-${p}`).innerHTML = renderCodeHtml(codeSections.filter(s => s.part === p), t, true);
+    });
   }
 
-  function maskAllTokens(mask) {
+  // fn(part) → true(가림) / false(펼침) / null(그대로)
+  function maskTokens(fn) {
     document.querySelectorAll('.token').forEach(el => {
-      if (mask) el.classList.add('masked');
-      else el.classList.remove('masked');
+      const r = fn(Number(el.dataset.part));
+      if (r !== null) el.classList.toggle('masked', r);
     });
   }
 
-  function maskPartTokens() {
-    document.querySelectorAll('.token').forEach(el => {
-      const p = el.getAttribute('data-part');
-      if (p === 'part2' || p === 'part3') el.classList.add('masked');
-      else el.classList.remove('masked');
-    });
+  function maskRandom15() {
+    const picked = new Set(shuffle(blanksData.map(x => x.id)).slice(0, 15));
+    document.querySelectorAll('.token').forEach(el => el.classList.toggle('masked', picked.has(el.dataset.id)));
   }
 
-  function toggleBlock(blockId, mask) {
-    document.querySelectorAll(`#${blockId} .token`).forEach(el => {
-      if (mask) el.classList.add('masked');
-      else el.classList.remove('masked');
-    });
+  function maskWeak() {
+    const weak = blanksData.filter(x => stats.blanks[x.id] && stats.blanks[x.id].w > 0).map(x => x.id);
+    if (!weak.length) { alert('아직 틀린 빈칸 기록이 없어요. 빈칸 실전을 먼저 풀어보세요!'); return; }
+    document.querySelectorAll('.token').forEach(el => el.classList.toggle('masked', weak.includes(el.dataset.id)));
   }
 
-  // 2단계: 타이핑 퀴즈 로직
+  /* ================= 시험지 1페이지 ================= */
+  const hintWords = [
+    "from ~ import", "read_csv", "suitability",
+    "train_test_split", "input_dim", "stratify",
+    "model.add", "~.astype", "layers.Dense",
+    "tendency", "activation", "import ~ as",
+    "relu", "layers", "models.Sequential",
+    "pandas", "shuffle", "tanh",
+    "test_size", "sigmoid", "~.dtypes",
+    "softmax", "encoding", "index_col",
+    "/content/drive", "tensorflow", "~.shape",
+    "~.columns", "mount", "pd.get_dummies",
+    "keras", "suitability", "models"
+  ];
+  const decoyWords = ["tanh", "sigmoid", "~.shape"];
+  const heroRows = [
+    ["Captain America", 0.92, 0.9, 0.91, 0.94, 0.18, 0.88, 0.95, 0.15],
+    ["Spider-Man", 0.86, 0.93, 0.72, 0.83, 0.15, 0.74, 0.91, 0.18],
+    ["Black Panther", 0.88, 0.82, 0.89, 0.9, 0.32, 0.81, 0.88, 0.25],
+    ["Hawkeye", 0.82, 0.76, 0.86, 0.87, 0.17, 0.84, 0.89, 0.3],
+    ["Captain Marvel", 0.89, 0.8, 0.88, 0.78, 0.38, 0.75, 0.86, 0.19],
+    ["Ant-Man", 0.7, 0.84, 0.68, 0.8, 0.27, 0.56, 0.77, 0.2],
+    ["Star-Lord", 0.68, 0.74, 0.55, 0.85, 0.39, 0.42, 0.72, 0.32],
+    ["Thor", 0.79, 0.76, 0.54, 0.88, 0.43, 0.57, 0.8, 0.29],
+    ["Iron Man", 0.75, 0.71, 0.58, 0.86, 0.47, 0.43, 0.81, 0.34]
+  ];
+  const featureNames = ["name", "justice", "empathy", "self_control", "teamwork", "power_desire", "rule_respect", "sacrifice", "revenge", "label", "hero", "villain"];
+
+  function renderExamSheet() {
+    const hints = hintWords.map(w => `<div class="hint-item${decoyWords.includes(w) ? ' decoy' : ''}">${escapeHtml(w)}</div>`).join('');
+    const heroHead = featureNames.slice(0, 10).map(f => `<th>${f}</th>`).join('');
+    const heroBody = heroRows.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td>hero</td></tr>`).join('');
+    document.getElementById('exam-sheet').innerHTML = `
+      <div class="sheet-sub">❀ 아래의 명령을 활용하여 소스 코드를 완성하시오. <span style="font-weight:normal; color:#94a3b8; font-size:0.8rem;">(취소선 = 빈칸에 안 쓰이는 함정 보기)</span></div>
+      <div class="hint-grid">${hints}</div>
+      <div class="sheet-sub">❀ 구글 드라이브 데이터 (일부 발췌)</div>
+      <div class="table-wrap"><table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table></div>
+      <div class="sheet-sub">❀ 데이터 특성</div>
+      <div class="hint-grid" style="grid-template-columns:repeat(4,1fr);">${featureNames.map(f => `<div class="hint-item">${f}</div>`).join('')}</div>
+      <div class="sheet-sub">❀ 데이터 타입</div>
+      <table><tbody>
+        <tr><th>정수</th><td>int64</td><th>실수</th><td>float64</td></tr>
+        <tr><th>문자열</th><td>object / string / category</td><th>논리</th><td>bool</td></tr>
+      </tbody></table>`;
+  }
+
+  /* ================= 빈칸 실전 ================= */
   let activeBlankIds = [];
   let wrongBlankIds = [];
+  let timerId = null;
+  let timerStart = 0;
+
+  // 첫 입력을 시작할 때 타이머가 켜짐
+  function resetTimer() {
+    clearInterval(timerId);
+    timerId = null;
+    document.getElementById('timer').textContent = '';
+  }
+
+  function startTimer() {
+    clearInterval(timerId);
+    timerStart = Date.now();
+    const el = document.getElementById('timer');
+    const tick = () => {
+      const s = Math.floor((Date.now() - timerStart) / 1000);
+      el.textContent = `⏱ ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    };
+    tick();
+    timerId = setInterval(tick, 1000);
+  }
+
+  function stopTimer() { clearInterval(timerId); }
 
   function renderCode() {
-    const container = document.getElementById('code-container');
     const b = (id) => {
-      const item = blanksData.find(x => x.id === id);
+      const item = blankById[id];
       if (activeBlankIds.includes(id)) {
-        return `<input type="text" class="code-input" id="input-${id}" data-id="${id}" placeholder="[ ${id} ]" style="width:${item.width}px" autocomplete="off" spellcheck="false"><span id="badge-${id}"></span>`;
-      } else {
-        return `<span class="filled-blank">${item.ans}</span>`;
+        return `<input type="text" class="code-input" id="input-${id}" data-id="${id}" placeholder="[ ${id} ]" style="width:${item.width}px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span id="badge-${id}"></span>`;
       }
+      return `<span class="filled-blank">${escapeHtml(item.ans)}</span>`;
     };
-
-    container.innerHTML = `
-<span class="comment">#1 구글 드라이브 연결하기</span>
-${b("1")} google.colab ${b("2")} drive<br>
-drive.${b("3")}('${b("4")}')<br>
-
-<span class="comment">#2 학습 데이터 준비하기</span>
-${b("5")} ${b("6")} ${b("7")} pd<br>
-hero_villain = ${b("8")}('/content/drive/MyDrive/2026AI/hero_villain/hero_villain.csv', ${b("9")})<br>
-print(hero_villain.${b("10")})<br>
-hero_villain<br>
-
-<span class="comment">#3 데이터 타입 확인하기</span>
-print(hero_villain.${b("11")})<br>
-
-<span class="comment">#4 데이터 타입 변환하기</span>
-hero_villain['label'] = hero_villain['label'].${b("12")}(${b("13")})<br>
-
-<span class="comment">#5 원 핫 인코딩</span>
-encoding = ${b("14")}(hero_villain)<br>
-
-<span class="comment">#6 변수 선언</span>
-${b("15")} = ${b("16")}<br>
-${b("17")} = ${b("18")}<br>
-
-<span class="comment">#7 데이터 분리</span>
-from sklearn.model_selection import ${b("19")}<br>
-tendency_train, tendency_test, suitability_train, suitability_test = ${b("20")}(tendency, suitability, ${b("21")}, ${b("22-1")}, ${b("22-2")})<br>
-
-<span class="comment">#8 인공지능 모델 만들기</span>
-${b("23")} ${b("24")} ${b("25")} tf<br>
-${b("26")} ${t_or_b("27", b)} ${b("28")} models<br>
-${b("29")} ${b("30")} ${b("31")} layers<br>
-
-<span class="comment">#9 인공신경망 만들기</span>
-model = ${b("32")}<br>
-${b("33")}(${b("34")}(8, ${b("35")}, ${b("36")}))<br>
-${b("37")}(${b("38")}(12, ${b("39")}))<br>
-${b("40")}(${b("41")}(4, ${b("42")}))<br>
-${b("43")}(${b("44")}(2, ${b("45")}))
-    `;
+    document.getElementById('code-container').innerHTML = renderCodeHtml(codeSections, b, false);
+    const inputs = [...document.querySelectorAll('#code-container .code-input')];
+    resetTimer();
+    inputs.forEach((el, i) => {
+      el.addEventListener('input', () => { if (!timerId) startTimer(); });
+      el.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' || e.isComposing) return;
+        e.preventDefault();
+        if (i < inputs.length - 1) inputs[i + 1].focus();
+        else checkAnswers();
+      });
+    });
+    if (inputs.length) inputs[0].focus({ preventScroll: true });
   }
 
-  function t_or_b(id, bFunc) { return bFunc(id); }
-
-  function startQuiz(count) {
+  function startQuiz(mode) {
     document.getElementById('btn-retry').style.display = 'none';
     const allIds = blanksData.map(x => x.id);
-    if (count >= allIds.length) {
-      activeBlankIds = [...allIds];
-    } else {
-      const shuffled = [...allIds].sort(() => 0.5 - Math.random());
-      activeBlankIds = shuffled.slice(0, count);
-    }
-    renderCode();
-    document.getElementById('score-display').innerText = `🎲 총 ${activeBlankIds.length}문제 출제됨! 빈칸을 채워보세요.`;
-  }
-
-  function startRangeQuiz(mode) {
-    document.getElementById('btn-retry').style.display = 'none';
-    if (mode === 'back') {
-      activeBlankIds = blanksData.filter(x => x.part === 2 || x.part === 3).map(x => x.id);
-      document.getElementById('score-display').innerText = `🔥 후반부 집중 모드 (15~45번, 총 ${activeBlankIds.length}문제) 출제됨!`;
-    } else {
+    let label;
+    if (mode === 'exam') {
+      activeBlankIds = shuffle(allIds).slice(0, 15);
+      label = '🎲 실전 모드: 랜덤 15문제';
+    } else if (mode === 'weak') {
+      activeBlankIds = weightedSample(allIds, 15, id => weakWeight('blanks', id));
+      label = '❗ 약점 집중: 많이 틀린·안 풀어본 빈칸 위주 15문제';
+    } else if (mode === 'back') {
+      activeBlankIds = blanksData.filter(x => x.part !== 1).map(x => x.id);
+      label = `🔥 15~45번 (${activeBlankIds.length}문제)`;
+    } else if (mode === 'front') {
       activeBlankIds = blanksData.filter(x => x.part === 1).map(x => x.id);
-      document.getElementById('score-display').innerText = `🟢 초반부 집중 모드 (1~14번, 총 ${activeBlankIds.length}문제) 출제됨!`;
+      label = `🟢 1~14번 (${activeBlankIds.length}문제)`;
+    } else {
+      activeBlankIds = [...allIds];
+      label = `전체 ${allIds.length}문제`;
     }
     renderCode();
+    document.getElementById('score-display').innerText = `${label} 출제! 빈칸을 채워보세요.`;
   }
 
+  // 공백 무시, 큰따옴표·스마트따옴표(모바일 키보드) → 작은따옴표
   function normalize(str) {
-    return str.replace(/\s+/g, '').replace(/"/g, "'");
+    return str.replace(/\s+/g, '').replace(/[‘’‚‛′`"“”]/g, "'");
+  }
+
+  function isCorrectBlank(item, value) {
+    const v = normalize(value);
+    return v === normalize(item.ans) || (item.alt || []).some(a => normalize(a) === v);
   }
 
   function checkAnswers() {
+    if (!activeBlankIds.length) return;
     let correctCount = 0;
     wrongBlankIds = [];
     activeBlankIds.forEach(id => {
       const inputEl = document.getElementById(`input-${id}`);
       const badgeEl = document.getElementById(`badge-${id}`);
-      const item = blanksData.find(x => x.id === id);
-      const userVal = normalize(inputEl.value);
-      const correctVal = normalize(item.ans);
-      const altVals = (item.alt || []).map(normalize);
-
-      if (userVal === correctVal || altVals.includes(userVal)) {
-        inputEl.classList.remove('wrong');
-        inputEl.classList.add('correct');
+      const item = blankById[id];
+      const ok = isCorrectBlank(item, inputEl.value);
+      inputEl.classList.toggle('correct', ok);
+      inputEl.classList.toggle('wrong', !ok);
+      if (ok) {
         badgeEl.innerHTML = '';
         correctCount++;
       } else {
-        inputEl.classList.remove('correct');
-        inputEl.classList.add('wrong');
-        badgeEl.innerHTML = `<span class="ans-badge">정답: ${item.ans}</span>`;
+        badgeEl.innerHTML = `<span class="ans-badge">정답: ${escapeHtml(item.ans)}</span>` + (item.trap ? `<span class="trap-badge">⚠ ${item.trap}</span>` : '');
         wrongBlankIds.push(id);
       }
+      record('blanks', id, ok);
     });
+    stopTimer();
 
     const total = activeBlankIds.length;
-    const score80 = Math.round((correctCount / total) * 80);
-    document.getElementById('score-display').innerText = 
-      `🎯 채점 결과: ${total}개 중 ${correctCount}개 정답! (환산: ${score80}점 / 80점)`;
+    const pct = Math.round((correctCount / total) * 100);
+    document.getElementById('score-display').innerText =
+      `🎯 채점 결과: ${total}개 중 ${correctCount}개 정답 (${pct}%)` + (pct === 100 ? ' 🎉 완벽!' : '');
 
     const retryBtn = document.getElementById('btn-retry');
-    if (wrongBlankIds.length > 0) {
-      retryBtn.style.display = 'inline-block';
-      retryBtn.innerText = `🔄 틀린 ${wrongBlankIds.length}문제만 다시 풀기`;
-    } else {
-      retryBtn.style.display = 'none';
-    }
+    retryBtn.style.display = wrongBlankIds.length ? 'inline-block' : 'none';
+    retryBtn.innerText = `🔄 틀린 ${wrongBlankIds.length}문제만 다시`;
+    renderStudyBlocks();
   }
 
   function retryWrong() {
-    if (wrongBlankIds.length === 0) return;
+    if (!wrongBlankIds.length) return;
     activeBlankIds = [...wrongBlankIds];
     document.getElementById('btn-retry').style.display = 'none';
     renderCode();
-    document.getElementById('score-display').innerText = `🔄 방금 틀린 ${activeBlankIds.length}문제만 다시 도전합니다!`;
+    document.getElementById('score-display').innerText = `🔄 방금 틀린 ${activeBlankIds.length}문제 재도전!`;
   }
 
   function showAllAnswers() {
     activeBlankIds.forEach(id => {
       const inputEl = document.getElementById(`input-${id}`);
-      const item = blanksData.find(x => x.id === id);
-      inputEl.value = item.ans;
+      inputEl.value = blankById[id].ans;
       inputEl.classList.remove('wrong');
       inputEl.classList.add('correct');
       document.getElementById(`badge-${id}`).innerHTML = '';
     });
-    document.getElementById('score-display').innerText = `👀 모든 정답을 표시했습니다.`;
+    stopTimer();
+    document.getElementById('score-display').innerText = '👀 모든 정답을 표시했습니다.';
   }
 
-  const flashcards = [
-    { tag: "#1 데이터 준비", q: "CSV의 약자와 의미는?", a: "Comma-Separated Values의 약자로, 데이터를 쉼표(,)로 구분해 저장하는 파일 형식" },
-    { tag: "#2 드라이브 연결", q: "from ~ import / mount() / '/content/drive'의 의미는?", a: "• from import: 다른 곳에 준비된 기능을 가져와 사용\n• mount(): 구글 드라이브를 코랩에 연결\n• /content/drive: 코랩에서 구글 드라이브에 접근하는 경로" },
-    { tag: "#3 데이터 읽기", q: "pandas와 read_csv(), index_col=0의 역할은?", a: "• pandas: 표 형태의 데이터를 다루고 분석하는 라이브러리\n• read_csv(): CSV 파일을 읽어오는 함수\n• index_col=0: 첫 번째 열을 데이터의 인덱스(행 이름)로 사용" },
-    { tag: "#3~4 데이터 확인", q: "~.columns 와 ~.dtypes 의 차이점은?", a: "• ~.columns: 데이터에 포함된 열(column)의 이름을 확인\n• ~.dtypes: 각 열의 데이터 타입(자료형)을 확인" },
-    { tag: "#5~6 전처리", q: "A[B].astype('C') 와 pd.get_dummies()의 역할은?", a: "• astype('C'): A 데이터의 B열 데이터 타입을 C로 변경\n• pd.get_dummies(): 원핫인코딩 수행 (범주형 값을 0과 1로 변환)" },
-    { tag: "#7 변수 선언", q: "tendency와 suitability 변수의 의미와 ~.shape의 역할은?", a: "• tendency: 변수 X (특성, 입력 값 - 8개)\n• suitability: 결과 Y (타깃, 적합도, 정답 - hero/villain)\n• ~.shape: 데이터의 행(row)과 열(column)의 개수를 확인" },
-    { tag: "#8 데이터 분리", q: "train_test_split의 3가지 옵션(shuffle, stratify, test_size) 의미는?", a: "• shuffle=True: 데이터를 무작위로 섞은 후 분리\n• stratify=suitability: 클래스(정답) 비율이 비슷하게 유지되도록 분리 (층화 추출)\n• test_size=0.2: 학습 데이터 8 : 평가 데이터 2 비율로 분리" },
-    { tag: "#9-1 모델 라이브러리", q: "tensorflow, keras, models, layers의 역할은?", a: "• tensorflow: AI 모델을 만들고 학습시키는 라이브러리\n• keras: 신경망 모델을 쉽게 만들도록 지원하는 라이브러리\n• models: 신경망 모델을 만들고 관리\n• layers: 신경망의 층(layer)을 생성" },
-    { tag: "#9-2 신경망 구조", q: "models.Sequential(), model.add(), layers.Dense(A), input_dim=A의 의미는?", a: "• models.Sequential(): 신경망 층을 순서대로 연결하는 모델 생성\n• model.add(): 모델에 새로운 층 추가\n• layers.Dense(A): A개의 뉴런을 가지며 앞뒤 층 모든 뉴런과 연결되는 [완전연결층]\n• input_dim=A: 입력 데이터 특성(feature)을 A개로 설정 (입력층에만 작성)" },
-    { tag: "#9-2 층의 구분", q: "코드의 Dense 4개 층(뉴런 8, 12, 4, 2개)은 각각 무슨 층인가?", a: "• 첫 번째 Dense(8, input_dim=8, relu): 입력층\n• 두 번째 Dense(12, relu): 은닉층\n• 세 번째 Dense(4, relu): 은닉층\n• 네 번째 Dense(2, softmax): 출력층" },
-    { tag: "#9-3 모델 학습 (필수!)", q: "model.compile()과 3가지 인자(optimizer, loss, metrics), model.summary()의 의미는?", a: "• model.compile(): 신경망을 학습시키는 방법을 설정\n• optimizer='adam': Adam을 사용해 모델의 [가중치]를 조정\n• loss='categorical_crossentropy': 범주형 교차 엔트로피로 예측과 실제 정답의 [차이(오차)] 계산\n• metrics=['accuracy']: 모델의 [정확도] 확인\n• model.summary(): 인공신경망의 [구조] 확인" }
+  /* ================= 데이터: 인공지능 활동지 ================= */
+  // desc 안의 [핵심어] 는 이론 정리에서 가릴 수 있고, 퀴즈에서 빈칸으로 출제됨
+  const theorySections = [
+    { title: "#1 데이터 준비하기",
+      intro: "구글 드라이브에 [2026AI] 폴더를 만들고, 그 속에 [hero_villain] 폴더를 생성한 뒤 [학습용] csv 파일과 [테스트용] csv 파일 2개 넣기",
+      items: [{ term: "csv", desc: "[Comma-Separated Values]의 약자로, 데이터를 [쉼표]로 구분해 저장하는 파일 형식" }] },
+    { title: "#2 구글 드라이브 연결하기",
+      code: "from google.colab import drive\ndrive.mount('/content/drive')",
+      items: [
+        { term: "from ~ import", desc: "파이썬에서 다른 곳에 준비되어 있는 [기능]을 가져와 사용하는 명령" },
+        { term: "mount( )", desc: "구글 드라이브를 코랩에서 사용할 수 있도록 [연결]" },
+        { term: "/content/drive", desc: "코랩에서 구글 드라이브에 접근하기 위한 [경로]" }] },
+    { title: "#3 학습 데이터 준비하기",
+      code: "import pandas as pd\nhero_villain = pd.read_csv('/content/drive/MyDrive/2026AI/hero_villain/hero_villain.csv', index_col=0)\nprint(hero_villain.columns)\nhero_villain",
+      items: [
+        { term: "import A as B", desc: "A를 가져와 B라고 [간단하게] 사용하는 명령" },
+        { term: "pandas", desc: "[표] 형태의 데이터를 다루고 분석하기 위한 [라이브러리]" },
+        { term: "read_csv( )", desc: "[CSV 파일]을 읽어오는 pandas의 함수" },
+        { term: "index_col = 0", desc: "CSV 파일의 [첫 번째 열]을 데이터의 [인덱스]로 사용" },
+        { term: "~.columns", desc: "데이터에 포함된 [열(column)의 이름]을 확인하는 기능" }] },
+    { title: "#4 데이터 타입 확인하기",
+      intro: "인공지능 모델은 [문자 자체를 그대로 입력하여 학습할 수 없어서] 확인 필수",
+      code: "print(hero_villain.dtypes)",
+      items: [{ term: "~.dtypes", desc: "각 열의 [데이터 타입(data type)]을 확인하는 기능" }],
+      extra: "datatypes" },
+    { title: "#5 데이터 타입 변환하기",
+      code: "hero_villain['label'] = hero_villain['label'].astype('category')\nprint(hero_villain.dtypes)",
+      items: [{ term: "A[B].astype('C')", desc: "A 데이터의 [B열]의 데이터 타입을 [C로 변경]하는 함수" }] },
+    { title: "#6 원핫인코딩(One-Hot Encoding)",
+      code: "encoding = pd.get_dummies(hero_villain)\nprint(encoding.columns)\nencoding",
+      items: [{ term: "pd.get_dummies( )", desc: "[범주형] 값을 [0과 1]로 변환" }] },
+    { title: "#7 변수 선언",
+      code: "tendency = encoding[['justice', 'empathy', 'self_control', 'teamwork',\n                     'power_desire', 'rule_respect', 'sacrifice', 'revenge']]\nsuitability = encoding[['label_hero', 'label_villain']]\nprint(tendency.shape, suitability.shape)",
+      items: [
+        { term: "tendency", desc: "변수 [X] ([특성], [입력 값])" },
+        { term: "suitability", desc: "결과 [Y] ([타깃], [적합도], [정답])" },
+        { term: "encoding[ ]", desc: "데이터가 들어 있는 [변수]로 처리" },
+        { term: "~.shape", desc: "데이터의 [행(row)]과 [열(column)]의 [개수]를 확인하는 기능" }] },
+    { title: "#8 데이터 분리(학습용 + 평가용)",
+      code: "from sklearn.model_selection import train_test_split\ntendency_train, tendency_test, suitability_train, suitability_test = train_test_split(\n    tendency, suitability, shuffle=True, stratify=suitability, test_size=0.2)\nprint(tendency_train.shape, suitability_train.shape)\nprint(tendency_test.shape, suitability_test.shape)",
+      items: [
+        { term: "train_test_split( )", desc: "전체 데이터를 [학습 데이터]와 [평가 데이터]로 분리" },
+        { term: "shuffle=True", desc: "데이터를 [섞은 후] 분리" },
+        { term: "stratify=suitability", desc: "[클래스 비율]이 비슷하게 유지되도록 분리 ([층화 추출]:stratification)" },
+        { term: "test_size=0.2", desc: "데이터 비율을 학습데이터 [8] : 평가 데이터 [2]로 분리" }] },
+    { title: "#9-1 인공지능 모델 만들기(Keras, tensorflow)",
+      code: "import tensorflow as tf\nfrom keras import models\nfrom keras import layers",
+      items: [
+        { term: "tensorflow", desc: "인공지능 모델을 만들고 [학습]시키기 위한 라이브러리" },
+        { term: "keras", desc: "인공지능 [신경망 모델]을 [쉽게] 만들 수 있도록 지원하는 라이브러리" },
+        { term: "models", desc: "신경망 [모델]을 만들고 [관리]하는 기능" },
+        { term: "layers", desc: "신경망의 [층(layer)]을 만들기 위한 기능" }] },
+    { title: "#9-2 인공지능 모델 만들기(신경망 만들기)",
+      code: "model = models.Sequential()\nmodel.add(layers.Dense(8, input_dim=8, activation='relu'))   # 입력층\nmodel.add(layers.Dense(12, activation='relu'))               # 은닉층\nmodel.add(layers.Dense(4, activation='relu'))                # 은닉층\nmodel.add(layers.Dense(2, activation='softmax'))             # 출력층",
+      items: [
+        { term: "models.Sequential( )", desc: "신경망 층을 [순서대로] 연결하는 모델을 만드는 기능" },
+        { term: "model.add( )", desc: "모델에 새로운 [층(layer)]을 [추가]" },
+        { term: "layers.Dense(A)", desc: "A개의 [뉴런] 수를 가지면서 모든 뉴런이 앞뒤 층의 뉴런과 연결되는 [완전연결층]" },
+        { term: "input_dim=A", desc: "입력 데이터 [특성(feature)]을 A개로 설정" },
+        { term: "activation='relu'", desc: "[ReLU(렐루)] 활성화 함수를 사용" },
+        { term: "activation='softmax'", desc: "[softmax] 활성화 함수를 사용" }],
+      extra: "activation" },
+    { title: "#9-3 인공지능 모델 만들기(신경망 학습하기)",
+      code: "model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\nmodel.summary()",
+      items: [
+        { term: "model.compile( )", desc: "신경망을 [학습시키는 방법]을 설정하는 기능" },
+        { term: "optimizer='adam'", desc: "Adam([Adaptive Moment Estimation])을 사용하여 모델의 [가중치]를 조정" },
+        { term: "loss='categorical_crossentropy'", desc: "[범주형 교차 엔트로피]를 사용하여 모델의 예측과 실제 정답의 [차이]를 계산" },
+        { term: "metrics=['accuracy']", desc: "모델의 [정확도(accuracy)]를 확인" },
+        { term: "model.summary( )", desc: "인공신경망의 [구조]를 확인" }] }
   ];
 
-  function renderFlashcards() {
-    const container = document.getElementById('flashcard-container');
-    container.innerHTML = flashcards.map((fc, idx) => `
-      <div class="flashcard" onclick="this.classList.toggle('revealed')">
-        <span class="tag">${fc.tag}</span>
-        <div class="q">Q${idx+1}. ${fc.q}</div>
-        <div class="a">${fc.a.replace(/\n/g, '<br>')}</div>
-      </div>
-    `).join('');
+  const activationFns = [
+    { name: "시그모이드 (Sigmoid)", key: "시그모이드", color: "#2563eb",
+      formula: 'f(x) = <span class="frac"><span>1</span><span>1 + e<sup>−x</sup></span></span>',
+      feature: "[0과 1 사이]의 값을 출력하는 [S자] 모양의 함수",
+      role: "한계: 오차 역전파 등 연속적인 계산 과정에서 입력층으로 갈수록 기울기가 점차 작아져 0에 수렴하는 [기울기 소실(Vanishing Gradient)] 문제 발생",
+      range: "0 ~ 1", shape: "S자 곡선", trait: "기울기 소실 문제 발생", use: "이진 분류(과거에 많이 사용)" },
+    { name: "렐루 (ReLU)", key: "렐루", color: "#16a34a",
+      formula: "f(x) = max(0, x)",
+      feature: "현재 딥러닝에서 [가장 많이 사용]되는 활성화 함수",
+      role: "역할: 입력 신호의 총합 크기가 특정 [임계값] 이상일 때만 신호를 활성화하여 전달하며, 시그모이드 함수의 [기울기 소실 문제를 해결]",
+      range: "0 ~ 무한대", shape: "계단형(음수 구간 0)", trait: "기울기 소실 문제 완화, 연산 효율 높음", use: "은닉층(대부분의 신경망)" },
+    { name: "소프트맥스 (Softmax)", key: "소프트맥스", color: "#7c3aed",
+      formula: 'f(x<sub>i</sub>) = <span class="frac"><span>e<sup>x<sub>i</sub></sup></span><span>Σ<sub>j=1</sub><sup>n</sup> e<sup>x<sub>j</sub></sup></span></span>',
+      feature: "입력받은 값들을 0~1 사이의 값으로 [정규화]하며, 모든 출력값의 총합이 항상 [1]이 되도록 변환",
+      role: "역할: 신경망의 최종 연산 결과를 [확률값]으로 변환해 주며, [다중 클래스 분류] 문제에서 주로 [출력층]에 적용",
+      range: "0 ~ 1 (합계 1)", shape: "확률 분포 형태", trait: "다중 클래스 확률 변환", use: "분류 문제(출력층)" },
+    { name: "탄젠트 하이퍼볼릭 (tanh)", key: "tanh", color: "#ea580c",
+      formula: 'f(x) = tanh(x) = <span class="frac"><span>e<sup>x</sup> − e<sup>−x</sup></span><span>e<sup>x</sup> + e<sup>−x</sup></span></span>',
+      feature: "시그모이드, 렐루 등과 함께 인공 신경망에 사용되는 주요 활성화 함수 중 하나",
+      role: "출력이 [-1 ~ 1], [0 중심]으로 분포",
+      range: "-1 ~ 1", shape: "S자 곡선", trait: "0 중심으로 분포, 기울기 소실 가능", use: "이진 분류, 은닉층(특정 상황)" }
+  ];
+  const actIntro = "활성화 함수는 신경망에서 입력 신호를 변환하여 [비선형성]을 부여하고, 모델이 더 [복잡한 패턴]을 학습할 수 있도록 도와줍니다.";
+
+  const dataTypes = [
+    { mean: "정수", py: "int", ex: "10, 25", pd: "int64" },
+    { mean: "실수", py: "float", ex: "0.92, 3.14", pd: "float64" },
+    { mean: "문자열", py: "str", ex: "\"Thor\", \"Hulk\"", pd: "object / string" },
+    { mean: "문자열", py: "str", ex: "\"hero\", \"villain\"", pd: "category" },
+    { mean: "논리(참/거짓)", py: "bool", ex: "true, false", pd: "bool" }
+  ];
+
+  /* ================= 활동지 이론 정리 렌더링 ================= */
+  const kwHtml = text => escapeHtml(text).replace(/\[([^\]]+)\]/g, '<span class="kw" onclick="this.classList.toggle(\'hide\')">$1</span>');
+  const plain = text => text.replace(/\[([^\]]+)\]/g, '$1');
+  const hcell = text => `<td class="hidden-cell" onclick="this.classList.toggle('show')">${escapeHtml(text)}</td>`;
+
+  function renderTheory() {
+    const html = theorySections.map(sec => {
+      let extra = '';
+      if (sec.extra === 'datatypes') {
+        extra = `<div class="sheet-sub">* 주요 데이터 타입</div><div class="table-wrap"><table><thead><tr><th>의미</th><th>파이썬 자료형</th><th>예시</th><th>pandas 표시</th></tr></thead><tbody>
+          <tr><td><strong>정수</strong></td>${hcell('int')}<td>10, 25</td>${hcell('int64')}</tr>
+          <tr><td><strong>실수</strong></td>${hcell('float')}<td>0.92, 3.14</td>${hcell('float64')}</tr>
+          <tr><td rowspan="2"><strong>문자열</strong></td><td rowspan="2" class="hidden-cell" onclick="this.classList.toggle('show')">str</td><td>"Thor", "Hulk"</td>${hcell('object / string')}</tr>
+          <tr><td>"hero", "villain"</td>${hcell('category')}</tr>
+          <tr><td><strong>논리(참/거짓)</strong></td>${hcell('bool')}<td>true, false</td>${hcell('bool')}</tr>
+        </tbody></table></div>`;
+      } else if (sec.extra === 'activation') {
+        extra = renderActivation();
+      }
+      return `<div class="card">
+        <h3>${sec.title}</h3>
+        ${sec.intro ? `<div class="note">${kwHtml(sec.intro)}</div>` : ''}
+        ${sec.code ? `<div class="sheet-code">${escapeHtml(sec.code)}</div>` : ''}
+        <div class="table-wrap"><table class="term-table"><tbody>
+          ${sec.items.map(it => `<tr><td>${escapeHtml(it.term)}</td><td>${kwHtml(it.desc)}</td></tr>`).join('')}
+        </tbody></table></div>
+        ${extra}
+      </div>`;
+    }).join('');
+    document.getElementById('theory-container').innerHTML = html;
   }
 
-  function toggleAllTheory(show) {
-    document.querySelectorAll('.flashcard').forEach(el => {
-      if (show) el.classList.add('revealed');
-      else el.classList.remove('revealed');
+  function renderActivation() {
+    const cards = activationFns.map(f => `
+      <div class="act-card" style="border-top:4px solid ${f.color};">
+        <h4 style="color:${f.color};">${f.name}</h4>
+        <div class="formula">${f.formula}</div>
+        <div>• ${kwHtml(f.feature)}</div>
+        <div>• ${kwHtml(f.role)}</div>
+      </div>`).join('');
+    const rows = activationFns.map(f => `<tr><td><strong style="color:${f.color};">${f.name}</strong></td>${hcell(f.range)}${hcell(f.shape)}${hcell(f.trait)}${hcell(f.use)}</tr>`).join('');
+    return `
+      <div class="sheet-sub" style="margin-top:18px;">⚡ 딥러닝의 핵심, 활성화 함수 (Activation Function)</div>
+      <div class="note">${kwHtml(actIntro)}</div>
+      <div class="act-grid">${cards}</div>
+      <div class="sheet-sub">한눈에 보는 활성화 함수 비교 <span style="font-weight:normal; color:#94a3b8; font-size:0.8rem;">(회색 칸 클릭)</span></div>
+      <div class="table-wrap"><table><thead><tr><th>종류</th><th>출력 범위</th><th>그래프 형태</th><th>주요 특징</th><th>주요 용도</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="note">이 코드에서는 입력층·은닉층 = <code>relu</code>, 출력층(hero/villain 2개 분류) = <code>softmax</code></div>`;
+  }
+
+  function toggleTheory(show) {
+    document.querySelectorAll('#theory-container .kw').forEach(el => el.classList.toggle('hide', !show));
+    document.querySelectorAll('#theory-container .hidden-cell').forEach(el => el.classList.toggle('show', show));
+  }
+
+  /* ================= 이론 퀴즈 ================= */
+  // 문제 유형: mc(객관식) / text(주관식). key = 오답노트에서 묶이는 개념 이름
+  function buildTheoryPool() {
+    const pool = [];
+    const allItems = theorySections.flatMap(sec => sec.items.map(it => ({ ...it, sec: sec.title })));
+    const pickOthers = (list, correct, n) => shuffle(list.filter(x => x !== correct)).slice(0, n);
+
+    allItems.forEach(it => {
+      const desc = plain(it.desc);
+      // 명령어 → 설명 고르기
+      pool.push({ key: it.term, sec: it.sec, type: 'mc',
+        q: `<span class="mono">${escapeHtml(it.term)}</span> 의 의미로 옳은 것은?`,
+        answer: desc, choices: () => shuffle([desc, ...pickOthers(allItems.map(x => plain(x.desc)), desc, 3)]) });
+      // 설명 → 명령어 고르기
+      pool.push({ key: it.term, sec: it.sec, type: 'mc',
+        q: `다음 설명에 해당하는 명령어는?<br><span style="font-weight:normal;">"${escapeHtml(desc)}"</span>`,
+        answer: it.term, choices: () => shuffle([it.term, ...pickOthers(allItems.map(x => x.term), it.term, 3)]) });
+      // 핵심어 빈칸 (주관식)
+      const kws = [...it.desc.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]);
+      kws.forEach(kw => {
+        pool.push({ key: it.term, sec: it.sec, type: 'text',
+          q: `<span class="mono">${escapeHtml(it.term)}</span> : ${blankOut(it.desc, kw)}`, answer: kw });
+      });
     });
-    document.querySelectorAll('.hidden-cell').forEach(el => {
-      if (show) el.classList.add('show');
-      else el.classList.remove('show');
+
+    theorySections.filter(s => s.intro).forEach(sec => {
+      [...sec.intro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
+        pool.push({ key: sec.title, sec: sec.title, type: 'text', q: blankOut(sec.intro, kw), answer: kw });
+      });
+    });
+
+    // 활성화 함수
+    const actNames = activationFns.map(f => f.name);
+    const actMc = (key, q, answer, choices) => pool.push({ key, sec: '활성화 함수', act: true, type: 'mc', q, answer, choices: () => shuffle(choices) });
+    activationFns.forEach(f => {
+      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>출력 범위</strong>는?`, f.range, activationFns.map(x => x.range));
+      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>그래프 형태</strong>는?`, f.shape, [...new Set(activationFns.map(x => x.shape))]);
+      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>주요 용도</strong>는?`, f.use, activationFns.map(x => x.use));
+      actMc(`활성화 함수: ${f.key}`, `주요 특징이 "${escapeHtml(f.trait)}"인 활성화 함수는?`, f.name, actNames);
+      if (f.key !== 'tanh') actMc(`활성화 함수: ${f.key}`, `수식이 ${f.formula} 인 활성화 함수는?`, f.name, actNames);
+      [f.feature, f.role].forEach(text => {
+        [...text.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
+          pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'text', q: `[${f.name}] ${blankOut(text, kw)}`, answer: kw });
+        });
+      });
+    });
+    actMc('활성화 함수: 렐루', '현재 딥러닝에서 <strong>가장 많이 사용</strong>되는 활성화 함수는?', actNames[1], actNames);
+    actMc('활성화 함수: 시그모이드', '<strong>기울기 소실(Vanishing Gradient)</strong> 문제가 발생하는 것이 한계로 제시된 함수는?', actNames[0], actNames);
+    actMc('활성화 함수: 소프트맥스', '<strong>다중 클래스 분류</strong> 문제에서 <strong>출력층</strong>에 주로 적용되는 함수는?', actNames[2], actNames);
+    actMc('활성화 함수: 소프트맥스', '모든 출력값의 <strong>총합이 항상 1</strong>이 되도록 변환하는 함수는?', actNames[2], actNames);
+    actMc('활성화 함수: 렐루', '<strong>시그모이드의 기울기 소실 문제를 해결</strong>한 함수는?', actNames[1], actNames);
+    [...actIntro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
+      pool.push({ key: '활성화 함수: 정의', sec: '활성화 함수', act: true, type: 'text', q: blankOut(actIntro, kw), answer: kw });
+    });
+
+    // 신경망 층 구분
+    const layerChoices = ['입력층', '은닉층', '출력층'];
+    [["model.add(layers.Dense(8, input_dim=8, activation='relu'))", '입력층'],
+     ["model.add(layers.Dense(12, activation='relu'))", '은닉층'],
+     ["model.add(layers.Dense(4, activation='relu'))", '은닉층'],
+     ["model.add(layers.Dense(2, activation='softmax'))", '출력층']].forEach(([code, ans]) => {
+      pool.push({ key: '층 구분 (입력/은닉/출력)', sec: '#9-2', type: 'mc', q: `<span class="mono">${escapeHtml(code)}</span> 는 어떤 층인가?`, answer: ans, choices: () => layerChoices });
+    });
+
+    // 데이터 타입 표
+    const pdTypes = [...new Set(dataTypes.map(d => d.pd))];
+    dataTypes.forEach(d => {
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc',
+        q: `${d.mean} ${escapeHtml(d.ex)} 의 <strong>pandas 표시</strong>는?`, answer: d.pd, choices: () => shuffle(pdTypes) });
+    });
+    ['정수', '실수', '문자열', '논리(참/거짓)'].forEach(mean => {
+      const d = dataTypes.find(x => x.mean === mean);
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc',
+        q: `${mean}의 <strong>파이썬 자료형</strong>은?`, answer: d.py, choices: () => ['int', 'float', 'str', 'bool'] });
+    });
+
+    return pool;
+  }
+
+  function blankOut(text, kw) {
+    let done = false;
+    return escapeHtml(text).replace(/\[([^\]]+)\]/g, (m, k) => {
+      if (!done && k === escapeHtml(kw)) { done = true; return '<span class="q-blank">&nbsp;</span>'; }
+      return k;
     });
   }
 
-  function switchTab(tabId, btnEl) {
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    btnEl.classList.add('active');
+  const theoryPool = buildTheoryPool();
+  let tquiz = [];
+
+  function startTheoryQuiz(mode) {
+    let picked;
+    if (mode === 'all') {
+      picked = shuffle(theoryPool);
+    } else if (mode === 'act') {
+      picked = shuffle(theoryPool.filter(q => q.act)).slice(0, 10);
+    } else {
+      const weightFn = mode === 'weak' ? (q => weakWeight('theory', q.key)) : (() => 1);
+      // 같은 개념이 한 번에 두 번 나오지 않도록
+      picked = [];
+      const usedKeys = new Set();
+      for (const q of weightedSample(theoryPool, theoryPool.length, weightFn)) {
+        if (usedKeys.has(q.key)) continue;
+        usedKeys.add(q.key);
+        picked.push(q);
+        if (picked.length === 10) break;
+      }
+    }
+    renderTheoryQuiz(picked);
   }
 
-  window.onload = () => {
+  function retryTheoryWrong() {
+    renderTheoryQuiz(tquiz.filter(s => s.done && !s.ok).map(s => s.q));
+  }
+
+  function renderTheoryQuiz(questions) {
+    tquiz = questions.map(q => ({ q, done: false, ok: false, choices: q.type === 'mc' ? q.choices() : null }));
+    document.getElementById('btn-tretry').style.display = 'none';
+    const container = document.getElementById('tquiz-container');
+    container.innerHTML = tquiz.map((s, i) => {
+      const body = s.q.type === 'mc'
+        ? `<div class="choices">${s.choices.map((c, ci) => `<button class="choice" data-qi="${i}" data-ci="${ci}">${ci + 1}. ${escapeHtml(c)}</button>`).join('')}</div>`
+        : `<input class="q-input" data-qi="${i}" placeholder="빈칸에 들어갈 말 입력 후 Enter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">`;
+      return `<div class="q-card" id="tq-${i}">
+        <div class="q-head"><span>Q${i + 1}. ${s.q.type === 'mc' ? '객관식' : '주관식'}</span><span>${escapeHtml(s.q.sec)}</span></div>
+        <div class="q-text">${s.q.q}</div>
+        ${body}
+        <div class="q-feedback" id="tqf-${i}"></div>
+      </div>`;
+    }).join('');
+
+    container.querySelectorAll('.choice').forEach(btn => btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.qi);
+      const s = tquiz[i];
+      if (s.done) return;
+      const ok = s.choices[Number(btn.dataset.ci)] === s.q.answer;
+      container.querySelectorAll(`.choice[data-qi="${i}"]`).forEach(b => {
+        b.disabled = true;
+        if (s.choices[Number(b.dataset.ci)] === s.q.answer) b.classList.add('answer');
+      });
+      btn.classList.add(ok ? 'picked-ok' : 'picked-ng');
+      finishTheoryQ(i, ok);
+    }));
+    container.querySelectorAll('.q-input').forEach(inp => inp.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || e.isComposing) return;
+      const i = Number(inp.dataset.qi);
+      const s = tquiz[i];
+      if (s.done || !inp.value.trim()) return;
+      const norm = v => v.toLowerCase().replace(/[\s'"()]/g, '');
+      const user = norm(inp.value);
+      const ans = norm(s.q.answer);
+      // 괄호 속 영어 표기 등은 생략해도 정답 처리 (예: "기울기 소실(Vanishing Gradient)" → "기울기 소실")
+      const short = norm(s.q.answer.replace(/\(.*\)/, ''));
+      const ok = user === ans || (short.length > 0 && user === short);
+      inp.disabled = true;
+      document.getElementById(`tqf-${i}`).innerHTML = ok ? '' : `정답: <strong>${escapeHtml(s.q.answer)}</strong>`;
+      finishTheoryQ(i, ok);
+      const next = container.querySelector('.q-input:not(:disabled)');
+      if (next) next.focus();
+    }));
+    updateTheoryScore();
+    const section = document.getElementById('tab-tquiz');
+    if (section.classList.contains('active')) window.scrollTo({ top: section.offsetTop - 10, behavior: 'smooth' });
+  }
+
+  function finishTheoryQ(i, ok) {
+    const s = tquiz[i];
+    s.done = true;
+    s.ok = ok;
+    document.getElementById(`tq-${i}`).classList.add(ok ? 'ok' : 'ng');
+    record('theory', s.q.key, ok);
+    updateTheoryScore();
+  }
+
+  function updateTheoryScore() {
+    const done = tquiz.filter(s => s.done).length;
+    const ok = tquiz.filter(s => s.ok).length;
+    const total = tquiz.length;
+    const el = document.getElementById('tscore-display');
+    if (done < total) {
+      el.innerText = `진행 ${done}/${total} · 정답 ${ok}개`;
+      return;
+    }
+    const score = Math.round((ok / total) * 20 * 10) / 10;
+    el.innerText = `🎯 결과: ${total}문제 중 ${ok}개 정답 → 이론 ${score}점 / 20점` + (ok === total ? ' 🎉' : '');
+    document.getElementById('btn-tretry').style.display = ok < total ? 'inline-block' : 'none';
+  }
+
+  /* ================= 오답노트 ================= */
+  function renderStats() {
+    const blankHtml = blanksData
+      .map(b => ({ b, s: stats.blanks[b.id] }))
+      .sort((x, y) => rate(y.s) - rate(x.s) || (y.s ? y.s.w : 0) - (x.s ? x.s.w : 0))
+      .map(({ b, s }) => {
+        const r = rate(s);
+        const color = !s ? '#cbd5e1' : r >= 0.5 ? '#ef4444' : r > 0 ? '#f59e0b' : '#22c55e';
+        const label = s ? `${s.w}/${s.n} 틀림` : '안 풀어봄';
+        return `<div class="stat-cell"><div><span class="sid">[${b.id}]</span> <span style="color:#64748b;">${label}</span></div>
+          <div class="sans" title="${escapeHtml(b.ans)}">${escapeHtml(b.ans)}</div>
+          <div class="bar"><span style="width:${s ? Math.max(r * 100, 4) : 0}%; background:${color};"></span></div></div>`;
+      }).join('');
+    document.getElementById('stats-blanks').innerHTML = `<div class="stat-grid">${blankHtml}</div>`;
+
+    const allItems = theorySections.flatMap(sec => sec.items);
+    const theoryRows = Object.entries(stats.theory)
+      .filter(([, s]) => s.w > 0)
+      .sort((a, b) => rate(b[1]) - rate(a[1]) || b[1].w - a[1].w)
+      .map(([key, s]) => {
+        const item = allItems.find(it => it.term === key);
+        return `<tr><td style="text-align:left; font-family:monospace; font-weight:bold;">${escapeHtml(key)}</td>
+          <td style="text-align:left;">${item ? kwHtml(item.desc) : ''}</td><td>${s.w}/${s.n}</td></tr>`;
+      }).join('');
+    document.getElementById('stats-theory').innerHTML = theoryRows
+      ? `<div class="table-wrap"><table><thead><tr><th>개념</th><th>활동지 설명</th><th>틀림/시도</th></tr></thead><tbody>${theoryRows}</tbody></table></div>`
+      : '<div class="empty">아직 틀린 이론 문제가 없어요. 이론 퀴즈를 풀어보세요!</div>';
+  }
+
+  function rate(s) { return s && s.n ? s.w / s.n : 0; }
+
+  function resetStats() {
+    if (!confirm('풀이 기록을 모두 지울까요?')) return;
+    stats = { blanks: {}, theory: {} };
+    saveStats();
+    renderStats();
     renderStudyBlocks();
-    startRangeQuiz('back');
-    renderFlashcards();
-  };
+  }
+
+  /* ================= 탭 ================= */
+  function switchTab(tabId) {
+    document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === tabId));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tabId));
+    if (tabId === 'tab-stats') renderStats();
+    try { localStorage.setItem(STORE_KEY + '-tab', tabId); } catch (e) {}
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+
+  renderStudyBlocks();
+  renderExamSheet();
+  renderTheory();
+  startQuiz('exam');
+  startTheoryQuiz('random');
+  try {
+    const lastTab = localStorage.getItem(STORE_KEY + '-tab');
+    if (lastTab && document.getElementById(lastTab)) switchTab(lastTab);
+  } catch (e) {}
 </script>
 
 </body>
