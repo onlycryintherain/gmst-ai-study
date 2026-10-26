@@ -3,292 +3,562 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인공지능 일반 수행평가 마스터</title>
+  <title>AI 수행평가 마스터</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --success: #16a34a;
-      --warning: #d97706;
-      --danger: #dc2626;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --line: #e2e8f0;
+      --bg: #f4f5f9;
+      --surface: #ffffff;
+      --surface-2: #f1f3f8;
+      --ink: #0f172a;
+      --ink-2: #475569;
+      --ink-3: #94a3b8;
+      --line: #e4e7ef;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --accent-soft: #eef0ff;
+      --accent-ink: #3730a3;
+      --ok: #059669;
+      --ok-soft: #e7f8f1;
+      --ng: #e11d48;
+      --ng-soft: #fff0f3;
+      --warn: #d97706;
+      --warn-soft: #fff7e6;
+      --editor: #111827;
+      --editor-line: #1f2937;
+      --editor-ink: #e5e7eb;
+      --editor-dim: #6b7280;
+      --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 4px 16px rgba(15, 23, 42, .05);
+      --radius: 16px;
+      --mono: 'JetBrains Mono', 'Consolas', monospace;
+      --sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    * { box-sizing: border-box; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { margin: 0; padding: 15px; background-color: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 1040px; margin: 0 auto; }
-    h1 { text-align: center; color: var(--primary-dark); margin-bottom: 5px; font-size: 1.6rem; }
-    .subtitle { text-align: center; color: var(--muted); margin-bottom: 14px; font-size: 0.9rem; }
-    code { background: #f1f5f9; padding: 0 4px; border-radius: 4px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9em; }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0d13;
+        --surface: #141823;
+        --surface-2: #1b2030;
+        --ink: #e8eaf0;
+        --ink-2: #a3aabb;
+        --ink-3: #687087;
+        --line: #252b3b;
+        --accent: #818cf8;
+        --accent-hover: #a5b4fc;
+        --accent-soft: rgba(129, 140, 248, .13);
+        --accent-ink: #c7d2fe;
+        --ok: #34d399;
+        --ok-soft: rgba(52, 211, 153, .12);
+        --ng: #fb7185;
+        --ng-soft: rgba(251, 113, 133, .12);
+        --warn: #fbbf24;
+        --warn-soft: rgba(251, 191, 36, .12);
+        --editor: #0a0e17;
+        --editor-line: #1a2131;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+      }
+    }
 
-    /* 시험 구성 안내 */
-    .exam-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 16px; }
-    .exam-info div { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 0.86rem; }
-    .exam-info strong { color: var(--primary-dark); }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    button, input { font-family: inherit; }
+    code, .mono { font-family: var(--mono); font-size: .88em; }
+    code { background: var(--surface-2); padding: 1px 6px; border-radius: 6px; }
 
-    /* 탭 메뉴 */
-    .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn { padding: 11px 18px; border: none; border-radius: 8px; background: #e2e8f0; color: #475569; font-weight: bold; cursor: pointer; font-size: 0.93rem; transition: 0.2s; }
-    .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
+    /* ---------- 상단 ---------- */
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--line); }
+    .topbar-inner { max-width: 1180px; margin: 0 auto; padding: 18px 20px 0; }
+    .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #a855f7); display: grid; place-items: center; color: white; font-weight: 800; font-size: .95rem; letter-spacing: -.02em; }
+    .brand h1 { margin: 0; font-size: 1.15rem; letter-spacing: -.02em; }
+    .brand p { margin: 0; font-size: .8rem; color: var(--ink-3); }
+    .mastery { display: flex; gap: 10px; }
+    .mastery-item { min-width: 150px; background: var(--surface-2); border-radius: 12px; padding: 8px 12px; }
+    .mastery-item .label { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-2); font-weight: 600; }
+    .mastery-item .label b { color: var(--ink); }
+    .meter { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+    .meter > span { display: block; height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s; }
 
+    .tabs { display: flex; gap: 4px; margin-top: 14px; overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: none; border: none; background: none; padding: 10px 14px 12px; font-size: .92rem; font-weight: 600; color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s; }
+    .tab:hover { color: var(--ink-2); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab .n { font-size: .72rem; font-weight: 700; color: var(--ink-3); margin-right: 4px; }
+    .tab.active .n { color: var(--accent); }
+
+    main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 80px; }
     .section { display: none; }
     .section.active { display: block; }
 
-    /* 카드 공통 */
-    .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--line); }
-    .card h3 { margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; color: #0f172a; font-size: 1.1rem; }
-    details.card > summary { cursor: pointer; font-weight: bold; font-size: 1.05rem; color: #0f172a; }
-    details.card[open] > summary { margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+    .page-head { margin-bottom: 18px; }
+    .page-head h2 { margin: 0 0 4px; font-size: 1.45rem; letter-spacing: -.03em; }
+    .page-head p { margin: 0; color: var(--ink-2); font-size: .92rem; }
 
-    /* 컨트롤 패널 */
-    .controls { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #eff6ff; padding: 14px; border-radius: 10px; margin-bottom: 18px; border: 1px solid #bfdbfe; }
-    .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
-    .btn { padding: 9px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-warning { background: var(--warning); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-outline { background: white; color: var(--primary); border: 1px solid var(--primary); }
-    .score-board { font-size: 1.05rem; font-weight: bold; color: var(--primary-dark); width: 100%; }
-    .timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; margin-left: 8px; }
+    /* ---------- 공통 컴포넌트 ---------- */
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+    .card-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 14px; font-size: 1.02rem; font-weight: 700; letter-spacing: -.01em; }
+    .muted { color: var(--ink-3); font-size: .85rem; font-weight: 500; }
 
-    /* 암기장 (클릭 토글 토큰) */
-    .study-block { background: #1e293b; color: #f8fafc; padding: 18px; border-radius: 10px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; line-height: 2.2; margin-bottom: 15px; overflow-x: auto; }
-    .study-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; background: #334155; color: #fff; padding: 8px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 0.95rem; margin-top: 15px; }
-    .study-header + .study-block { border-radius: 0 0 10px 10px; margin-top: 0; }
-    .tip-box { background: #fefce8; border-left: 4px solid #eab308; padding: 10px 14px; margin: 8px 0 15px 0; font-size: 0.88rem; color: #713f12; border-radius: 0 6px 6px 0; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+    .seg button { border: none; background: none; padding: 7px 13px; border-radius: 9px; font-size: .86rem; font-weight: 600; color: var(--ink-2); cursor: pointer; transition: .15s; }
+    .seg button:hover { color: var(--ink); }
+    .seg button.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(15, 23, 42, .1); }
 
-    .token { display: inline-block; background: #38bdf8; color: #0f172a; font-weight: bold; padding: 1px 8px; border-radius: 5px; cursor: pointer; user-select: none; transition: 0.15s; border: 2px solid #38bdf8; margin: 0 2px; line-height: 1.4; position: relative; }
-    .token .num-tag { font-size: 0.75rem; background: #0284c7; color: white; padding: 1px 4px; border-radius: 3px; margin-right: 4px; }
-    .token.masked { background: #334155; color: transparent; border: 2px dashed #94a3b8; }
-    .token.masked .num-tag { color: #f8fafc; background: #64748b; }
-    .token.weak::after { content: ''; position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; border-radius: 50%; background: #f43f5e; border: 2px solid #1e293b; }
-    .token:hover { transform: translateY(-1px); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; border-radius: 10px; padding: 9px 16px; font-size: .88rem; font-weight: 700; cursor: pointer; transition: .15s; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-ghost { background: var(--surface); color: var(--ink-2); border-color: var(--line); }
+    .btn-ghost:hover { color: var(--ink); border-color: var(--ink-3); }
+    .btn-sm { padding: 5px 10px; font-size: .78rem; border-radius: 8px; }
+    .btn-lg { padding: 12px 22px; font-size: .95rem; }
+    .kbd { font-family: var(--mono); font-size: .7rem; border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; opacity: .6; }
 
-    /* 실전 코드 입력 영역 */
-    .code-box { background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 10px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.95rem; overflow-x: auto; line-height: 2.2; }
-    .comment { color: #94a3b8; font-weight: bold; display: block; margin-top: 12px; }
-    .comment:first-child { margin-top: 0; }
-    .layer-note { color: #64748b; font-size: 0.8rem; margin-left: 10px; }
-    .code-input { background: #ffffff; color: #0f172a; border: 2px solid #94a3b8; border-radius: 4px; padding: 3px 6px; font-family: inherit; font-size: 0.9rem; font-weight: bold; margin: 2px; max-width: 100%; }
-    .code-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3); }
-    .code-input.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
-    .code-input.wrong { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
-    .ans-badge { display: inline-block; background: #fef08a; color: #854d0e; font-size: 0.8rem; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-weight: bold; line-height: 1.5; }
-    .trap-badge { display: inline-block; background: #fecdd3; color: #9f1239; font-size: 0.75rem; padding: 1px 6px; border-radius: 4px; margin-left: 4px; font-family: 'Pretendard', sans-serif; line-height: 1.5; }
-    .filled-blank { color: #cbd5e1; padding: 2px 4px; }
-    .code-box *:not(.comment), .study-block *:not(.comment):not(.layer-note) { font-family: 'Consolas', 'Monaco', monospace; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+    .pill-1 { background: #e0f7f4; color: #0f766e; }
+    .pill-2 { background: #fff3dc; color: #b45309; }
+    .pill-3 { background: #ffe8ee; color: #be123c; }
+    @media (prefers-color-scheme: dark) {
+      .pill-1 { background: rgba(45, 212, 191, .12); color: #5eead4; }
+      .pill-2 { background: rgba(251, 191, 36, .12); color: #fcd34d; }
+      .pill-3 { background: rgba(251, 113, 133, .12); color: #fda4af; }
+    }
 
-    /* 시험지 1페이지 */
-    .hint-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-family: monospace; font-size: 0.85rem; background: #faf5ff; padding: 10px; border-radius: 8px; border: 1px solid #c4b5fd; }
-    .hint-item { background: white; padding: 3px 6px; border-radius: 4px; border: 1px dashed #c4b5fd; text-align: center; }
-    .hint-item.decoy { text-decoration: line-through; color: #94a3b8; }
-    .sheet-sub { font-weight: bold; margin: 14px 0 6px; color: #6d28d9; }
-    .table-wrap { overflow-x: auto; }
-    .hero-table td, .hero-table th { padding: 4px 6px; font-size: 0.8rem; }
+    .callout { border-radius: 12px; padding: 12px 14px; font-size: .87rem; line-height: 1.75; background: var(--surface-2); color: var(--ink-2); }
+    .callout b { color: var(--ink); }
+    details.callout > summary { cursor: pointer; font-weight: 700; color: var(--ink); list-style: none; }
+    details.callout > summary::before { content: '▸ '; color: var(--accent); }
+    details.callout[open] > summary::before { content: '▾ '; }
+    details.callout[open] > summary { margin-bottom: 6px; }
+    .callout ul { margin: 0; padding-left: 18px; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; }
-    th { background: #f1f5f9; font-weight: bold; }
-    .hidden-cell { background: #cbd5e1; color: transparent; cursor: pointer; user-select: none; border-radius: 4px; transition: 0.2s; }
-    .hidden-cell.show { background: #dcfce7; color: #166534; font-weight: bold; }
+    /* ---------- 코드 에디터 ---------- */
+    .editor { background: var(--editor); color: var(--editor-ink); border-radius: var(--radius); font-family: var(--mono); font-size: .86rem; line-height: 2.05; overflow: hidden; border: 1px solid var(--editor-line); }
+    .editor-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--editor-line); font-family: var(--sans); font-size: .82rem; color: #9ca3af; }
+    .dots { display: flex; gap: 6px; }
+    .dots i { width: 10px; height: 10px; border-radius: 50%; background: #374151; display: block; }
+    .dots i:nth-child(1) { background: #f87171; } .dots i:nth-child(2) { background: #fbbf24; } .dots i:nth-child(3) { background: #34d399; }
+    .editor-body { padding: 12px 0; overflow-x: auto; }
+    .row { display: flex; padding-right: 16px; }
+    .row:hover { background: rgba(255, 255, 255, .02); }
+    .gutter { flex: none; width: 44px; text-align: right; padding-right: 14px; color: #4b5563; user-select: none; }
+    .src { flex: 1; min-width: 0; white-space: pre-wrap; word-break: break-word; }
+    .row.cm .src { color: #6b7d95; font-style: italic; }
+    .row.cm { margin-top: 6px; }
+    .row.cm:first-child { margin-top: 0; }
+    .hl-kw { color: #f472b6; }
+    .hl-str { color: #fcd34d; }
+    .hl-note { color: #6b7d95; font-style: italic; margin-left: 12px; }
 
-    /* 이론 정리 */
-    .term-table td:first-child { font-family: 'Consolas', 'Monaco', monospace; font-weight: bold; white-space: nowrap; text-align: left; width: 1%; }
-    .term-table td:last-child { text-align: left; }
-    .kw { background: #dbeafe; color: #1e40af; font-weight: bold; padding: 0 4px; border-radius: 4px; cursor: pointer; transition: 0.15s; }
-    .kw.hide { background: #cbd5e1; color: transparent; user-select: none; }
-    .sheet-code { background: #1e293b; color: #f8fafc; padding: 12px 16px; border-radius: 8px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.88rem; line-height: 1.9; overflow-x: auto; white-space: pre; }
-    .note { font-size: 0.88rem; color: #475569; background: #f8fafc; border-left: 3px solid #a78bfa; padding: 6px 12px; border-radius: 0 6px 6px 0; margin: 8px 0; }
-    .act-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-    .act-card { border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-size: 0.88rem; }
-    .act-card h4 { margin: 0 0 6px; }
-    .formula { font-family: 'Times New Roman', serif; font-size: 1.05rem; font-style: italic; margin: 6px 0 8px; }
-    .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: 0.9em; margin: 0 2px; }
+    .tok { display: inline-flex; align-items: center; gap: 4px; background: rgba(129, 140, 248, .16); color: #c7d2fe; border: 1px solid rgba(129, 140, 248, .35); padding: 0 7px; border-radius: 7px; cursor: pointer; user-select: none; position: relative; font-weight: 600; line-height: 1.6; transition: .12s; white-space: normal; }
+    .tok:hover { background: rgba(129, 140, 248, .26); }
+    .tok .no { font-size: .66rem; font-weight: 700; color: #818cf8; }
+    .tok.masked { background: rgba(255, 255, 255, .03); border-style: dashed; border-color: #4b5563; color: transparent; }
+    .tok.masked .no { color: #9ca3af; }
+    .tok.weak::after { content: ''; position: absolute; top: -3px; right: -3px; width: 7px; height: 7px; border-radius: 50%; background: #fb7185; }
+
+    .blank { background: rgba(255, 255, 255, .05); color: #f9fafb; border: 1px dashed #4b5563; border-radius: 7px; padding: 1px 8px; font-family: var(--mono); font-size: .84rem; font-weight: 600; max-width: 100%; transition: .12s; }
+    .blank::placeholder { color: #6b7280; }
+    .blank:focus { outline: none; border-style: solid; border-color: #818cf8; background: rgba(129, 140, 248, .1); box-shadow: 0 0 0 3px rgba(129, 140, 248, .18); }
+    .blank.correct { border: 1px solid #34d399; background: rgba(52, 211, 153, .12); color: #6ee7b7; }
+    .blank.wrong { border: 1px solid #fb7185; background: rgba(251, 113, 133, .12); color: #fda4af; }
+    .fix { display: inline-block; font-family: var(--sans); font-size: .74rem; font-weight: 600; line-height: 1.5; margin-left: 6px; color: #fde68a; background: rgba(251, 191, 36, .12); border-radius: 6px; padding: 1px 7px; }
+    .fix.trap { color: #fecdd3; background: rgba(251, 113, 133, .14); }
+    .given { color: #9ca3af; }
+
+    /* ---------- 빈칸 실전 레이아웃 ---------- */
+    .quiz-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+    .side { position: sticky; top: 16px; }
+    .side .card { padding: 16px; }
+    .side h4 { margin: 0 0 8px; font-size: .8rem; color: var(--ink-3); font-weight: 700; letter-spacing: .02em; }
+    .side h4 + * { margin-bottom: 14px; }
+    .words { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .word { font-family: var(--mono); font-size: .74rem; background: var(--surface-2); border-radius: 6px; padding: 4px 6px; text-align: center; color: var(--ink-2); }
+    .word.decoy { text-decoration: line-through; opacity: .45; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .mini-table td { border: 1px solid var(--line); padding: 5px 7px; }
+    .mini-table td:nth-child(odd) { color: var(--ink-3); font-weight: 600; white-space: nowrap; }
+    .mini-table td:nth-child(even) { font-family: var(--mono); }
+    .hero-wrap { overflow-x: auto; margin-top: 8px; }
+    .hero-table { border-collapse: collapse; font-size: .7rem; font-family: var(--mono); white-space: nowrap; }
+    .hero-table th, .hero-table td { border: 1px solid var(--line); padding: 3px 6px; }
+    .hero-table th { background: var(--surface-2); }
+
+    .status { display: flex; align-items: center; gap: 14px; font-size: .85rem; color: var(--ink-2); font-weight: 600; }
+    .status .t { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+    .result { display: none; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .result.show { display: flex; }
+    .result-score { display: flex; align-items: baseline; gap: 10px; }
+    .result-score .big { font-size: 2.2rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+    .result-score .of { color: var(--ink-3); font-weight: 700; }
+    .result-msg { color: var(--ink-2); font-size: .9rem; }
+
+    /* ---------- 이론 정리 ---------- */
+    .toc { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: thin; }
+    .toc a { flex: none; text-decoration: none; font-size: .8rem; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--line); padding: 5px 11px; border-radius: 99px; }
+    .toc a:hover { color: var(--accent); border-color: var(--accent); }
+    .sec-num { font-family: var(--mono); color: var(--accent); margin-right: 6px; }
+    .defs { display: grid; gap: 0; border-top: 1px solid var(--line); margin-top: 14px; }
+    .def { display: grid; grid-template-columns: minmax(150px, 230px) 1fr; gap: 14px; padding: 11px 2px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+    .def .term { font-family: var(--mono); font-weight: 700; font-size: .82rem; color: var(--ink); word-break: break-all; }
+    .def .desc { color: var(--ink-2); }
+    .kw { color: var(--accent-ink); background: var(--accent-soft); font-weight: 700; padding: 0 5px; border-radius: 5px; cursor: pointer; transition: .12s; }
+    .kw.hide { color: transparent; background: var(--surface-2); outline: 1px dashed var(--ink-3); outline-offset: -1px; user-select: none; }
+    .snippet { margin-top: 12px; }
+    .snippet .editor-body { padding: 10px 0; }
+
+    .acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+    .act { border: 1px solid var(--line); border-radius: 14px; padding: 14px; font-size: .86rem; color: var(--ink-2); position: relative; overflow: hidden; }
+    .act::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--c); }
+    .act h4 { margin: 0 0 4px; color: var(--ink); font-size: .95rem; }
+    .act .formula { font-family: 'Times New Roman', serif; font-style: italic; font-size: 1.05rem; color: var(--ink); margin: 6px 0 10px; }
+    .act p { margin: 4px 0; }
+    .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .9em; margin: 0 2px; }
     .frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 3px; }
 
-    /* 이론 퀴즈 */
-    .q-card { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
-    .q-card.ok { border-color: #22c55e; background: #f0fdf4; }
-    .q-card.ng { border-color: #ef4444; background: #fef2f2; }
-    .q-head { display: flex; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
-    .q-text { font-weight: bold; margin-bottom: 10px; }
-    .q-text .mono { font-family: 'Consolas', 'Monaco', monospace; background: #f1f5f9; padding: 1px 6px; border-radius: 4px; }
-    .q-blank { display: inline-block; min-width: 70px; border-bottom: 2px solid #0f172a; margin: 0 3px; }
-    .choices { display: grid; gap: 6px; }
-    .choice { text-align: left; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 0.9rem; color: var(--text); }
-    .choice:hover:not(:disabled) { border-color: var(--primary); background: #eff6ff; }
-    .choice.picked-ok, .choice.answer { background: #dcfce7; border-color: #22c55e; color: #166534; font-weight: bold; }
-    .choice.picked-ng { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+    .tbl-wrap { overflow-x: auto; margin-top: 12px; }
+    table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .86rem; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .tbl th, .tbl td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl th { background: var(--surface-2); font-size: .78rem; color: var(--ink-2); font-weight: 700; }
+    .reveal { cursor: pointer; }
+    .reveal > span { background: var(--surface-2); color: transparent; border-radius: 6px; padding: 1px 6px; user-select: none; transition: .12s; outline: 1px dashed var(--ink-3); outline-offset: -1px; }
+    .reveal.show > span { background: var(--ok-soft); color: var(--ok); font-weight: 700; outline: none; }
+
+    /* ---------- 이론 퀴즈 ---------- */
+    .modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .mode { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; cursor: pointer; box-shadow: var(--shadow); transition: .15s; color: var(--ink); }
+    .mode:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .mode .ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 800; margin-bottom: 10px; }
+    .mode h4 { margin: 0 0 4px; font-size: 1rem; }
+    .mode p { margin: 0; font-size: .84rem; color: var(--ink-2); }
+
+    .play { max-width: 720px; margin: 0 auto; }
+    .play-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .play-top .meter { flex: 1; margin: 0; height: 8px; }
+    .play-top .count { font-size: .85rem; font-weight: 700; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .qcard { padding: 26px; }
+    .qmeta { display: flex; gap: 6px; margin-bottom: 12px; }
+    .tag { font-size: .72rem; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--surface-2); color: var(--ink-2); }
+    .tag.type { background: var(--accent-soft); color: var(--accent-ink); }
+    .qtext { font-size: 1.12rem; font-weight: 700; line-height: 1.65; letter-spacing: -.01em; margin-bottom: 18px; }
+    .qtext .mono { background: var(--surface-2); padding: 2px 8px; border-radius: 6px; font-size: .85em; }
+    .quote { display: block; font-weight: 500; color: var(--ink-2); font-size: .98rem; margin-top: 8px; padding-left: 12px; border-left: 3px solid var(--line); }
+    .qblank { display: inline-block; min-width: 80px; border-bottom: 2px solid var(--accent); margin: 0 4px; }
+    .choices { display: grid; gap: 8px; }
+    .choice { display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-size: .93rem; color: var(--ink); transition: .12s; }
+    .choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .choice .k { flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; font-size: .78rem; font-weight: 800; background: var(--surface-2); color: var(--ink-2); }
     .choice:disabled { cursor: default; }
-    .q-input { width: 100%; max-width: 360px; padding: 8px 10px; border: 2px solid #94a3b8; border-radius: 6px; font-size: 0.95rem; }
-    .q-feedback { margin-top: 8px; font-size: 0.86rem; }
+    .choice.answer { border-color: var(--ok); background: var(--ok-soft); }
+    .choice.answer .k { background: var(--ok); color: white; }
+    .choice.picked-ng { border-color: var(--ng); background: var(--ng-soft); }
+    .choice.picked-ng .k { background: var(--ng); color: white; }
+    .answer-row { display: flex; gap: 8px; }
+    .answer-row input { flex: 1; min-width: 0; padding: 12px 14px; font-size: 1rem; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); }
+    .answer-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+    .answer-row input.ok { border-color: var(--ok); background: var(--ok-soft); }
+    .answer-row input.ng { border-color: var(--ng); background: var(--ng-soft); }
+    .feedback { display: none; margin-top: 16px; border-radius: 12px; padding: 12px 14px; font-size: .9rem; }
+    .feedback.ok { display: block; background: var(--ok-soft); color: var(--ok); }
+    .feedback.ng { display: block; background: var(--ng-soft); color: var(--ng); }
+    .feedback .exp { color: var(--ink-2); margin-top: 4px; font-size: .86rem; }
+    .play-actions { display: flex; justify-content: flex-end; margin-top: 16px; gap: 8px; }
 
-    /* 오답노트 */
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
-    .stat-cell { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 0.8rem; background: white; }
-    .stat-cell .sid { font-weight: bold; }
-    .stat-cell .sans { font-family: monospace; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 4px; }
-    .bar > span { display: block; height: 100%; }
-    .empty { color: var(--muted); font-size: 0.9rem; }
+    .score-hero { text-align: center; padding: 34px 20px; }
+    .score-hero .big { font-size: 3.6rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+    .score-hero .big small { font-size: 1.3rem; color: var(--ink-3); font-weight: 700; }
+    .score-hero p { color: var(--ink-2); margin: 10px 0 20px; }
+    .score-hero .actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .wrong-list { display: grid; gap: 8px; }
+    .wrong-item { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: .88rem; }
+    .wrong-item .wq { color: var(--ink-2); }
+    .wrong-item .wa { margin-top: 4px; font-weight: 700; color: var(--ok); }
 
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      h1 { font-size: 1.3rem; }
-      .hint-grid { grid-template-columns: repeat(2, 1fr); }
-      .tab-btn { flex: 1 1 45%; padding: 10px 8px; font-size: 0.85rem; }
+    /* ---------- 오답노트 ---------- */
+    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .stat-card .v { font-size: 1.7rem; font-weight: 800; letter-spacing: -.03em; }
+    .stat-card .l { font-size: .8rem; color: var(--ink-3); font-weight: 600; }
+    .heat { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+    .cell { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-family: var(--mono); font-size: .76rem; font-weight: 700; background: var(--surface-2); color: var(--ink-3); cursor: default; }
+    .cell.good { background: var(--ok-soft); color: var(--ok); }
+    .cell.mid { background: var(--warn-soft); color: var(--warn); }
+    .cell.bad { background: var(--ng-soft); color: var(--ng); }
+    .legend { display: flex; gap: 14px; font-size: .78rem; color: var(--ink-3); margin-top: 12px; flex-wrap: wrap; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+    .rank { display: grid; gap: 6px; }
+    .rank-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; font-size: .86rem; padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .rank-row:last-child { border-bottom: none; }
+    .rank-row .id { font-family: var(--mono); font-weight: 800; color: var(--ng); }
+    .rank-row .a { font-family: var(--mono); font-size: .8rem; word-break: break-all; }
+    .rank-row .r { color: var(--ink-3); font-size: .78rem; font-weight: 600; white-space: nowrap; }
+    .empty { color: var(--ink-3); font-size: .9rem; padding: 8px 0; }
+
+    @media (max-width: 980px) {
+      .quiz-layout { grid-template-columns: 1fr; }
+      .side { position: static; order: -1; }
+      .side .card { margin-bottom: 0; }
+    }
+    @media (max-width: 640px) {
+      .topbar-inner { padding: 14px 14px 0; }
+      main { padding: 18px 14px 60px; }
+      .mastery { width: 100%; }
+      .mastery-item { flex: 1; min-width: 0; }
+      .def { grid-template-columns: 1fr; gap: 2px; }
+      .gutter { width: 30px; padding-right: 8px; }
+      .editor { font-size: .8rem; }
+      .qcard { padding: 18px; }
+      .qtext { font-size: 1.02rem; }
+      .card { padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>🚀 인공지능 일반 수행평가 마스터</h1>
-  <div class="subtitle">암기장으로 외우기 → 빈칸 15문제 실전 → 활동지 이론 정리 → 이론 퀴즈 → 오답노트로 약점 보완</div>
-
-  <div class="exam-info">
-    <div>✍️ <strong>코드 빈칸</strong>: 최종본 빈칸 46개(1~45, 22-1·22-2) 중 <strong>15개</strong> 출제</div>
-    <div>🧠 <strong>이론 20점</strong>: 인공지능 활동지(#1~#9-3, 활성화 함수) 내용에서 출제</div>
-    <div>📄 <strong>시험 중 참고 가능</strong>: 최종본 1페이지 (명령어 보기 · 데이터 · 특성 · 타입)</div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+          <h1>인공지능 일반 수행평가</h1>
+          <p>코드 빈칸 15문제 · 이론 20점 대비</p>
+        </div>
+      </div>
+      <div class="mastery">
+        <div class="mastery-item">
+          <div class="label"><span>빈칸 마스터</span><b id="m-blank">0/46</b></div>
+          <div class="meter"><span id="m-blank-bar" style="width:0%"></span></div>
+        </div>
+        <div class="mastery-item">
+          <div class="label"><span>이론 마스터</span><b id="m-theory">0%</b></div>
+          <div class="meter"><span id="m-theory-bar" style="width:0%"></span></div>
+        </div>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="tab-study"><span class="n">01</span>빈칸 암기장</button>
+      <button class="tab" data-tab="tab-quiz"><span class="n">02</span>빈칸 실전</button>
+      <button class="tab" data-tab="tab-theory"><span class="n">03</span>이론 정리</button>
+      <button class="tab" data-tab="tab-tquiz"><span class="n">04</span>이론 퀴즈</button>
+      <button class="tab" data-tab="tab-stats"><span class="n">05</span>오답노트</button>
+    </nav>
   </div>
+</header>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="tab-study">📖 빈칸 암기장</button>
-    <button class="tab-btn" data-tab="tab-quiz">🎯 빈칸 실전</button>
-    <button class="tab-btn" data-tab="tab-theory">📚 활동지 이론 정리</button>
-    <button class="tab-btn" data-tab="tab-tquiz">🧠 이론 퀴즈 (20점)</button>
-    <button class="tab-btn" data-tab="tab-stats">📊 오답노트</button>
-  </div>
-
-  <!-- ================= 빈칸 암기장 ================= -->
-  <div id="tab-study" class="section active">
-    <div class="controls">
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="maskTokens(() => true)">🙈 모두 가리기</button>
-        <button class="btn btn-outline" onclick="maskTokens(() => false)">👀 모두 펼치기</button>
-        <button class="btn btn-warning" onclick="maskTokens(p => p !== 1)">🔥 15~45번만 가리기</button>
-        <button class="btn btn-success" onclick="maskRandom15()">🎲 시험처럼 랜덤 15개 가리기</button>
-        <button class="btn btn-danger" onclick="maskWeak()">❗ 자주 틀린 것만 가리기</button>
+<main>
+  <!-- ================= 01 빈칸 암기장 ================= -->
+  <section id="tab-study" class="section active">
+    <div class="page-head">
+      <h2>빈칸 암기장</h2>
+      <p>최종본 코드의 빈칸 46개(1~45, 22-1·22-2). 박스를 눌러 가리고, 떠올린 다음 다시 눌러 확인하세요.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="study-seg">
+        <button class="active" data-mode="none">모두 보기</button>
+        <button data-mode="all">모두 가리기</button>
+        <button data-mode="back">15~45번 가리기</button>
+        <button data-mode="rand">랜덤 15개</button>
+        <button data-mode="weak">틀린 것만</button>
       </div>
-      <div style="font-size:0.86rem; color:#1e40af; font-weight:bold;">
-        💡 파란 박스를 클릭하면 하나씩 가려지거나 보입니다. 빨간 점 = 빈칸 실전에서 틀린 적 있는 빈칸
+      <span class="muted">빨간 점 = 실전에서 틀린 적 있는 빈칸</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="pill pill-1">#1 ~ #5 · 빈칸 1~14</span><span class="muted">드라이브 연결 & 전처리</span></div>
+      <div class="editor"><div class="editor-body" id="block-1"></div></div>
+      <details class="callout" style="margin-top:12px;">
+        <summary>암기 포인트: 보기와 다르게 써야 하는 것</summary>
+        <ul>
+          <li>보기는 <code>read_csv</code>지만 답은 <b><code>pd.read_csv</code></b>, 보기 <code>index_col</code> → 답 <b><code>index_col=0</code></b></li>
+          <li><code>~.columns</code> · <code>~.dtypes</code> · <code>~.astype</code>는 코드에 점(<code>.</code>)이 있으니 <b><code>columns</code> · <code>dtypes</code> · <code>astype</code></b>만</li>
+          <li><code>[13] 'category'</code>는 <b>보기에 없음</b> → 시험지 '데이터 타입' 표에서 찾고 작은따옴표 필수</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="pill pill-2">#6 ~ #7 · 빈칸 15~22-2</span><span class="muted">변수 선언 & 데이터 분리</span></div>
+      <div class="editor"><div class="editor-body" id="block-2"></div></div>
+      <details class="callout" style="margin-top:12px;">
+        <summary>암기 포인트: 텐-수 / 셔-스-테</summary>
+        <ul>
+          <li>왼쪽은 <b><code>tendency</code> / <code>suitability</code></b>, 오른쪽은 둘 다 <b><code>encoding[[ ... ]]</code></b> (대괄호 2개)</li>
+          <li><code>16</code>: 시험지 '데이터 특성' 표에서 <b>name · label · hero · villain만 빼고</b> 순서대로 8개</li>
+          <li><code>18</code>: <b><code>encoding[['label_hero', 'label_villain']]</code></b></li>
+          <li><code>19 · 20</code>: 둘 다 <b><code>train_test_split</code></b> → 옵션 <b><code>shuffle=True</code></b>(T 대문자) · <b><code>stratify=suitability</code></b>(따옴표 없음) · <b><code>test_size=0.2</code></b></li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="pill pill-3">#8 ~ #9 · 빈칸 23~45</span><span class="muted">23문제 · 외울 건 5개뿐</span></div>
+      <div class="editor"><div class="editor-body" id="block-3"></div></div>
+      <details class="callout" style="margin-top:12px;" open>
+        <summary>암기 포인트: 패턴만 알면 끝</summary>
+        <ul>
+          <li><code>import tensorflow as</code> tf → <b><code>from keras import</code></b> 2번 반복</li>
+          <li><code>32</code>: <b><code>models.Sequential()</code></b> — 보기엔 없는 <b>빈 괄호 <code>()</code></b>까지</li>
+          <li>맨 앞 <code>33·37·40·43</code> = <b><code>model.add</code></b>, 괄호 안 <code>34·38·41·44</code> = <b><code>layers.Dense</code></b></li>
+          <li>첫 층만 <b><code>input_dim=8</code></b>, 활성화는 위 3개 <b><code>'relu'</code></b> · 마지막만 <b><code>'softmax'</code></b></li>
+          <li>보기의 <code>sigmoid</code> · <code>tanh</code> · <code>~.shape</code>는 <b>빈칸에 안 쓰이는 함정</b></li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= 02 빈칸 실전 ================= -->
+  <section id="tab-quiz" class="section">
+    <div class="page-head">
+      <h2>빈칸 실전</h2>
+      <p>실제 시험처럼 46개 중 15개가 랜덤으로 출제됩니다. 오른쪽 시험지 1페이지는 시험 중에도 볼 수 있어요.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="quiz-seg">
+        <button class="active" data-mode="exam">실전 15문제</button>
+        <button data-mode="weak">약점 15문제</button>
+        <button data-mode="front">1~14번</button>
+        <button data-mode="back">15~45번</button>
+        <button data-mode="all">전체 46</button>
       </div>
-    </div>
-
-    <div class="study-header">
-      <span>🟢 #1 ~ #5 (빈칸 1~14번): 드라이브 연결 & 데이터 전처리</span>
-      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 1 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 1 ? false : null)">펼치기</button></div>
-    </div>
-    <div class="study-block" id="block-1"></div>
-    <div class="tip-box">
-      <strong>💡 보기와 다르게 써야 하는 것 (함정!):</strong> 보기에는 <code>read_csv</code>지만 답은 <strong><code>pd.read_csv</code></strong> · 보기 <code>index_col</code> → 답 <strong><code>index_col=0</code></strong> ·
-      <code>~.columns</code> / <code>~.dtypes</code> / <code>~.astype</code>는 코드에 이미 점(<code>.</code>)이 있으니 <strong><code>columns</code>, <code>dtypes</code>, <code>astype</code></strong>만 ·
-      <code>[13] 'category'</code>는 <strong>보기에 없음!</strong> 시험지 1페이지 '데이터 타입' 표에서 찾고 작은따옴표 필수.
-    </div>
-
-    <div class="study-header" style="background:#b45309;">
-      <span>🟠 #6 ~ #7 (빈칸 15~22-2번): 변수 선언 & 데이터 분리</span>
-      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 2 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 2 ? false : null)">펼치기</button></div>
-    </div>
-    <div class="study-block" id="block-2"></div>
-    <div class="tip-box">
-      <strong>🔥 변수 선언(15~18):</strong> 왼쪽은 <strong>텐-수</strong>(<code>tendency</code> / <code>suitability</code>), 오른쪽은 둘 다 <strong><code>encoding[[' ... ']]</code> (대괄호 2개!)</strong>.<br>
-      &nbsp;&nbsp;• <code>16번</code> 특성 8개는 시험지 1페이지 <strong>'데이터 특성' 표에서 <code>name</code>, <code>label</code>, <code>hero</code>, <code>villain</code>만 빼고 순서대로</strong> 베껴 쓰기!<br>
-      &nbsp;&nbsp;• <code>18번</code>은 <code>label</code> + <code>hero</code>/<code>villain</code>을 언더바로 합쳐 <strong><code>encoding[['label_hero', 'label_villain']]</code></strong><br>
-      <strong>🔥 데이터 분리(19~22-2):</strong> <code>19, 20번</code> 둘 다 <strong><code>train_test_split</code></strong>, 옵션은 <strong>"셔-스-테"</strong>: <code>shuffle=True</code>(T 대문자) · <code>stratify=suitability</code>(따옴표 없음) · <code>test_size=0.2</code>
-    </div>
-
-    <div class="study-header" style="background:#be123c;">
-      <span>🔴 #8 ~ #9 (빈칸 23~45번): 모델 & 신경망 층 쌓기 (★23문제, 점수 밭!)</span>
-      <div><button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 3 ? true : null)">가리기</button> <button class="btn btn-outline btn-sm" onclick="maskTokens(p => p === 3 ? false : null)">펼치기</button></div>
-    </div>
-    <div class="study-block" id="block-3"></div>
-    <div class="tip-box">
-      <strong>🔥 23개 빈칸, 외울 건 5개뿐:</strong><br>
-      1. <strong>#8 (23~31):</strong> <code>import tensorflow as</code> tf / <strong><code>from keras import</code></strong> 2번 반복<br>
-      2. <strong>#9 (32):</strong> <strong><code>models.Sequential()</code></strong> — 보기엔 괄호가 없지만 <strong>빈 괄호 <code>()</code>까지</strong> 써야 함!<br>
-      3. <strong>층 4줄 (33~45):</strong> 맨 앞 <code>33·37·40·43</code> = <strong><code>model.add</code></strong>, 괄호 안 <code>34·38·41·44</code> = <strong><code>layers.Dense</code></strong><br>
-      &nbsp;&nbsp;• 첫 층에만 <strong><code>[35] input_dim=8</code></strong> (특성 8개) · <code>36·39·42</code> = <strong><code>activation='relu'</code></strong> · 마지막 <code>45</code>만 <strong><code>activation='softmax'</code></strong><br>
-      4. 보기의 <code>sigmoid</code>, <code>tanh</code>, <code>~.shape</code>는 <strong>빈칸에 안 쓰이는 함정 보기</strong>!
-    </div>
-  </div>
-
-  <!-- ================= 빈칸 실전 ================= -->
-  <div id="tab-quiz" class="section">
-    <details class="card" open>
-      <summary>📄 시험지 1페이지 (시험 중 볼 수 있음)</summary>
-      <div id="exam-sheet"></div>
-    </details>
-
-    <div class="controls">
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="startQuiz('exam')">🎲 실전 랜덤 15문제</button>
-        <button class="btn btn-danger" onclick="startQuiz('weak')">❗ 약점 집중 15문제</button>
-        <button class="btn btn-warning" onclick="startQuiz('back')">🔥 15~45번</button>
-        <button class="btn btn-outline" onclick="startQuiz('front')">🟢 1~14번</button>
-        <button class="btn btn-outline" onclick="startQuiz('all')">전체 46문제</button>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-success" onclick="checkAnswers()">✅ 채점하기</button>
-        <button class="btn btn-danger" id="btn-retry" style="display:none;" onclick="retryWrong()">🔄 틀린 문제만 다시</button>
-        <button class="btn btn-outline" onclick="showAllAnswers()">👀 정답 채우기</button>
-      </div>
-      <div class="score-board"><span id="score-display">원하는 연습 모드를 선택하세요!</span><span class="timer" id="timer"></span></div>
-      <div style="font-size:0.82rem; color:#475569;">⌨️ <strong>Enter</strong> = 다음 빈칸으로, 마지막 빈칸에서 Enter = 채점</div>
-    </div>
-
-    <div class="code-box" id="code-container"></div>
-  </div>
-
-  <!-- ================= 활동지 이론 정리 ================= -->
-  <div id="tab-theory" class="section">
-    <div class="controls">
-      <div><strong>💡 사용법:</strong> 파란 핵심어·회색 칸을 클릭하면 가려지거나 보입니다. 핵심어를 가리고 설명을 입으로 말해보세요!</div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="toggleTheory(false)">🙈 핵심어 모두 가리기</button>
-        <button class="btn btn-outline" onclick="toggleTheory(true)">👀 모두 보기</button>
+      <div class="status">
+        <span id="q-progress">0/15 입력</span>
+        <span class="t" id="timer">0:00</span>
       </div>
     </div>
+
+    <div class="quiz-layout">
+      <div>
+        <div class="card result" id="q-result">
+          <div>
+            <div class="result-score"><span class="big" id="q-score">0</span><span class="of" id="q-total">/ 15</span></div>
+            <div class="result-msg" id="q-msg"></div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" id="btn-retry" onclick="retryWrong()">틀린 것만 다시</button>
+            <button class="btn btn-primary" onclick="startQuiz(currentMode)">새 문제</button>
+          </div>
+        </div>
+        <div class="editor">
+          <div class="editor-bar">
+            <div class="dots"><i></i><i></i><i></i></div>
+            <span>hero_villain.ipynb</span>
+            <span><span class="kbd">Enter</span> 다음 빈칸</span>
+          </div>
+          <div class="editor-body" id="code-container"></div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+          <button class="btn btn-ghost" onclick="showAllAnswers()">정답 보기</button>
+          <button class="btn btn-primary btn-lg" onclick="checkAnswers()">채점하기</button>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="card" id="exam-sheet"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= 03 이론 정리 ================= -->
+  <section id="tab-theory" class="section">
+    <div class="page-head">
+      <h2>활동지 이론 정리</h2>
+      <p>이론 20점은 여기서 나옵니다. 파란 핵심어를 가리고 설명을 입으로 말해보세요.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="theory-seg">
+        <button class="active" data-show="1">핵심어 보기</button>
+        <button data-show="0">핵심어 가리기</button>
+      </div>
+    </div>
+    <nav class="toc" id="theory-toc"></nav>
     <div id="theory-container"></div>
-  </div>
+  </section>
 
-  <!-- ================= 이론 퀴즈 ================= -->
-  <div id="tab-tquiz" class="section">
-    <div class="controls">
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="startTheoryQuiz('random')">🎲 랜덤 10문제 (20점)</button>
-        <button class="btn btn-danger" onclick="startTheoryQuiz('weak')">❗ 약점 집중 10문제</button>
-        <button class="btn btn-warning" onclick="startTheoryQuiz('act')">⚡ 활성화 함수 집중</button>
-        <button class="btn btn-outline" onclick="startTheoryQuiz('all')">📚 전체 문제 다 풀기</button>
+  <!-- ================= 04 이론 퀴즈 ================= -->
+  <section id="tab-tquiz" class="section">
+    <div id="tq-start">
+      <div class="page-head">
+        <h2>이론 퀴즈</h2>
+        <p>활동지 내용으로 만든 객관식·주관식 문제. 한 문제씩 풀고 바로 확인해요.</p>
       </div>
-      <button class="btn btn-danger" id="btn-tretry" style="display:none;" onclick="retryTheoryWrong()">🔄 틀린 문제만 다시</button>
-      <div class="score-board" id="tscore-display">객관식은 누르는 즉시, 주관식은 Enter로 채점됩니다.</div>
+      <div class="modes">
+        <button class="mode" data-mode="random"><div class="ico">10</div><h4>랜덤 10문제</h4><p>실전처럼 20점 만점으로 환산</p></button>
+        <button class="mode" data-mode="weak"><div class="ico">!</div><h4>약점 집중</h4><p>많이 틀린 · 안 풀어본 개념 위주</p></button>
+        <button class="mode" data-mode="act"><div class="ico">ƒ</div><h4>활성화 함수</h4><p>시그모이드 · 렐루 · 소프트맥스 · tanh</p></button>
+        <button class="mode" data-mode="all"><div class="ico">∞</div><h4>전체 문제</h4><p id="all-count">모든 문제를 섞어서</p></button>
+      </div>
     </div>
-    <div id="tquiz-container"></div>
-  </div>
 
-  <!-- ================= 오답노트 ================= -->
-  <div id="tab-stats" class="section">
-    <div class="controls">
-      <div>📊 이 브라우저에 저장된 풀이 기록입니다. 많이 틀린 순서로 정렬됩니다.</div>
-      <button class="btn btn-danger" onclick="resetStats()">🗑️ 기록 초기화</button>
+    <div id="tq-play" class="play" style="display:none;">
+      <div class="play-top">
+        <button class="btn btn-ghost btn-sm" onclick="showTQ('start')">✕</button>
+        <div class="meter"><span id="tq-bar" style="width:0%"></span></div>
+        <span class="count" id="tq-count">1 / 10</span>
+      </div>
+      <div class="card qcard">
+        <div class="qmeta"><span class="tag type" id="tq-type"></span><span class="tag" id="tq-sec"></span></div>
+        <div class="qtext" id="tq-text"></div>
+        <div id="tq-body"></div>
+        <div class="feedback" id="tq-feedback"></div>
+        <div class="play-actions">
+          <button class="btn btn-primary" id="tq-next" style="display:none;">다음 <span class="kbd">Enter</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tq-result" class="play" style="display:none;">
+      <div class="card score-hero">
+        <div class="muted">이론 점수</div>
+        <div class="big" id="tq-score">0<small> / 20</small></div>
+        <p id="tq-summary"></p>
+        <div class="actions">
+          <button class="btn btn-ghost" id="tq-retry" onclick="retryTheoryWrong()">틀린 것만 다시</button>
+          <button class="btn btn-ghost" onclick="showTQ('start')">모드 선택</button>
+          <button class="btn btn-primary" onclick="startTheoryQuiz(tqMode)">새로 풀기</button>
+        </div>
+      </div>
+      <div class="card" id="tq-wrong-card">
+        <div class="card-title">틀린 문제</div>
+        <div class="wrong-list" id="tq-wrong"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 05 오답노트 ================= -->
+  <section id="tab-stats" class="section">
+    <div class="page-head">
+      <h2>오답노트</h2>
+      <p>풀이 기록은 이 브라우저에만 저장됩니다.</p>
+    </div>
+    <div class="stat-cards" id="stat-cards"></div>
+    <div class="card">
+      <div class="card-title">빈칸별 정답률 <span class="muted">마우스를 올리면 정답</span></div>
+      <div class="heat" id="stats-heat"></div>
+      <div class="legend">
+        <span><i style="background:var(--surface-2)"></i>안 풀어봄</span>
+        <span><i style="background:var(--ok)"></i>안 틀림</span>
+        <span><i style="background:var(--warn)"></i>가끔 틀림</span>
+        <span><i style="background:var(--ng)"></i>절반 이상 틀림</span>
+      </div>
     </div>
     <div class="card">
-      <h3>✍️ 코드 빈칸 (틀린 비율)</h3>
-      <div id="stats-blanks"></div>
+      <div class="card-title">자주 틀린 빈칸</div>
+      <div class="rank" id="stats-blanks"></div>
     </div>
     <div class="card">
-      <h3>🧠 이론 (틀린 적 있는 개념)</h3>
-      <div id="stats-theory"></div>
+      <div class="card-title">자주 틀린 이론 개념</div>
+      <div class="rank" id="stats-theory"></div>
     </div>
-  </div>
-</div>
+    <button class="btn btn-ghost" onclick="resetStats()">기록 초기화</button>
+  </section>
+</main>
 
 <script>
   /* ================= 데이터: 최종본 빈칸 ================= */
@@ -350,28 +620,39 @@
     { part: 1, title: "#3 데이터 타입 확인하기", lines: ["print(hero_villain.{11})"] },
     { part: 1, title: "#4 데이터 타입 변환하기", lines: ["hero_villain['label'] = hero_villain['label'].{12}({13})"] },
     { part: 1, title: "#5 원 핫 인코딩", lines: ["encoding = {14}(hero_villain)"] },
-    { part: 2, title: "#6 변수 선언", memo: "텐-수 / 대괄호 2개!", lines: ["{15} = {16}", "{17} = {18}"] },
-    { part: 2, title: "#7 데이터 분리", memo: "트-트 / 셔-스-테!", lines: ["from sklearn.model_selection import {19}", "tendency_train, tendency_test, suitability_train, suitability_test = {20}(tendency, suitability, {21}, {22-1}, {22-2})"] },
-    { part: 3, title: "#8 인공지능 모델 만들기", memo: "임-텐-애 / 프-케-임 2번!", lines: ["{23} {24} {25} tf", "{26} {27} {28} models", "{29} {30} {31} layers"] },
-    { part: 3, title: "#9 인공신경망 만들기", memo: "Sequential() → add + Dense 4번!", lines: ["model = {32}", "{33}({34}(8, {35}, {36}))", "{37}({38}(12, {39}))", "{40}({41}(4, {42}))", "{43}({44}(2, {45}))"],
+    { part: 2, title: "#6 변수 선언", memo: "텐-수 / 대괄호 2개", lines: ["{15} = {16}", "{17} = {18}"] },
+    { part: 2, title: "#7 데이터 분리", memo: "트-트 / 셔-스-테", lines: ["from sklearn.model_selection import {19}", "tendency_train, tendency_test, suitability_train, suitability_test = {20}(tendency, suitability, {21}, {22-1}, {22-2})"] },
+    { part: 3, title: "#8 인공지능 모델 만들기", memo: "임-텐-애 / 프-케-임 ×2", lines: ["{23} {24} {25} tf", "{26} {27} {28} models", "{29} {30} {31} layers"] },
+    { part: 3, title: "#9 인공신경망 만들기", memo: "Sequential() → add + Dense ×4", lines: ["model = {32}", "{33}({34}(8, {35}, {36}))", "{37}({38}(12, {39}))", "{40}({41}(4, {42}))", "{43}({44}(2, {45}))"],
       notes: [null, "입력층", "은닉층", "은닉층", "출력층"] }
   ];
 
-  const escapeHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // 코드 템플릿을 렌더링. blankFn(id) → 빈칸 HTML
+  // 코드 조각에 간단한 문법 색 입히기 (문자열 / 키워드)
+  function highlight(text) {
+    return text.split(/('[^']*')/).map(part => {
+      if (/^'[^']*'$/.test(part)) return `<span class="hl-str">${escapeHtml(part)}</span>`;
+      return escapeHtml(part).replace(/\b(from|import|as|print)\b/g, '<span class="hl-kw">$1</span>');
+    }).join('');
+  }
+
+  // 코드 템플릿을 에디터 줄로 렌더링. blankFn(id) → 빈칸 HTML
   function renderCodeHtml(sections, blankFn, withMemo) {
+    let ln = 0;
+    const row = (cls, html) => `<div class="row ${cls}"><span class="gutter">${++ln}</span><span class="src">${html}</span></div>`;
     return sections.map(sec => {
-      const title = withMemo && sec.memo ? `${sec.title} (${sec.memo})` : sec.title;
+      const title = withMemo && sec.memo ? `${sec.title}  — ${sec.memo}` : sec.title;
+      const head = row('cm', escapeHtml(title));
       const lines = sec.lines.map((line, i) => {
         const html = line.split(/(\{[\d-]+\})/).map(seg => {
           const m = seg.match(/^\{([\d-]+)\}$/);
-          return m ? blankFn(m[1]) : escapeHtml(seg);
+          return m ? blankFn(m[1]) : highlight(seg);
         }).join('');
-        const note = withMemo && sec.notes && sec.notes[i] ? `<span class="layer-note">← ${sec.notes[i]}</span>` : '';
-        return html + note;
-      }).join('<br>');
-      return `<span class="comment">${title}</span>${lines}`;
+        const note = withMemo && sec.notes && sec.notes[i] ? `<span class="hl-note"># ${sec.notes[i]}</span>` : '';
+        return row('', html + note);
+      }).join('');
+      return head + lines;
     }).join('');
   }
 
@@ -391,15 +672,19 @@
     const s = stats[kind][key] || (stats[kind][key] = { n: 0, w: 0 });
     s.n++;
     if (!correct) s.w++;
+    s.last = correct;
     saveStats();
+    updateMastery();
   }
 
   // 틀린 횟수가 많을수록, 안 풀어본 것일수록 자주 나오도록
   function weakWeight(kind, key) {
     const s = stats[kind][key];
     if (!s) return 2;
-    return 1 + (s.w * 4) / s.n + s.w;
+    return 1 + (s.w * 4) / s.n + s.w + (s.last === false ? 3 : 0);
   }
+
+  function rate(s) { return s && s.n ? s.w / s.n : 0; }
 
   function shuffle(arr) {
     const a = [...arr];
@@ -422,36 +707,52 @@
     return out;
   }
 
-  /* ================= 빈칸 암기장 ================= */
+  // 세그먼트 버튼 활성 표시
+  function setSeg(segId, attr, value) {
+    document.querySelectorAll(`#${segId} button`).forEach(b => b.classList.toggle('active', b.dataset[attr] === String(value)));
+  }
+
+  /* ================= 상단 마스터 게이지 ================= */
+  // 마지막 풀이에서 맞힌 것을 '마스터'로 봄
+  function updateMastery() {
+    const blankDone = blanksData.filter(b => stats.blanks[b.id] && stats.blanks[b.id].last).length;
+    document.getElementById('m-blank').textContent = `${blankDone}/${blanksData.length}`;
+    document.getElementById('m-blank-bar').style.width = `${(blankDone / blanksData.length) * 100}%`;
+    const keys = [...new Set(theoryPool.map(q => q.key))];
+    const theoryDone = keys.filter(k => stats.theory[k] && stats.theory[k].last).length;
+    const pct = Math.round((theoryDone / keys.length) * 100);
+    document.getElementById('m-theory').textContent = `${pct}%`;
+    document.getElementById('m-theory-bar').style.width = `${pct}%`;
+  }
+
+  /* ================= 01 빈칸 암기장 ================= */
   function renderStudyBlocks() {
     const t = (id) => {
       const item = blankById[id];
       const s = stats.blanks[id];
       const weak = s && s.w > 0 ? ' weak' : '';
-      return `<span class="token${weak}" data-id="${id}" data-part="${item.part}" onclick="this.classList.toggle('masked')"><span class="num-tag">${id}</span>${escapeHtml(item.ans)}</span>`;
+      return `<span class="tok${weak}" data-id="${id}" data-part="${item.part}" onclick="this.classList.toggle('masked')"><span class="no">${id}</span>${escapeHtml(item.ans)}</span>`;
     };
     [1, 2, 3].forEach(p => {
       document.getElementById(`block-${p}`).innerHTML = renderCodeHtml(codeSections.filter(s => s.part === p), t, true);
     });
   }
 
-  // fn(part) → true(가림) / false(펼침) / null(그대로)
-  function maskTokens(fn) {
-    document.querySelectorAll('.token').forEach(el => {
-      const r = fn(Number(el.dataset.part));
-      if (r !== null) el.classList.toggle('masked', r);
-    });
-  }
-
-  function maskRandom15() {
-    const picked = new Set(shuffle(blanksData.map(x => x.id)).slice(0, 15));
-    document.querySelectorAll('.token').forEach(el => el.classList.toggle('masked', picked.has(el.dataset.id)));
-  }
-
-  function maskWeak() {
-    const weak = blanksData.filter(x => stats.blanks[x.id] && stats.blanks[x.id].w > 0).map(x => x.id);
-    if (!weak.length) { alert('아직 틀린 빈칸 기록이 없어요. 빈칸 실전을 먼저 풀어보세요!'); return; }
-    document.querySelectorAll('.token').forEach(el => el.classList.toggle('masked', weak.includes(el.dataset.id)));
+  function setStudyMode(mode) {
+    let hide;
+    if (mode === 'all') hide = () => true;
+    else if (mode === 'none') hide = () => false;
+    else if (mode === 'back') hide = el => el.dataset.part !== '1';
+    else if (mode === 'rand') {
+      const picked = new Set(shuffle(blanksData.map(x => x.id)).slice(0, 15));
+      hide = el => picked.has(el.dataset.id);
+    } else if (mode === 'weak') {
+      const weak = blanksData.filter(x => stats.blanks[x.id] && stats.blanks[x.id].w > 0).map(x => x.id);
+      if (!weak.length) { alert('아직 틀린 빈칸 기록이 없어요. 빈칸 실전을 먼저 풀어보세요!'); return; }
+      hide = el => weak.includes(el.dataset.id);
+    }
+    document.querySelectorAll('.tok').forEach(el => el.classList.toggle('masked', hide(el)));
+    setSeg('study-seg', 'mode', mode);
   }
 
   /* ================= 시험지 1페이지 ================= */
@@ -483,43 +784,48 @@
   const featureNames = ["name", "justice", "empathy", "self_control", "teamwork", "power_desire", "rule_respect", "sacrifice", "revenge", "label", "hero", "villain"];
 
   function renderExamSheet() {
-    const hints = hintWords.map(w => `<div class="hint-item${decoyWords.includes(w) ? ' decoy' : ''}">${escapeHtml(w)}</div>`).join('');
+    const words = hintWords.map(w => `<div class="word${decoyWords.includes(w) ? ' decoy' : ''}">${escapeHtml(w)}</div>`).join('');
     const heroHead = featureNames.slice(0, 10).map(f => `<th>${f}</th>`).join('');
     const heroBody = heroRows.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td>hero</td></tr>`).join('');
     document.getElementById('exam-sheet').innerHTML = `
-      <div class="sheet-sub">❀ 아래의 명령을 활용하여 소스 코드를 완성하시오. <span style="font-weight:normal; color:#94a3b8; font-size:0.8rem;">(취소선 = 빈칸에 안 쓰이는 함정 보기)</span></div>
-      <div class="hint-grid">${hints}</div>
-      <div class="sheet-sub">❀ 구글 드라이브 데이터 (일부 발췌)</div>
-      <div class="table-wrap"><table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table></div>
-      <div class="sheet-sub">❀ 데이터 특성</div>
-      <div class="hint-grid" style="grid-template-columns:repeat(4,1fr);">${featureNames.map(f => `<div class="hint-item">${f}</div>`).join('')}</div>
-      <div class="sheet-sub">❀ 데이터 타입</div>
-      <table><tbody>
-        <tr><th>정수</th><td>int64</td><th>실수</th><td>float64</td></tr>
-        <tr><th>문자열</th><td>object / string / category</td><th>논리</th><td>bool</td></tr>
-      </tbody></table>`;
+      <div class="card-title" style="margin-bottom:12px;">시험지 1페이지 <span class="muted">시험 중 참고 가능</span></div>
+      <h4>명령어 보기 <span style="font-weight:500;">(취소선 = 함정)</span></h4>
+      <div class="words">${words}</div>
+      <h4>데이터 특성</h4>
+      <div class="words" style="grid-template-columns:1fr 1fr 1fr;">${featureNames.map(f => `<div class="word">${f}</div>`).join('')}</div>
+      <h4>데이터 타입</h4>
+      <table class="mini-table"><tbody>
+        <tr><td>정수</td><td>int64</td><td>실수</td><td>float64</td></tr>
+        <tr><td>문자열</td><td colspan="3">object / string / category</td></tr>
+        <tr><td>논리</td><td colspan="3">bool</td></tr>
+      </tbody></table>
+      <details style="margin-top:12px;">
+        <summary class="muted" style="cursor:pointer;">구글 드라이브 데이터 (일부 발췌)</summary>
+        <div class="hero-wrap"><table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table></div>
+      </details>`;
   }
 
-  /* ================= 빈칸 실전 ================= */
+  /* ================= 02 빈칸 실전 ================= */
   let activeBlankIds = [];
   let wrongBlankIds = [];
+  let currentMode = 'exam';
   let timerId = null;
   let timerStart = 0;
 
-  // 첫 입력을 시작할 때 타이머가 켜짐
   function resetTimer() {
     clearInterval(timerId);
     timerId = null;
-    document.getElementById('timer').textContent = '';
+    document.getElementById('timer').textContent = '0:00';
   }
 
+  // 첫 입력을 시작할 때 타이머가 켜짐
   function startTimer() {
     clearInterval(timerId);
     timerStart = Date.now();
     const el = document.getElementById('timer');
     const tick = () => {
       const s = Math.floor((Date.now() - timerStart) / 1000);
-      el.textContent = `⏱ ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+      el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
     };
     tick();
     timerId = setInterval(tick, 1000);
@@ -527,19 +833,28 @@
 
   function stopTimer() { clearInterval(timerId); }
 
+  function updateProgress() {
+    const filled = activeBlankIds.filter(id => document.getElementById(`input-${id}`).value.trim()).length;
+    document.getElementById('q-progress').textContent = `${filled}/${activeBlankIds.length} 입력`;
+  }
+
   function renderCode() {
     const b = (id) => {
       const item = blankById[id];
       if (activeBlankIds.includes(id)) {
-        return `<input type="text" class="code-input" id="input-${id}" data-id="${id}" placeholder="[ ${id} ]" style="width:${item.width}px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span id="badge-${id}"></span>`;
+        return `<input type="text" class="blank" id="input-${id}" data-id="${id}" placeholder="${id}" style="width:${item.width}px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><span id="badge-${id}"></span>`;
       }
-      return `<span class="filled-blank">${escapeHtml(item.ans)}</span>`;
+      return `<span class="given">${highlight(item.ans)}</span>`;
     };
     document.getElementById('code-container').innerHTML = renderCodeHtml(codeSections, b, false);
-    const inputs = [...document.querySelectorAll('#code-container .code-input')];
+    document.getElementById('q-result').classList.remove('show');
     resetTimer();
+    const inputs = [...document.querySelectorAll('#code-container .blank')];
     inputs.forEach((el, i) => {
-      el.addEventListener('input', () => { if (!timerId) startTimer(); });
+      el.addEventListener('input', () => {
+        if (!timerId) startTimer();
+        updateProgress();
+      });
       el.addEventListener('keydown', e => {
         if (e.key !== 'Enter' || e.isComposing) return;
         e.preventDefault();
@@ -547,31 +862,19 @@
         else checkAnswers();
       });
     });
-    if (inputs.length) inputs[0].focus({ preventScroll: true });
+    updateProgress();
   }
 
   function startQuiz(mode) {
-    document.getElementById('btn-retry').style.display = 'none';
+    currentMode = mode;
+    setSeg('quiz-seg', 'mode', mode);
     const allIds = blanksData.map(x => x.id);
-    let label;
-    if (mode === 'exam') {
-      activeBlankIds = shuffle(allIds).slice(0, 15);
-      label = '🎲 실전 모드: 랜덤 15문제';
-    } else if (mode === 'weak') {
-      activeBlankIds = weightedSample(allIds, 15, id => weakWeight('blanks', id));
-      label = '❗ 약점 집중: 많이 틀린·안 풀어본 빈칸 위주 15문제';
-    } else if (mode === 'back') {
-      activeBlankIds = blanksData.filter(x => x.part !== 1).map(x => x.id);
-      label = `🔥 15~45번 (${activeBlankIds.length}문제)`;
-    } else if (mode === 'front') {
-      activeBlankIds = blanksData.filter(x => x.part === 1).map(x => x.id);
-      label = `🟢 1~14번 (${activeBlankIds.length}문제)`;
-    } else {
-      activeBlankIds = [...allIds];
-      label = `전체 ${allIds.length}문제`;
-    }
+    if (mode === 'exam') activeBlankIds = shuffle(allIds).slice(0, 15);
+    else if (mode === 'weak') activeBlankIds = weightedSample(allIds, 15, id => weakWeight('blanks', id));
+    else if (mode === 'back') activeBlankIds = blanksData.filter(x => x.part !== 1).map(x => x.id);
+    else if (mode === 'front') activeBlankIds = blanksData.filter(x => x.part === 1).map(x => x.id);
+    else activeBlankIds = [...allIds];
     renderCode();
-    document.getElementById('score-display').innerText = `${label} 출제! 빈칸을 채워보세요.`;
   }
 
   // 공백 무시, 큰따옴표·스마트따옴표(모바일 키보드) → 작은따옴표
@@ -599,7 +902,7 @@
         badgeEl.innerHTML = '';
         correctCount++;
       } else {
-        badgeEl.innerHTML = `<span class="ans-badge">정답: ${escapeHtml(item.ans)}</span>` + (item.trap ? `<span class="trap-badge">⚠ ${item.trap}</span>` : '');
+        badgeEl.innerHTML = `<span class="fix">${escapeHtml(item.ans)}</span>` + (item.trap ? `<span class="fix trap">${escapeHtml(item.trap)}</span>` : '');
         wrongBlankIds.push(id);
       }
       record('blanks', id, ok);
@@ -608,21 +911,24 @@
 
     const total = activeBlankIds.length;
     const pct = Math.round((correctCount / total) * 100);
-    document.getElementById('score-display').innerText =
-      `🎯 채점 결과: ${total}개 중 ${correctCount}개 정답 (${pct}%)` + (pct === 100 ? ' 🎉 완벽!' : '');
-
-    const retryBtn = document.getElementById('btn-retry');
-    retryBtn.style.display = wrongBlankIds.length ? 'inline-block' : 'none';
-    retryBtn.innerText = `🔄 틀린 ${wrongBlankIds.length}문제만 다시`;
+    document.getElementById('q-score').textContent = correctCount;
+    document.getElementById('q-total').textContent = `/ ${total}`;
+    document.getElementById('q-score').style.color = pct === 100 ? 'var(--ok)' : pct >= 70 ? 'var(--accent)' : 'var(--ng)';
+    document.getElementById('q-msg').textContent =
+      pct === 100 ? `완벽해요! ${document.getElementById('timer').textContent} 걸렸어요.` :
+      `정답률 ${pct}% · 빨간 칸 옆에 정답과 함정 포인트가 표시돼요.`;
+    document.getElementById('btn-retry').style.display = wrongBlankIds.length ? '' : 'none';
+    document.getElementById('q-result').classList.add('show');
+    document.getElementById('q-result').scrollIntoView({ behavior: 'smooth', block: 'center' });
     renderStudyBlocks();
   }
 
   function retryWrong() {
     if (!wrongBlankIds.length) return;
     activeBlankIds = [...wrongBlankIds];
-    document.getElementById('btn-retry').style.display = 'none';
     renderCode();
-    document.getElementById('score-display').innerText = `🔄 방금 틀린 ${activeBlankIds.length}문제 재도전!`;
+    const first = document.querySelector('#code-container .blank');
+    if (first) first.focus();
   }
 
   function showAllAnswers() {
@@ -634,7 +940,7 @@
       document.getElementById(`badge-${id}`).innerHTML = '';
     });
     stopTimer();
-    document.getElementById('score-display').innerText = '👀 모든 정답을 표시했습니다.';
+    updateProgress();
   }
 
   /* ================= 데이터: 인공지능 활동지 ================= */
@@ -710,22 +1016,22 @@
   ];
 
   const activationFns = [
-    { name: "시그모이드 (Sigmoid)", key: "시그모이드", color: "#2563eb",
+    { name: "시그모이드 (Sigmoid)", key: "시그모이드", color: "#3b82f6",
       formula: 'f(x) = <span class="frac"><span>1</span><span>1 + e<sup>−x</sup></span></span>',
       feature: "[0과 1 사이]의 값을 출력하는 [S자] 모양의 함수",
       role: "한계: 오차 역전파 등 연속적인 계산 과정에서 입력층으로 갈수록 기울기가 점차 작아져 0에 수렴하는 [기울기 소실(Vanishing Gradient)] 문제 발생",
       range: "0 ~ 1", shape: "S자 곡선", trait: "기울기 소실 문제 발생", use: "이진 분류(과거에 많이 사용)" },
-    { name: "렐루 (ReLU)", key: "렐루", color: "#16a34a",
+    { name: "렐루 (ReLU)", key: "렐루", color: "#10b981",
       formula: "f(x) = max(0, x)",
       feature: "현재 딥러닝에서 [가장 많이 사용]되는 활성화 함수",
       role: "역할: 입력 신호의 총합 크기가 특정 [임계값] 이상일 때만 신호를 활성화하여 전달하며, 시그모이드 함수의 [기울기 소실 문제를 해결]",
       range: "0 ~ 무한대", shape: "계단형(음수 구간 0)", trait: "기울기 소실 문제 완화, 연산 효율 높음", use: "은닉층(대부분의 신경망)" },
-    { name: "소프트맥스 (Softmax)", key: "소프트맥스", color: "#7c3aed",
+    { name: "소프트맥스 (Softmax)", key: "소프트맥스", color: "#8b5cf6",
       formula: 'f(x<sub>i</sub>) = <span class="frac"><span>e<sup>x<sub>i</sub></sup></span><span>Σ<sub>j=1</sub><sup>n</sup> e<sup>x<sub>j</sub></sup></span></span>',
       feature: "입력받은 값들을 0~1 사이의 값으로 [정규화]하며, 모든 출력값의 총합이 항상 [1]이 되도록 변환",
       role: "역할: 신경망의 최종 연산 결과를 [확률값]으로 변환해 주며, [다중 클래스 분류] 문제에서 주로 [출력층]에 적용",
       range: "0 ~ 1 (합계 1)", shape: "확률 분포 형태", trait: "다중 클래스 확률 변환", use: "분류 문제(출력층)" },
-    { name: "탄젠트 하이퍼볼릭 (tanh)", key: "tanh", color: "#ea580c",
+    { name: "탄젠트 하이퍼볼릭 (tanh)", key: "tanh", color: "#f97316",
       formula: 'f(x) = tanh(x) = <span class="frac"><span>e<sup>x</sup> − e<sup>−x</sup></span><span>e<sup>x</sup> + e<sup>−x</sup></span></span>',
       feature: "시그모이드, 렐루 등과 함께 인공 신경망에 사용되는 주요 활성화 함수 중 하나",
       role: "출력이 [-1 ~ 1], [0 중심]으로 분포",
@@ -741,135 +1047,133 @@
     { mean: "논리(참/거짓)", py: "bool", ex: "true, false", pd: "bool" }
   ];
 
-  /* ================= 활동지 이론 정리 렌더링 ================= */
+  /* ================= 03 이론 정리 ================= */
   const kwHtml = text => escapeHtml(text).replace(/\[([^\]]+)\]/g, '<span class="kw" onclick="this.classList.toggle(\'hide\')">$1</span>');
   const plain = text => text.replace(/\[([^\]]+)\]/g, '$1');
-  const hcell = text => `<td class="hidden-cell" onclick="this.classList.toggle('show')">${escapeHtml(text)}</td>`;
+  const rcell = text => `<td class="reveal" onclick="this.classList.toggle('show')"><span>${escapeHtml(text)}</span></td>`;
+  const snippet = code => `<div class="editor snippet"><div class="editor-body">${code.split('\n').map((l, i) =>
+    `<div class="row"><span class="gutter">${i + 1}</span><span class="src">${highlight(l)}</span></div>`).join('')}</div></div>`;
+  const secId = i => `sec-${i}`;
 
   function renderTheory() {
-    const html = theorySections.map(sec => {
+    document.getElementById('theory-toc').innerHTML = theorySections.map((sec, i) =>
+      `<a href="#${secId(i)}">${escapeHtml(sec.title.split(' ')[0])} ${escapeHtml(sec.title.split(' ').slice(1).join(' ').replace(/\(.*\)/, ''))}</a>`).join('') +
+      `<a href="#sec-act">활성화 함수</a>`;
+
+    document.getElementById('theory-container').innerHTML = theorySections.map((sec, i) => {
+      const [num, ...rest] = sec.title.split(' ');
       let extra = '';
       if (sec.extra === 'datatypes') {
-        extra = `<div class="sheet-sub">* 주요 데이터 타입</div><div class="table-wrap"><table><thead><tr><th>의미</th><th>파이썬 자료형</th><th>예시</th><th>pandas 표시</th></tr></thead><tbody>
-          <tr><td><strong>정수</strong></td>${hcell('int')}<td>10, 25</td>${hcell('int64')}</tr>
-          <tr><td><strong>실수</strong></td>${hcell('float')}<td>0.92, 3.14</td>${hcell('float64')}</tr>
-          <tr><td rowspan="2"><strong>문자열</strong></td><td rowspan="2" class="hidden-cell" onclick="this.classList.toggle('show')">str</td><td>"Thor", "Hulk"</td>${hcell('object / string')}</tr>
-          <tr><td>"hero", "villain"</td>${hcell('category')}</tr>
-          <tr><td><strong>논리(참/거짓)</strong></td>${hcell('bool')}<td>true, false</td>${hcell('bool')}</tr>
+        extra = `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>의미</th><th>파이썬 자료형</th><th>예시</th><th>pandas 표시</th></tr></thead><tbody>
+          ${dataTypes.map(d => `<tr><td><b>${d.mean}</b></td>${rcell(d.py)}<td>${escapeHtml(d.ex)}</td>${rcell(d.pd)}</tr>`).join('')}
         </tbody></table></div>`;
-      } else if (sec.extra === 'activation') {
-        extra = renderActivation();
       }
-      return `<div class="card">
-        <h3>${sec.title}</h3>
-        ${sec.intro ? `<div class="note">${kwHtml(sec.intro)}</div>` : ''}
-        ${sec.code ? `<div class="sheet-code">${escapeHtml(sec.code)}</div>` : ''}
-        <div class="table-wrap"><table class="term-table"><tbody>
-          ${sec.items.map(it => `<tr><td>${escapeHtml(it.term)}</td><td>${kwHtml(it.desc)}</td></tr>`).join('')}
-        </tbody></table></div>
-        ${extra}
-      </div>`;
+      return `<div class="card" id="${secId(i)}" style="scroll-margin-top:16px;">
+          <div class="card-title"><span><span class="sec-num">${num}</span>${escapeHtml(rest.join(' '))}</span></div>
+          ${sec.intro ? `<div class="callout">${kwHtml(sec.intro)}</div>` : ''}
+          ${sec.code ? snippet(sec.code) : ''}
+          <div class="defs">${sec.items.map(it => `<div class="def"><div class="term">${escapeHtml(it.term)}</div><div class="desc">${kwHtml(it.desc)}</div></div>`).join('')}</div>
+          ${extra}
+        </div>` + (sec.extra === 'activation' ? renderActivation() : '');
     }).join('');
-    document.getElementById('theory-container').innerHTML = html;
   }
 
   function renderActivation() {
     const cards = activationFns.map(f => `
-      <div class="act-card" style="border-top:4px solid ${f.color};">
-        <h4 style="color:${f.color};">${f.name}</h4>
+      <div class="act" style="--c:${f.color};">
+        <h4>${f.name}</h4>
         <div class="formula">${f.formula}</div>
-        <div>• ${kwHtml(f.feature)}</div>
-        <div>• ${kwHtml(f.role)}</div>
+        <p>${kwHtml(f.feature)}</p>
+        <p>${kwHtml(f.role)}</p>
       </div>`).join('');
-    const rows = activationFns.map(f => `<tr><td><strong style="color:${f.color};">${f.name}</strong></td>${hcell(f.range)}${hcell(f.shape)}${hcell(f.trait)}${hcell(f.use)}</tr>`).join('');
-    return `
-      <div class="sheet-sub" style="margin-top:18px;">⚡ 딥러닝의 핵심, 활성화 함수 (Activation Function)</div>
-      <div class="note">${kwHtml(actIntro)}</div>
-      <div class="act-grid">${cards}</div>
-      <div class="sheet-sub">한눈에 보는 활성화 함수 비교 <span style="font-weight:normal; color:#94a3b8; font-size:0.8rem;">(회색 칸 클릭)</span></div>
-      <div class="table-wrap"><table><thead><tr><th>종류</th><th>출력 범위</th><th>그래프 형태</th><th>주요 특징</th><th>주요 용도</th></tr></thead><tbody>${rows}</tbody></table></div>
-      <div class="note">이 코드에서는 입력층·은닉층 = <code>relu</code>, 출력층(hero/villain 2개 분류) = <code>softmax</code></div>`;
+    const rows = activationFns.map(f => `<tr><td><b style="color:${f.color};">${f.name}</b></td>${rcell(f.range)}${rcell(f.shape)}${rcell(f.trait)}${rcell(f.use)}</tr>`).join('');
+    return `<div class="card" id="sec-act" style="scroll-margin-top:16px;">
+      <div class="card-title"><span><span class="sec-num">ƒ</span>딥러닝의 핵심, 활성화 함수</span><span class="muted">표의 칸을 눌러 확인</span></div>
+      <div class="callout">${kwHtml(actIntro)}</div>
+      <div class="acts">${cards}</div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>종류</th><th>출력 범위</th><th>그래프 형태</th><th>주요 특징</th><th>주요 용도</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="callout" style="margin-top:12px;">이 코드에서는 입력층·은닉층 = <code>relu</code>, 출력층(hero / villain 2개 분류) = <code>softmax</code></div>
+    </div>`;
   }
 
   function toggleTheory(show) {
     document.querySelectorAll('#theory-container .kw').forEach(el => el.classList.toggle('hide', !show));
-    document.querySelectorAll('#theory-container .hidden-cell').forEach(el => el.classList.toggle('show', show));
+    document.querySelectorAll('#theory-container .reveal').forEach(el => el.classList.toggle('show', show));
+    setSeg('theory-seg', 'show', show ? 1 : 0);
   }
 
-  /* ================= 이론 퀴즈 ================= */
-  // 문제 유형: mc(객관식) / text(주관식). key = 오답노트에서 묶이는 개념 이름
+  /* ================= 04 이론 퀴즈 ================= */
+  // 문제 유형: mc(객관식) / text(주관식). key = 오답노트에서 묶이는 개념 이름, exp = 해설
   function buildTheoryPool() {
     const pool = [];
-    const allItems = theorySections.flatMap(sec => sec.items.map(it => ({ ...it, sec: sec.title })));
-    const pickOthers = (list, correct, n) => shuffle(list.filter(x => x !== correct)).slice(0, n);
+    const allItems = theorySections.flatMap(sec => sec.items.map(it => ({ ...it, sec: sec.title.split(' ')[0] })));
+    const pickOthers = (list, correct, n) => shuffle([...new Set(list)].filter(x => x !== correct)).slice(0, n);
 
     allItems.forEach(it => {
       const desc = plain(it.desc);
-      // 명령어 → 설명 고르기
-      pool.push({ key: it.term, sec: it.sec, type: 'mc',
+      const exp = `${it.term} : ${desc}`;
+      pool.push({ key: it.term, sec: it.sec, type: 'mc', exp,
         q: `<span class="mono">${escapeHtml(it.term)}</span> 의 의미로 옳은 것은?`,
         answer: desc, choices: () => shuffle([desc, ...pickOthers(allItems.map(x => plain(x.desc)), desc, 3)]) });
-      // 설명 → 명령어 고르기
-      pool.push({ key: it.term, sec: it.sec, type: 'mc',
-        q: `다음 설명에 해당하는 명령어는?<br><span style="font-weight:normal;">"${escapeHtml(desc)}"</span>`,
+      pool.push({ key: it.term, sec: it.sec, type: 'mc', exp,
+        q: `다음 설명에 해당하는 명령어는?<span class="quote">${escapeHtml(desc)}</span>`,
         answer: it.term, choices: () => shuffle([it.term, ...pickOthers(allItems.map(x => x.term), it.term, 3)]) });
-      // 핵심어 빈칸 (주관식)
-      const kws = [...it.desc.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]);
-      kws.forEach(kw => {
-        pool.push({ key: it.term, sec: it.sec, type: 'text',
-          q: `<span class="mono">${escapeHtml(it.term)}</span> : ${blankOut(it.desc, kw)}`, answer: kw });
+      [...it.desc.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
+        pool.push({ key: it.term, sec: it.sec, type: 'text', exp,
+          q: `<span class="mono">${escapeHtml(it.term)}</span><span class="quote">${blankOut(it.desc, kw)}</span>`, answer: kw });
       });
     });
 
     theorySections.filter(s => s.intro).forEach(sec => {
       [...sec.intro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-        pool.push({ key: sec.title, sec: sec.title, type: 'text', q: blankOut(sec.intro, kw), answer: kw });
+        pool.push({ key: sec.title, sec: sec.title.split(' ')[0], type: 'text', exp: plain(sec.intro), q: blankOut(sec.intro, kw), answer: kw });
       });
     });
 
-    // 활성화 함수
     const actNames = activationFns.map(f => f.name);
-    const actMc = (key, q, answer, choices) => pool.push({ key, sec: '활성화 함수', act: true, type: 'mc', q, answer, choices: () => shuffle(choices) });
+    const actExp = f => `${f.name} · 출력 ${f.range} · ${f.shape} · ${f.trait} · ${f.use}`;
+    const actMc = (f, q, answer, choices) => pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'mc', exp: actExp(f), q, answer, choices: () => shuffle([...new Set(choices)]) });
     activationFns.forEach(f => {
-      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>출력 범위</strong>는?`, f.range, activationFns.map(x => x.range));
-      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>그래프 형태</strong>는?`, f.shape, [...new Set(activationFns.map(x => x.shape))]);
-      actMc(`활성화 함수: ${f.key}`, `${f.name}의 <strong>주요 용도</strong>는?`, f.use, activationFns.map(x => x.use));
-      actMc(`활성화 함수: ${f.key}`, `주요 특징이 "${escapeHtml(f.trait)}"인 활성화 함수는?`, f.name, actNames);
-      if (f.key !== 'tanh') actMc(`활성화 함수: ${f.key}`, `수식이 ${f.formula} 인 활성화 함수는?`, f.name, actNames);
+      actMc(f, `${f.name}의 <b>출력 범위</b>는?`, f.range, activationFns.map(x => x.range));
+      actMc(f, `${f.name}의 <b>그래프 형태</b>는?`, f.shape, activationFns.map(x => x.shape));
+      actMc(f, `${f.name}의 <b>주요 용도</b>는?`, f.use, activationFns.map(x => x.use));
+      actMc(f, `주요 특징이 "${escapeHtml(f.trait)}"인 활성화 함수는?`, f.name, actNames);
+      if (f.key !== 'tanh') actMc(f, `수식이 ${f.formula} 인 활성화 함수는?`, f.name, actNames);
       [f.feature, f.role].forEach(text => {
         [...text.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-          pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'text', q: `[${f.name}] ${blankOut(text, kw)}`, answer: kw });
+          pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'text', exp: plain(text), q: `${f.name}<span class="quote">${blankOut(text, kw)}</span>`, answer: kw });
         });
       });
     });
-    actMc('활성화 함수: 렐루', '현재 딥러닝에서 <strong>가장 많이 사용</strong>되는 활성화 함수는?', actNames[1], actNames);
-    actMc('활성화 함수: 시그모이드', '<strong>기울기 소실(Vanishing Gradient)</strong> 문제가 발생하는 것이 한계로 제시된 함수는?', actNames[0], actNames);
-    actMc('활성화 함수: 소프트맥스', '<strong>다중 클래스 분류</strong> 문제에서 <strong>출력층</strong>에 주로 적용되는 함수는?', actNames[2], actNames);
-    actMc('활성화 함수: 소프트맥스', '모든 출력값의 <strong>총합이 항상 1</strong>이 되도록 변환하는 함수는?', actNames[2], actNames);
-    actMc('활성화 함수: 렐루', '<strong>시그모이드의 기울기 소실 문제를 해결</strong>한 함수는?', actNames[1], actNames);
+    const [sig, relu, soft] = activationFns;
+    actMc(relu, '현재 딥러닝에서 <b>가장 많이 사용</b>되는 활성화 함수는?', relu.name, actNames);
+    actMc(sig, '<b>기울기 소실(Vanishing Gradient)</b> 문제가 한계로 제시된 함수는?', sig.name, actNames);
+    actMc(soft, '<b>다중 클래스 분류</b> 문제에서 <b>출력층</b>에 주로 적용되는 함수는?', soft.name, actNames);
+    actMc(soft, '모든 출력값의 <b>총합이 항상 1</b>이 되도록 변환하는 함수는?', soft.name, actNames);
+    actMc(relu, '<b>시그모이드의 기울기 소실 문제를 해결</b>한 함수는?', relu.name, actNames);
     [...actIntro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-      pool.push({ key: '활성화 함수: 정의', sec: '활성화 함수', act: true, type: 'text', q: blankOut(actIntro, kw), answer: kw });
+      pool.push({ key: '활성화 함수: 정의', sec: '활성화 함수', act: true, type: 'text', exp: plain(actIntro), q: blankOut(actIntro, kw), answer: kw });
     });
 
-    // 신경망 층 구분
     const layerChoices = ['입력층', '은닉층', '출력층'];
     [["model.add(layers.Dense(8, input_dim=8, activation='relu'))", '입력층'],
      ["model.add(layers.Dense(12, activation='relu'))", '은닉층'],
      ["model.add(layers.Dense(4, activation='relu'))", '은닉층'],
      ["model.add(layers.Dense(2, activation='softmax'))", '출력층']].forEach(([code, ans]) => {
-      pool.push({ key: '층 구분 (입력/은닉/출력)', sec: '#9-2', type: 'mc', q: `<span class="mono">${escapeHtml(code)}</span> 는 어떤 층인가?`, answer: ans, choices: () => layerChoices });
+      pool.push({ key: '층 구분 (입력/은닉/출력)', sec: '#9-2', type: 'mc', exp: 'input_dim이 있는 첫 층 = 입력층, softmax인 마지막 층 = 출력층, 나머지 = 은닉층',
+        q: `다음은 어떤 층인가?<span class="quote mono">${escapeHtml(code)}</span>`, answer: ans, choices: () => layerChoices });
     });
 
-    // 데이터 타입 표
     const pdTypes = [...new Set(dataTypes.map(d => d.pd))];
+    const typeExp = '정수 int/int64 · 실수 float/float64 · 문자열 str/object·string·category · 논리 bool/bool';
     dataTypes.forEach(d => {
-      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc',
-        q: `${d.mean} ${escapeHtml(d.ex)} 의 <strong>pandas 표시</strong>는?`, answer: d.pd, choices: () => shuffle(pdTypes) });
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', exp: typeExp,
+        q: `${d.mean} ${escapeHtml(d.ex)} 의 <b>pandas 표시</b>는?`, answer: d.pd, choices: () => shuffle(pdTypes) });
     });
     ['정수', '실수', '문자열', '논리(참/거짓)'].forEach(mean => {
       const d = dataTypes.find(x => x.mean === mean);
-      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc',
-        q: `${mean}의 <strong>파이썬 자료형</strong>은?`, answer: d.py, choices: () => ['int', 'float', 'str', 'bool'] });
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', exp: typeExp,
+        q: `${mean}의 <b>파이썬 자료형</b>은?`, answer: d.py, choices: () => ['int', 'float', 'str', 'bool'] });
     });
 
     return pool;
@@ -878,15 +1182,24 @@
   function blankOut(text, kw) {
     let done = false;
     return escapeHtml(text).replace(/\[([^\]]+)\]/g, (m, k) => {
-      if (!done && k === escapeHtml(kw)) { done = true; return '<span class="q-blank">&nbsp;</span>'; }
+      if (!done && k === escapeHtml(kw)) { done = true; return '<span class="qblank">&nbsp;</span>'; }
       return k;
     });
   }
 
   const theoryPool = buildTheoryPool();
-  let tquiz = [];
+  let tqList = [];
+  let tqIdx = 0;
+  let tqMode = 'random';
+
+  function showTQ(view) {
+    ['start', 'play', 'result'].forEach(v => {
+      document.getElementById(`tq-${v}`).style.display = v === view ? '' : 'none';
+    });
+  }
 
   function startTheoryQuiz(mode) {
+    tqMode = mode;
     let picked;
     if (mode === 'all') {
       picked = shuffle(theoryPool);
@@ -904,100 +1217,167 @@
         if (picked.length === 10) break;
       }
     }
-    renderTheoryQuiz(picked);
+    runTheoryQuiz(picked);
   }
 
   function retryTheoryWrong() {
-    renderTheoryQuiz(tquiz.filter(s => s.done && !s.ok).map(s => s.q));
+    runTheoryQuiz(tqList.filter(s => !s.ok).map(s => s.q));
   }
 
-  function renderTheoryQuiz(questions) {
-    tquiz = questions.map(q => ({ q, done: false, ok: false, choices: q.type === 'mc' ? q.choices() : null }));
-    document.getElementById('btn-tretry').style.display = 'none';
-    const container = document.getElementById('tquiz-container');
-    container.innerHTML = tquiz.map((s, i) => {
-      const body = s.q.type === 'mc'
-        ? `<div class="choices">${s.choices.map((c, ci) => `<button class="choice" data-qi="${i}" data-ci="${ci}">${ci + 1}. ${escapeHtml(c)}</button>`).join('')}</div>`
-        : `<input class="q-input" data-qi="${i}" placeholder="빈칸에 들어갈 말 입력 후 Enter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">`;
-      return `<div class="q-card" id="tq-${i}">
-        <div class="q-head"><span>Q${i + 1}. ${s.q.type === 'mc' ? '객관식' : '주관식'}</span><span>${escapeHtml(s.q.sec)}</span></div>
-        <div class="q-text">${s.q.q}</div>
-        ${body}
-        <div class="q-feedback" id="tqf-${i}"></div>
-      </div>`;
-    }).join('');
+  function runTheoryQuiz(questions) {
+    tqList = questions.map(q => ({ q, done: false, ok: false, choices: q.type === 'mc' ? q.choices() : null }));
+    tqIdx = 0;
+    showTQ('play');
+    renderTQ();
+  }
 
-    container.querySelectorAll('.choice').forEach(btn => btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.qi);
-      const s = tquiz[i];
-      if (s.done) return;
-      const ok = s.choices[Number(btn.dataset.ci)] === s.q.answer;
-      container.querySelectorAll(`.choice[data-qi="${i}"]`).forEach(b => {
-        b.disabled = true;
-        if (s.choices[Number(b.dataset.ci)] === s.q.answer) b.classList.add('answer');
+  function renderTQ() {
+    const s = tqList[tqIdx];
+    const total = tqList.length;
+    document.getElementById('tq-bar').style.width = `${(tqIdx / total) * 100}%`;
+    document.getElementById('tq-count').textContent = `${tqIdx + 1} / ${total}`;
+    document.getElementById('tq-type').textContent = s.q.type === 'mc' ? '객관식' : '주관식';
+    document.getElementById('tq-sec').textContent = s.q.sec;
+    document.getElementById('tq-text').innerHTML = s.q.q;
+    const fb = document.getElementById('tq-feedback');
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+    document.getElementById('tq-next').style.display = 'none';
+
+    const body = document.getElementById('tq-body');
+    if (s.q.type === 'mc') {
+      body.innerHTML = `<div class="choices">${s.choices.map((c, ci) =>
+        `<button class="choice" data-ci="${ci}"><span class="k">${ci + 1}</span><span>${escapeHtml(c)}</span></button>`).join('')}</div>`;
+      body.querySelectorAll('.choice').forEach(btn => btn.addEventListener('click', () => answerMc(Number(btn.dataset.ci))));
+    } else {
+      body.innerHTML = `<div class="answer-row">
+        <input id="tq-input" placeholder="빈칸에 들어갈 말" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button class="btn btn-primary" id="tq-submit">확인</button></div>`;
+      const inp = document.getElementById('tq-input');
+      inp.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' || e.isComposing) return;
+        e.stopPropagation();
+        answerText();
       });
-      btn.classList.add(ok ? 'picked-ok' : 'picked-ng');
-      finishTheoryQ(i, ok);
-    }));
-    container.querySelectorAll('.q-input').forEach(inp => inp.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' || e.isComposing) return;
-      const i = Number(inp.dataset.qi);
-      const s = tquiz[i];
-      if (s.done || !inp.value.trim()) return;
-      const norm = v => v.toLowerCase().replace(/[\s'"()]/g, '');
-      const user = norm(inp.value);
-      const ans = norm(s.q.answer);
-      // 괄호 속 영어 표기 등은 생략해도 정답 처리 (예: "기울기 소실(Vanishing Gradient)" → "기울기 소실")
-      const short = norm(s.q.answer.replace(/\(.*\)/, ''));
-      const ok = user === ans || (short.length > 0 && user === short);
-      inp.disabled = true;
-      document.getElementById(`tqf-${i}`).innerHTML = ok ? '' : `정답: <strong>${escapeHtml(s.q.answer)}</strong>`;
-      finishTheoryQ(i, ok);
-      const next = container.querySelector('.q-input:not(:disabled)');
-      if (next) next.focus();
-    }));
-    updateTheoryScore();
-    const section = document.getElementById('tab-tquiz');
-    if (section.classList.contains('active')) window.scrollTo({ top: section.offsetTop - 10, behavior: 'smooth' });
+      document.getElementById('tq-submit').addEventListener('click', answerText);
+      inp.focus();
+    }
   }
 
-  function finishTheoryQ(i, ok) {
-    const s = tquiz[i];
+  function answerMc(ci) {
+    const s = tqList[tqIdx];
+    if (s.done) return;
+    const ok = s.choices[ci] === s.q.answer;
+    document.querySelectorAll('#tq-body .choice').forEach(b => {
+      b.disabled = true;
+      if (s.choices[Number(b.dataset.ci)] === s.q.answer) b.classList.add('answer');
+    });
+    if (!ok) document.querySelector(`#tq-body .choice[data-ci="${ci}"]`).classList.add('picked-ng');
+    s.user = s.choices[ci];
+    finishTQ(ok);
+  }
+
+  function answerText() {
+    const s = tqList[tqIdx];
+    const inp = document.getElementById('tq-input');
+    if (s.done || !inp.value.trim()) return;
+    const norm = v => v.toLowerCase().replace(/[\s'"()]/g, '');
+    const user = norm(inp.value);
+    // 괄호 속 영어 표기 등은 생략해도 정답 처리 (예: "기울기 소실(Vanishing Gradient)" → "기울기 소실")
+    const short = norm(s.q.answer.replace(/\(.*\)/, ''));
+    const ok = user === norm(s.q.answer) || (short.length > 0 && user === short);
+    inp.disabled = true;
+    inp.classList.add(ok ? 'ok' : 'ng');
+    document.getElementById('tq-submit').style.display = 'none';
+    s.user = inp.value;
+    finishTQ(ok);
+  }
+
+  function finishTQ(ok) {
+    const s = tqList[tqIdx];
     s.done = true;
     s.ok = ok;
-    document.getElementById(`tq-${i}`).classList.add(ok ? 'ok' : 'ng');
     record('theory', s.q.key, ok);
-    updateTheoryScore();
+    const fb = document.getElementById('tq-feedback');
+    fb.className = `feedback ${ok ? 'ok' : 'ng'}`;
+    fb.innerHTML = (ok ? '<b>정답!</b>' : `<b>정답: ${escapeHtml(s.q.answer)}</b>`) +
+      (s.q.exp ? `<div class="exp">${escapeHtml(s.q.exp)}</div>` : '');
+    const next = document.getElementById('tq-next');
+    next.style.display = '';
+    next.innerHTML = tqIdx === tqList.length - 1 ? '결과 보기 <span class="kbd">Enter</span>' : '다음 <span class="kbd">Enter</span>';
+    next.focus();
   }
 
-  function updateTheoryScore() {
-    const done = tquiz.filter(s => s.done).length;
-    const ok = tquiz.filter(s => s.ok).length;
-    const total = tquiz.length;
-    const el = document.getElementById('tscore-display');
-    if (done < total) {
-      el.innerText = `진행 ${done}/${total} · 정답 ${ok}개`;
-      return;
+  function nextTQ() {
+    if (!tqList[tqIdx] || !tqList[tqIdx].done) return;
+    if (tqIdx < tqList.length - 1) {
+      tqIdx++;
+      renderTQ();
+    } else {
+      showTQResult();
     }
-    const score = Math.round((ok / total) * 20 * 10) / 10;
-    el.innerText = `🎯 결과: ${total}문제 중 ${ok}개 정답 → 이론 ${score}점 / 20점` + (ok === total ? ' 🎉' : '');
-    document.getElementById('btn-tretry').style.display = ok < total ? 'inline-block' : 'none';
   }
 
-  /* ================= 오답노트 ================= */
+  function showTQResult() {
+    const total = tqList.length;
+    const ok = tqList.filter(s => s.ok).length;
+    const score = Math.round((ok / total) * 20 * 10) / 10;
+    document.getElementById('tq-score').innerHTML = `${score}<small> / 20</small>`;
+    document.getElementById('tq-score').style.color = ok === total ? 'var(--ok)' : ok / total >= .7 ? 'var(--accent)' : 'var(--ng)';
+    document.getElementById('tq-summary').textContent = `${total}문제 중 ${ok}개 정답` + (ok === total ? ' · 완벽해요!' : '');
+    const wrong = tqList.filter(s => !s.ok);
+    document.getElementById('tq-retry').style.display = wrong.length ? '' : 'none';
+    document.getElementById('tq-wrong-card').style.display = wrong.length ? '' : 'none';
+    document.getElementById('tq-wrong').innerHTML = wrong.map(s => `
+      <div class="wrong-item"><div class="wq">${s.q.q}</div><div class="wa">정답: ${escapeHtml(s.q.answer)}</div></div>`).join('');
+    showTQ('result');
+  }
+
+  document.getElementById('tq-next').addEventListener('click', nextTQ);
+  document.querySelectorAll('.mode').forEach(btn => btn.addEventListener('click', () => startTheoryQuiz(btn.dataset.mode)));
+
+  // 키보드: 1~4 보기 선택, Enter 다음 문제
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('tab-tquiz').classList.contains('active')) return;
+    if (document.getElementById('tq-play').style.display === 'none') return;
+    const s = tqList[tqIdx];
+    if (!s) return;
+    if (e.key === 'Enter' && s.done) { e.preventDefault(); nextTQ(); return; }
+    if (s.q.type === 'mc' && !s.done && /^[1-4]$/.test(e.key) && Number(e.key) <= s.choices.length) answerMc(Number(e.key) - 1);
+  });
+
+  /* ================= 05 오답노트 ================= */
   function renderStats() {
-    const blankHtml = blanksData
-      .map(b => ({ b, s: stats.blanks[b.id] }))
-      .sort((x, y) => rate(y.s) - rate(x.s) || (y.s ? y.s.w : 0) - (x.s ? x.s.w : 0))
-      .map(({ b, s }) => {
-        const r = rate(s);
-        const color = !s ? '#cbd5e1' : r >= 0.5 ? '#ef4444' : r > 0 ? '#f59e0b' : '#22c55e';
-        const label = s ? `${s.w}/${s.n} 틀림` : '안 풀어봄';
-        return `<div class="stat-cell"><div><span class="sid">[${b.id}]</span> <span style="color:#64748b;">${label}</span></div>
-          <div class="sans" title="${escapeHtml(b.ans)}">${escapeHtml(b.ans)}</div>
-          <div class="bar"><span style="width:${s ? Math.max(r * 100, 4) : 0}%; background:${color};"></span></div></div>`;
+    const tried = blanksData.filter(b => stats.blanks[b.id]);
+    const totalN = tried.reduce((t, b) => t + stats.blanks[b.id].n, 0);
+    const totalW = tried.reduce((t, b) => t + stats.blanks[b.id].w, 0);
+    const tKeys = Object.values(stats.theory);
+    const tN = tKeys.reduce((t, s) => t + s.n, 0);
+    const tW = tKeys.reduce((t, s) => t + s.w, 0);
+    const pct = (n, w) => n ? `${Math.round(((n - w) / n) * 100)}%` : '–';
+    document.getElementById('stat-cards').innerHTML = `
+      <div class="stat-card"><div class="l">풀어본 빈칸</div><div class="v">${tried.length}<span class="muted"> / ${blanksData.length}</span></div></div>
+      <div class="stat-card"><div class="l">빈칸 정답률</div><div class="v">${pct(totalN, totalW)}</div></div>
+      <div class="stat-card"><div class="l">이론 풀이 수</div><div class="v">${tN}</div></div>
+      <div class="stat-card"><div class="l">이론 정답률</div><div class="v">${pct(tN, tW)}</div></div>`;
+
+    document.getElementById('stats-heat').innerHTML = blanksData.map(b => {
+      const s = stats.blanks[b.id];
+      const r = rate(s);
+      const cls = !s ? '' : r >= 0.5 ? 'bad' : r > 0 ? 'mid' : 'good';
+      const tip = `[${b.id}] ${b.ans}` + (s ? ` · ${s.w}/${s.n} 틀림` : ' · 안 풀어봄');
+      return `<div class="cell ${cls}" title="${escapeHtml(tip)}">${b.id}</div>`;
+    }).join('');
+
+    const blankRows = blanksData
+      .filter(b => stats.blanks[b.id] && stats.blanks[b.id].w > 0)
+      .sort((x, y) => rate(stats.blanks[y.id]) - rate(stats.blanks[x.id]) || stats.blanks[y.id].w - stats.blanks[x.id].w)
+      .slice(0, 10)
+      .map(b => {
+        const s = stats.blanks[b.id];
+        return `<div class="rank-row"><span class="id">${b.id}</span><span><span class="a">${escapeHtml(b.ans)}</span>${b.trap ? `<div class="muted">${escapeHtml(b.trap)}</div>` : ''}</span><span class="r">${s.w}/${s.n} 틀림</span></div>`;
       }).join('');
-    document.getElementById('stats-blanks').innerHTML = `<div class="stat-grid">${blankHtml}</div>`;
+    document.getElementById('stats-blanks').innerHTML = blankRows || '<div class="empty">아직 틀린 빈칸이 없어요.</div>';
 
     const allItems = theorySections.flatMap(sec => sec.items);
     const theoryRows = Object.entries(stats.theory)
@@ -1005,15 +1385,11 @@
       .sort((a, b) => rate(b[1]) - rate(a[1]) || b[1].w - a[1].w)
       .map(([key, s]) => {
         const item = allItems.find(it => it.term === key);
-        return `<tr><td style="text-align:left; font-family:monospace; font-weight:bold;">${escapeHtml(key)}</td>
-          <td style="text-align:left;">${item ? kwHtml(item.desc) : ''}</td><td>${s.w}/${s.n}</td></tr>`;
+        return `<div class="rank-row" style="grid-template-columns:minmax(120px,220px) 1fr auto;"><span class="a" style="font-weight:700;">${escapeHtml(key)}</span>
+          <span style="color:var(--ink-2);">${item ? kwHtml(item.desc) : ''}</span><span class="r">${s.w}/${s.n} 틀림</span></div>`;
       }).join('');
-    document.getElementById('stats-theory').innerHTML = theoryRows
-      ? `<div class="table-wrap"><table><thead><tr><th>개념</th><th>활동지 설명</th><th>틀림/시도</th></tr></thead><tbody>${theoryRows}</tbody></table></div>`
-      : '<div class="empty">아직 틀린 이론 문제가 없어요. 이론 퀴즈를 풀어보세요!</div>';
+    document.getElementById('stats-theory').innerHTML = theoryRows || '<div class="empty">아직 틀린 이론 문제가 없어요.</div>';
   }
-
-  function rate(s) { return s && s.n ? s.w / s.n : 0; }
 
   function resetStats() {
     if (!confirm('풀이 기록을 모두 지울까요?')) return;
@@ -1021,23 +1397,28 @@
     saveStats();
     renderStats();
     renderStudyBlocks();
+    updateMastery();
   }
 
   /* ================= 탭 ================= */
   function switchTab(tabId) {
     document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === tabId));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tabId));
+    document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tabId));
     if (tabId === 'tab-stats') renderStats();
     try { localStorage.setItem(STORE_KEY + '-tab', tabId); } catch (e) {}
   }
 
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+  document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+  document.querySelectorAll('#study-seg button').forEach(btn => btn.addEventListener('click', () => setStudyMode(btn.dataset.mode)));
+  document.querySelectorAll('#quiz-seg button').forEach(btn => btn.addEventListener('click', () => startQuiz(btn.dataset.mode)));
+  document.querySelectorAll('#theory-seg button').forEach(btn => btn.addEventListener('click', () => toggleTheory(btn.dataset.show === '1')));
 
+  document.getElementById('all-count').textContent = `${theoryPool.length}문제를 섞어서`;
   renderStudyBlocks();
   renderExamSheet();
   renderTheory();
   startQuiz('exam');
-  startTheoryQuiz('random');
+  updateMastery();
   try {
     const lastTab = localStorage.getItem(STORE_KEY + '-tab');
     if (lastTab && document.getElementById(lastTab)) switchTab(lastTab);
