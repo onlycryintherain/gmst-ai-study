@@ -343,7 +343,7 @@
         <div class="logo">AI</div>
         <div>
           <h1>인공지능 일반 수행평가</h1>
-          <p>코드 빈칸 15문제 · 이론 20점 대비</p>
+          <p>1과제 개념 20점 · 2과제 빈칸 15문항 80점</p>
         </div>
       </div>
       <div class="mastery">
@@ -500,13 +500,14 @@
     <div id="tq-start">
       <div class="page-head">
         <h2>이론 퀴즈</h2>
-        <p>활동지 내용으로 만든 객관식·주관식 문제. 한 문제씩 풀고 바로 확인해요.</p>
+        <p>1과제(20점)는 <b>설명을 보고 해당하는 명령어나 핵심 개념을 쓰는 주관식</b>이에요. 실전형으로 연습하고, 막히면 워밍업부터.</p>
       </div>
       <div class="modes">
-        <button class="mode" data-mode="random"><div class="ico">10</div><h4>랜덤 10문제</h4><p>실전처럼 20점 만점으로 환산</p></button>
-        <button class="mode" data-mode="weak"><div class="ico">!</div><h4>약점 집중</h4><p>많이 틀린 · 안 풀어본 개념 위주</p></button>
-        <button class="mode" data-mode="act"><div class="ico">ƒ</div><h4>활성화 함수</h4><p>시그모이드 · 렐루 · 소프트맥스 · tanh</p></button>
-        <button class="mode" data-mode="all"><div class="ico">∞</div><h4>전체 문제</h4><p id="all-count">모든 문제를 섞어서</p></button>
+        <button class="mode" data-mode="random"><div class="ico">10</div><h4>실전 10문제</h4><p>설명 → 명령어·개념 쓰기, 20점 환산</p></button>
+        <button class="mode" data-mode="weak"><div class="ico">!</div><h4>약점 집중</h4><p>많이 틀린 · 안 풀어본 것 위주 (실전형)</p></button>
+        <button class="mode" data-mode="all"><div class="ico">∞</div><h4>실전형 전체</h4><p id="all-count">모든 설명 문제</p></button>
+        <button class="mode" data-mode="mc"><div class="ico">①</div><h4>객관식 워밍업</h4><p>처음 외울 때 보기 고르며 익히기</p></button>
+        <button class="mode" data-mode="kw"><div class="ico">_</div><h4>핵심어 빈칸</h4><p>설명 속 핵심 단어 채우기</p></button>
       </div>
     </div>
 
@@ -936,9 +937,10 @@
     document.getElementById('q-score').textContent = correctCount;
     document.getElementById('q-total').textContent = `/ ${total}`;
     document.getElementById('q-score').style.color = pct === 100 ? 'var(--ok)' : pct >= 70 ? 'var(--accent)' : 'var(--ng)';
-    document.getElementById('q-msg').textContent =
+    const score80 = Math.round((correctCount / total) * 80 * 10) / 10;
+    document.getElementById('q-msg').textContent = `2과제 환산 ${score80}점 / 80 · ` + (
       pct === 100 ? `완벽해요! ${document.getElementById('timer').textContent} 걸렸어요.` :
-      `정답률 ${pct}% · 빨간 칸 옆에 정답과 함정 포인트가 표시돼요.`;
+      `빨간 칸 옆에 정답과 함정 포인트가 표시돼요.`);
     document.getElementById('btn-retry').style.display = wrongBlankIds.length ? '' : 'none';
     document.getElementById('q-result').classList.add('show');
     document.getElementById('q-result').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -974,16 +976,16 @@
     { title: "#2 구글 드라이브 연결하기",
       code: "from google.colab import drive\ndrive.mount('/content/drive')",
       items: [
-        { term: "from ~ import", desc: "파이썬에서 다른 곳에 준비되어 있는 [기능]을 가져와 사용하는 명령" },
-        { term: "mount( )", desc: "구글 드라이브를 코랩에서 사용할 수 있도록 [연결]" },
+        { term: "from ~ import", accept: ["from import"], desc: "파이썬에서 다른 곳에 준비되어 있는 [기능]을 가져와 사용하는 명령" },
+        { term: "mount( )", accept: ["drive.mount"], desc: "구글 드라이브를 코랩에서 사용할 수 있도록 [연결]" },
         { term: "/content/drive", desc: "코랩에서 구글 드라이브에 접근하기 위한 [경로]" }] },
     { title: "#3 학습 데이터 준비하기",
       code: "import pandas as pd\nhero_villain = pd.read_csv('/content/drive/MyDrive/2026AI/hero_villain/hero_villain.csv', index_col=0)\nprint(hero_villain.columns)\nhero_villain",
       items: [
-        { term: "import A as B", desc: "A를 가져와 B라고 [간단하게] 사용하는 명령" },
+        { term: "import A as B", accept: ["import as"], desc: "A를 가져와 B라고 [간단하게] 사용하는 명령" },
         { term: "pandas", desc: "[표] 형태의 데이터를 다루고 분석하기 위한 [라이브러리]" },
-        { term: "read_csv( )", desc: "[CSV 파일]을 읽어오는 pandas의 함수" },
-        { term: "index_col = 0", desc: "CSV 파일의 [첫 번째 열]을 데이터의 [인덱스]로 사용" },
+        { term: "read_csv( )", accept: ["pd.read_csv"], desc: "[CSV 파일]을 읽어오는 pandas의 함수" },
+        { term: "index_col = 0", accept: ["index_col"], desc: "CSV 파일의 [첫 번째 열]을 데이터의 [인덱스]로 사용" },
         { term: "~.columns", desc: "데이터에 포함된 [열(column)의 이름]을 확인하는 기능" }] },
     { title: "#4 데이터 타입 확인하기",
       intro: "인공지능 모델은 [문자 자체를 그대로 입력하여 학습할 수 없어서] 확인 필수",
@@ -992,10 +994,10 @@
       extra: "datatypes" },
     { title: "#5 데이터 타입 변환하기",
       code: "hero_villain['label'] = hero_villain['label'].astype('category')\nprint(hero_villain.dtypes)",
-      items: [{ term: "A[B].astype('C')", desc: "A 데이터의 [B열]의 데이터 타입을 [C로 변경]하는 함수" }] },
+      items: [{ term: "A[B].astype('C')", accept: ["astype"], desc: "A 데이터의 [B열]의 데이터 타입을 [C로 변경]하는 함수" }] },
     { title: "#6 원핫인코딩(One-Hot Encoding)",
       code: "encoding = pd.get_dummies(hero_villain)\nprint(encoding.columns)\nencoding",
-      items: [{ term: "pd.get_dummies( )", desc: "[범주형] 값을 [0과 1]로 변환" }] },
+      items: [{ term: "pd.get_dummies( )", accept: ["get_dummies"], desc: "[범주형] 값을 [0과 1]로 변환" }] },
     { title: "#7 변수 선언",
       code: "tendency = encoding[['justice', 'empathy', 'self_control', 'teamwork',\n                     'power_desire', 'rule_respect', 'sacrifice', 'revenge']]\nsuitability = encoding[['label_hero', 'label_villain']]\nprint(tendency.shape, suitability.shape)",
       items: [
@@ -1007,9 +1009,9 @@
       code: "from sklearn.model_selection import train_test_split\ntendency_train, tendency_test, suitability_train, suitability_test = train_test_split(\n    tendency, suitability, shuffle=True, stratify=suitability, test_size=0.2)\nprint(tendency_train.shape, suitability_train.shape)\nprint(tendency_test.shape, suitability_test.shape)",
       items: [
         { term: "train_test_split( )", desc: "전체 데이터를 [학습 데이터]와 [평가 데이터]로 분리" },
-        { term: "shuffle=True", desc: "데이터를 [섞은 후] 분리" },
-        { term: "stratify=suitability", desc: "[클래스 비율]이 비슷하게 유지되도록 분리 ([층화 추출]:stratification)" },
-        { term: "test_size=0.2", desc: "데이터 비율을 학습데이터 [8] : 평가 데이터 [2]로 분리" }] },
+        { term: "shuffle=True", accept: ["shuffle"], desc: "데이터를 [섞은 후] 분리" },
+        { term: "stratify=suitability", accept: ["stratify"], desc: "[클래스 비율]이 비슷하게 유지되도록 분리 ([층화 추출]:stratification)" },
+        { term: "test_size=0.2", accept: ["test_size"], desc: "데이터 비율을 학습데이터 [8] : 평가 데이터 [2]로 분리" }] },
     { title: "#9-1 인공지능 모델 만들기(Keras, tensorflow)",
       code: "import tensorflow as tf\nfrom keras import models\nfrom keras import layers",
       items: [
@@ -1020,21 +1022,21 @@
     { title: "#9-2 인공지능 모델 만들기(신경망 만들기)",
       code: "model = models.Sequential()\nmodel.add(layers.Dense(8, input_dim=8, activation='relu'))   # 입력층\nmodel.add(layers.Dense(12, activation='relu'))               # 은닉층\nmodel.add(layers.Dense(4, activation='relu'))                # 은닉층\nmodel.add(layers.Dense(2, activation='softmax'))             # 출력층",
       items: [
-        { term: "models.Sequential( )", desc: "신경망 층을 [순서대로] 연결하는 모델을 만드는 기능" },
+        { term: "models.Sequential( )", accept: ["Sequential"], desc: "신경망 층을 [순서대로] 연결하는 모델을 만드는 기능" },
         { term: "model.add( )", desc: "모델에 새로운 [층(layer)]을 [추가]" },
-        { term: "layers.Dense(A)", desc: "A개의 [뉴런] 수를 가지면서 모든 뉴런이 앞뒤 층의 뉴런과 연결되는 [완전연결층]" },
-        { term: "input_dim=A", desc: "입력 데이터 [특성(feature)]을 A개로 설정" },
-        { term: "activation='relu'", desc: "[ReLU(렐루)] 활성화 함수를 사용" },
-        { term: "activation='softmax'", desc: "[softmax] 활성화 함수를 사용" }],
+        { term: "layers.Dense(A)", accept: ["layers.Dense", "Dense"], desc: "A개의 [뉴런] 수를 가지면서 모든 뉴런이 앞뒤 층의 뉴런과 연결되는 [완전연결층]" },
+        { term: "input_dim=A", accept: ["input_dim"], desc: "입력 데이터 [특성(feature)]을 A개로 설정" },
+        { term: "activation='relu'", accept: ["relu", "렐루"], desc: "[ReLU(렐루)] 활성화 함수를 사용" },
+        { term: "activation='softmax'", accept: ["softmax", "소프트맥스"], desc: "[softmax] 활성화 함수를 사용" }],
       extra: "activation" },
     { title: "#9-3 인공지능 모델 만들기(신경망 학습하기)",
       code: "model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\nmodel.summary()",
       items: [
-        { term: "model.compile( )", desc: "신경망을 [학습시키는 방법]을 설정하는 기능" },
-        { term: "optimizer='adam'", desc: "Adam([Adaptive Moment Estimation])을 사용하여 모델의 [가중치]를 조정" },
-        { term: "loss='categorical_crossentropy'", desc: "[범주형 교차 엔트로피]를 사용하여 모델의 예측과 실제 정답의 [차이]를 계산" },
-        { term: "metrics=['accuracy']", desc: "모델의 [정확도(accuracy)]를 확인" },
-        { term: "model.summary( )", desc: "인공신경망의 [구조]를 확인" }] }
+        { term: "model.compile( )", accept: ["compile"], desc: "신경망을 [학습시키는 방법]을 설정하는 기능" },
+        { term: "optimizer='adam'", accept: ["optimizer", "adam"], desc: "Adam([Adaptive Moment Estimation])을 사용하여 모델의 [가중치]를 조정" },
+        { term: "loss='categorical_crossentropy'", accept: ["loss", "categorical_crossentropy"], desc: "[범주형 교차 엔트로피]를 사용하여 모델의 예측과 실제 정답의 [차이]를 계산" },
+        { term: "metrics=['accuracy']", accept: ["metrics", "accuracy"], desc: "모델의 [정확도(accuracy)]를 확인" },
+        { term: "model.summary( )", accept: ["summary"], desc: "인공신경망의 [구조]를 확인" }] }
   ];
 
   const activationFns = [
@@ -1125,36 +1127,81 @@
   }
 
   /* ================= 04 이론 퀴즈 ================= */
-  // 문제 유형: mc(객관식) / text(주관식). key = 오답노트에서 묶이는 개념 이름, exp = 해설
+  // 실제 1과제: 설명을 보고 해당하는 명령어나 핵심 개념을 답하는 주관식.
+  // 명령어(theorySections.items) 외에 활동지에 나오는 핵심 개념도 같은 방식으로 출제
+  const concepts = [
+    { sec: '활성화 함수', answer: '활성화 함수', accept: ['activation function', 'activation'],
+      desc: '신경망에서 입력 신호를 변환하여 비선형성을 부여하고, 모델이 더 복잡한 패턴을 학습할 수 있도록 도와주는 함수' },
+    { sec: '활성화 함수', answer: '시그모이드', accept: ['sigmoid'],
+      desc: '0과 1 사이의 값을 출력하는 S자 모양의 활성화 함수로, 기울기 소실 문제가 한계로 지적됨' },
+    { sec: '활성화 함수', answer: '렐루', accept: ['relu'],
+      desc: '현재 딥러닝에서 가장 많이 사용되며, 입력 신호의 총합 크기가 특정 임계값 이상일 때만 신호를 활성화하여 전달하는 활성화 함수' },
+    { sec: '활성화 함수', answer: '소프트맥스', accept: ['softmax'],
+      desc: '입력받은 값들을 0~1 사이로 정규화하며 모든 출력값의 총합이 항상 1이 되도록 변환하고, 다중 클래스 분류의 출력층에 주로 적용되는 활성화 함수' },
+    { sec: '활성화 함수', answer: '탄젠트 하이퍼볼릭', accept: ['tanh', '하이퍼볼릭 탄젠트'],
+      desc: '출력 범위가 -1 ~ 1이고 0을 중심으로 분포하는 S자 곡선 모양의 활성화 함수' },
+    { sec: '활성화 함수', answer: '기울기 소실', accept: ['vanishing gradient', '기울기 소실 문제'],
+      desc: '오차 역전파 등 연속적인 계산 과정에서 입력층으로 갈수록 기울기가 점차 작아져 0에 수렴하는 문제' },
+    { sec: '#6', answer: '원핫인코딩', accept: ['원 핫 인코딩', 'one-hot encoding', 'onehot encoding', 'one hot encoding'],
+      desc: '범주형 값을 0과 1로 변환하는 인코딩 방식 (pandas의 get_dummies로 수행)' },
+    { sec: '#8', answer: '층화 추출', accept: ['stratification'],
+      desc: '클래스 비율이 비슷하게 유지되도록 데이터를 분리하는 방법 (한글 용어)' },
+    { sec: '#9-2', answer: '완전연결층', accept: ['완전 연결층', 'dense', 'fully connected layer'],
+      desc: '모든 뉴런이 앞뒤 층의 뉴런과 연결되는 층' },
+    { sec: '#9-2', answer: '입력층', accept: [],
+      desc: '신경망의 첫 번째 층으로, input_dim으로 입력 데이터 특성 개수를 함께 설정하는 층' },
+    { sec: '#9-2', answer: '은닉층', accept: [],
+      desc: '입력층과 출력층 사이에 있는 층 (이 코드에서는 Dense(12)와 Dense(4))' },
+    { sec: '#9-2', answer: '출력층', accept: [],
+      desc: '최종 결과를 내는 마지막 층 (이 코드에서는 softmax 활성화 함수 사용)' },
+    { sec: '#4', answer: 'category', accept: [],
+      desc: '"hero", "villain" 같은 범주형 문자열의 pandas 데이터 타입 표시' },
+    { sec: '#4', answer: 'int64', accept: [], desc: '정수(int) 데이터의 pandas 데이터 타입 표시' },
+    { sec: '#4', answer: 'float64', accept: [], desc: '실수(float) 데이터의 pandas 데이터 타입 표시' }
+  ];
+
+  // 명령어 답 비교: 대소문자·공백·따옴표·괄호·'~.' 무시
+  const normTerm = v => v.toLowerCase().replace(/~\.?/g, '').replace(/[\s'"`‘’“”()\[\]]/g, '').replace(/^\./, '');
+
+  // kind: recall(설명→명령어/개념, 실전형) / mc(객관식 워밍업) / kw(핵심어 빈칸)
+  // key = 오답노트에서 묶이는 개념 이름, exp = 해설
   function buildTheoryPool() {
     const pool = [];
     const allItems = theorySections.flatMap(sec => sec.items.map(it => ({ ...it, sec: sec.title.split(' ')[0] })));
     const pickOthers = (list, correct, n) => shuffle([...new Set(list)].filter(x => x !== correct)).slice(0, n);
+    const recallQ = desc => `설명에 해당하는 명령어 또는 개념은?<span class="quote">${escapeHtml(desc)}</span>`;
 
     allItems.forEach(it => {
       const desc = plain(it.desc);
       const exp = `${it.term} : ${desc}`;
-      pool.push({ key: it.term, sec: it.sec, type: 'mc', exp,
+      pool.push({ key: it.term, sec: it.sec, type: 'text', kind: 'recall', exp,
+        q: recallQ(desc), answer: it.term, accept: it.accept || [] });
+      pool.push({ key: it.term, sec: it.sec, type: 'mc', kind: 'mc', exp,
         q: `<span class="mono">${escapeHtml(it.term)}</span> 의 의미로 옳은 것은?`,
         answer: desc, choices: () => shuffle([desc, ...pickOthers(allItems.map(x => plain(x.desc)), desc, 3)]) });
-      pool.push({ key: it.term, sec: it.sec, type: 'mc', exp,
+      pool.push({ key: it.term, sec: it.sec, type: 'mc', kind: 'mc', exp,
         q: `다음 설명에 해당하는 명령어는?<span class="quote">${escapeHtml(desc)}</span>`,
         answer: it.term, choices: () => shuffle([it.term, ...pickOthers(allItems.map(x => x.term), it.term, 3)]) });
       [...it.desc.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-        pool.push({ key: it.term, sec: it.sec, type: 'text', exp,
+        pool.push({ key: it.term, sec: it.sec, type: 'text', kind: 'kw', exp,
           q: `<span class="mono">${escapeHtml(it.term)}</span><span class="quote">${blankOut(it.desc, kw)}</span>`, answer: kw });
       });
     });
 
+    concepts.forEach(c => {
+      pool.push({ key: c.answer, sec: c.sec, type: 'text', kind: 'recall', exp: `${c.answer} : ${c.desc}`,
+        q: recallQ(c.desc), answer: c.answer, accept: c.accept });
+    });
+
     theorySections.filter(s => s.intro).forEach(sec => {
       [...sec.intro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-        pool.push({ key: sec.title, sec: sec.title.split(' ')[0], type: 'text', exp: plain(sec.intro), q: blankOut(sec.intro, kw), answer: kw });
+        pool.push({ key: sec.title, sec: sec.title.split(' ')[0], type: 'text', kind: 'kw', exp: plain(sec.intro), q: blankOut(sec.intro, kw), answer: kw });
       });
     });
 
     const actNames = activationFns.map(f => f.name);
     const actExp = f => `${f.name} · 출력 ${f.range} · ${f.shape} · ${f.trait} · ${f.use}`;
-    const actMc = (f, q, answer, choices) => pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'mc', exp: actExp(f), q, answer, choices: () => shuffle([...new Set(choices)]) });
+    const actMc = (f, q, answer, choices) => pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'mc', kind: 'mc', exp: actExp(f), q, answer, choices: () => shuffle([...new Set(choices)]) });
     activationFns.forEach(f => {
       actMc(f, `${f.name}의 <b>출력 범위</b>는?`, f.range, activationFns.map(x => x.range));
       actMc(f, `${f.name}의 <b>그래프 형태</b>는?`, f.shape, activationFns.map(x => x.shape));
@@ -1163,7 +1210,7 @@
       if (f.key !== 'tanh') actMc(f, `수식이 ${f.formula} 인 활성화 함수는?`, f.name, actNames);
       [f.feature, f.role].forEach(text => {
         [...text.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-          pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'text', exp: plain(text), q: `${f.name}<span class="quote">${blankOut(text, kw)}</span>`, answer: kw });
+          pool.push({ key: `활성화 함수: ${f.key}`, sec: '활성화 함수', act: true, type: 'text', kind: 'kw', exp: plain(text), q: `${f.name}<span class="quote">${blankOut(text, kw)}</span>`, answer: kw });
         });
       });
     });
@@ -1174,7 +1221,7 @@
     actMc(soft, '모든 출력값의 <b>총합이 항상 1</b>이 되도록 변환하는 함수는?', soft.name, actNames);
     actMc(relu, '<b>시그모이드의 기울기 소실 문제를 해결</b>한 함수는?', relu.name, actNames);
     [...actIntro.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]).forEach(kw => {
-      pool.push({ key: '활성화 함수: 정의', sec: '활성화 함수', act: true, type: 'text', exp: plain(actIntro), q: blankOut(actIntro, kw), answer: kw });
+      pool.push({ key: '활성화 함수: 정의', sec: '활성화 함수', act: true, type: 'text', kind: 'kw', exp: plain(actIntro), q: blankOut(actIntro, kw), answer: kw });
     });
 
     const layerChoices = ['입력층', '은닉층', '출력층'];
@@ -1182,19 +1229,19 @@
      ["model.add(layers.Dense(12, activation='relu'))", '은닉층'],
      ["model.add(layers.Dense(4, activation='relu'))", '은닉층'],
      ["model.add(layers.Dense(2, activation='softmax'))", '출력층']].forEach(([code, ans]) => {
-      pool.push({ key: '층 구분 (입력/은닉/출력)', sec: '#9-2', type: 'mc', exp: 'input_dim이 있는 첫 층 = 입력층, softmax인 마지막 층 = 출력층, 나머지 = 은닉층',
+      pool.push({ key: '층 구분 (입력/은닉/출력)', sec: '#9-2', type: 'mc', kind: 'mc', exp: 'input_dim이 있는 첫 층 = 입력층, softmax인 마지막 층 = 출력층, 나머지 = 은닉층',
         q: `다음은 어떤 층인가?<span class="quote mono">${escapeHtml(code)}</span>`, answer: ans, choices: () => layerChoices });
     });
 
     const pdTypes = [...new Set(dataTypes.map(d => d.pd))];
     const typeExp = '정수 int/int64 · 실수 float/float64 · 문자열 str/object·string·category · 논리 bool/bool';
     dataTypes.forEach(d => {
-      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', exp: typeExp,
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', kind: 'mc', exp: typeExp,
         q: `${d.mean} ${escapeHtml(d.ex)} 의 <b>pandas 표시</b>는?`, answer: d.pd, choices: () => shuffle(pdTypes) });
     });
     ['정수', '실수', '문자열', '논리(참/거짓)'].forEach(mean => {
       const d = dataTypes.find(x => x.mean === mean);
-      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', exp: typeExp,
+      pool.push({ key: '주요 데이터 타입', sec: '#4', type: 'mc', kind: 'mc', exp: typeExp,
         q: `${mean}의 <b>파이썬 자료형</b>은?`, answer: d.py, choices: () => ['int', 'float', 'str', 'bool'] });
     });
 
@@ -1222,17 +1269,18 @@
 
   function startTheoryQuiz(mode) {
     tqMode = mode;
+    const recall = theoryPool.filter(q => q.kind === 'recall');
     let picked;
     if (mode === 'all') {
-      picked = shuffle(theoryPool);
-    } else if (mode === 'act') {
-      picked = shuffle(theoryPool.filter(q => q.act)).slice(0, 10);
+      picked = shuffle(recall);
     } else {
+      const source = mode === 'mc' ? theoryPool.filter(q => q.kind === 'mc')
+        : mode === 'kw' ? theoryPool.filter(q => q.kind === 'kw') : recall;
       const weightFn = mode === 'weak' ? (q => weakWeight('theory', q.key)) : (() => 1);
       // 같은 개념이 한 번에 두 번 나오지 않도록
       picked = [];
       const usedKeys = new Set();
-      for (const q of weightedSample(theoryPool, theoryPool.length, weightFn)) {
+      for (const q of weightedSample(source, source.length, weightFn)) {
         if (usedKeys.has(q.key)) continue;
         usedKeys.add(q.key);
         picked.push(q);
@@ -1258,7 +1306,7 @@
     const total = tqList.length;
     document.getElementById('tq-bar').style.width = `${(tqIdx / total) * 100}%`;
     document.getElementById('tq-count').textContent = `${tqIdx + 1} / ${total}`;
-    document.getElementById('tq-type').textContent = s.q.type === 'mc' ? '객관식' : '주관식';
+    document.getElementById('tq-type').textContent = { recall: '주관식 · 실전형', mc: '객관식', kw: '핵심어 빈칸' }[s.q.kind];
     document.getElementById('tq-sec').textContent = s.q.sec;
     document.getElementById('tq-text').innerHTML = s.q.q;
     const fb = document.getElementById('tq-feedback');
@@ -1273,7 +1321,7 @@
       body.querySelectorAll('.choice').forEach(btn => btn.addEventListener('click', () => answerMc(Number(btn.dataset.ci))));
     } else {
       body.innerHTML = `<div class="answer-row">
-        <input id="tq-input" placeholder="빈칸에 들어갈 말" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <input id="tq-input" placeholder="${s.q.kind === 'recall' ? '명령어 또는 개념' : '빈칸에 들어갈 말'}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
         <button class="btn btn-primary" id="tq-submit">확인</button></div>`;
       const inp = document.getElementById('tq-input');
       inp.addEventListener('keydown', e => {
@@ -1303,11 +1351,17 @@
     const s = tqList[tqIdx];
     const inp = document.getElementById('tq-input');
     if (s.done || !inp.value.trim()) return;
-    const norm = v => v.toLowerCase().replace(/[\s'"()]/g, '');
-    const user = norm(inp.value);
-    // 괄호 속 영어 표기 등은 생략해도 정답 처리 (예: "기울기 소실(Vanishing Gradient)" → "기울기 소실")
-    const short = norm(s.q.answer.replace(/\(.*\)/, ''));
-    const ok = user === norm(s.q.answer) || (short.length > 0 && user === short);
+    let ok;
+    if (s.q.kind === 'recall') {
+      const user = normTerm(inp.value);
+      ok = [s.q.answer, ...s.q.accept].some(a => normTerm(a) === user);
+    } else {
+      const norm = v => v.toLowerCase().replace(/[\s'"()]/g, '');
+      const user = norm(inp.value);
+      // 괄호 속 영어 표기 등은 생략해도 정답 처리 (예: "기울기 소실(Vanishing Gradient)" → "기울기 소실")
+      const short = norm(s.q.answer.replace(/\(.*\)/, ''));
+      ok = user === norm(s.q.answer) || (short.length > 0 && user === short);
+    }
     inp.disabled = true;
     inp.classList.add(ok ? 'ok' : 'ng');
     document.getElementById('tq-submit').style.display = 'none';
@@ -1407,8 +1461,10 @@
       .sort((a, b) => rate(b[1]) - rate(a[1]) || b[1].w - a[1].w)
       .map(([key, s]) => {
         const item = allItems.find(it => it.term === key);
+        const concept = concepts.find(c => c.answer === key);
+        const desc = item ? kwHtml(item.desc) : concept ? escapeHtml(concept.desc) : '';
         return `<div class="rank-row" style="grid-template-columns:minmax(120px,220px) 1fr auto;"><span class="a" style="font-weight:700;">${escapeHtml(key)}</span>
-          <span style="color:var(--ink-2);">${item ? kwHtml(item.desc) : ''}</span><span class="r">${s.w}/${s.n} 틀림</span></div>`;
+          <span style="color:var(--ink-2);">${desc}</span><span class="r">${s.w}/${s.n} 틀림</span></div>`;
       }).join('');
     document.getElementById('stats-theory').innerHTML = theoryRows || '<div class="empty">아직 틀린 이론 문제가 없어요.</div>';
   }
@@ -1435,7 +1491,7 @@
   document.querySelectorAll('#quiz-seg button').forEach(btn => btn.addEventListener('click', () => startQuiz(btn.dataset.mode)));
   document.querySelectorAll('#theory-seg button').forEach(btn => btn.addEventListener('click', () => toggleTheory(btn.dataset.show === '1')));
 
-  document.getElementById('all-count').textContent = `${theoryPool.length}문제를 섞어서`;
+  document.getElementById('all-count').textContent = `설명 문제 ${theoryPool.filter(q => q.kind === 'recall').length}개 전부`;
   renderStudyBlocks();
   renderExamSheet();
   syncSheet();
