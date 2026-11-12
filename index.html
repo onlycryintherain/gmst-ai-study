@@ -184,6 +184,11 @@
     .fix { display: inline-block; font-family: var(--sans); font-size: .74rem; font-weight: 600; line-height: 1.5; margin-left: 6px; color: #fde68a; background: rgba(251, 191, 36, .12); border-radius: 6px; padding: 1px 7px; }
     .fix.trap { color: #fecdd3; background: rgba(251, 113, 133, .14); }
     .given { color: #9ca3af; }
+    .fix.kor { color: #c7d2fe; background: rgba(129, 140, 248, .16); }
+    .kor-box { display: grid; gap: 6px; }
+    .kor-opt { display: flex; gap: 10px; align-items: flex-start; background: var(--surface-2); border-radius: 8px; padding: 7px 10px; font-size: .86rem; line-height: 1.5; }
+    .kor-opt b { flex: none; color: var(--accent); }
+    .kor-toggle { display: flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--ink-2); margin: 8px 0 16px; cursor: pointer; }
 
     /* ---------- 빈칸 실전 레이아웃 ---------- */
     .quiz-layout { display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 16px; align-items: start; }
@@ -406,10 +411,10 @@
       <button class="tab active" data-tab="tab-learn"><span class="n">01</span>단계 학습</button>
       <button class="tab" data-tab="tab-cards"><span class="n">02</span>암기 카드</button>
       <button class="tab" data-tab="tab-tquiz"><span class="n">03</span>실전 퀴즈</button>
-      <button class="tab" data-tab="tab-theory"><span class="n">04</span>활동지 정리</button>
-      <button class="tab" data-tab="tab-stats"><span class="n">05</span>오답노트</button>
+      <button class="tab" data-tab="tab-quiz"><span class="n">04</span>빈칸 한글 보기</button>
+      <button class="tab" data-tab="tab-theory"><span class="n">05</span>활동지 정리</button>
+      <button class="tab" data-tab="tab-stats"><span class="n">06</span>오답노트</button>
       <button class="tab tab-done" data-tab="tab-study">2과제 암기장 ✓</button>
-      <button class="tab tab-done" data-tab="tab-quiz">2과제 실전 ✓</button>
     </nav>
   </div>
 </header>
@@ -479,11 +484,13 @@
   <section id="tab-quiz" class="section">
     <div class="page-head">
       <h2>빈칸 실전</h2>
-      <p>실제 시험처럼 46개 중 15개가 랜덤으로 출제됩니다. 시험지 1페이지는 시험 중에도 볼 수 있어요.</p>
+      <p id="quiz-desc"></p>
     </div>
     <div class="toolbar">
       <div class="seg" id="quiz-seg">
-        <button class="active" data-mode="exam">실전 15문제</button>
+        <button class="active" data-mode="kor">한글 보기 5문제</button>
+        <button data-mode="korweak">한글 보기 약점 5</button>
+        <button data-mode="exam">실전 15문제</button>
         <button data-mode="weak">약점 15문제</button>
         <button data-mode="front">1~14번</button>
         <button data-mode="back">15~45번</button>
@@ -903,6 +910,49 @@
     "keras", "suitability", "models"
   ];
   const decoyWords = ["tanh", "sigmoid", "~.shape"];
+
+  // '한글 보기' 모드: 명령어 대신 이 설명이 보기로 나옴 (소문 대비). 활동지 문장을 최대한 그대로 사용
+  const korDesc = {
+    "from": "가져올 기능이 들어 있는 곳(모듈)을 지정하는 명령 (from ~ import 의 앞부분)",
+    "import": "다른 곳에 준비되어 있는 기능을 가져와 사용하는 명령",
+    "mount": "구글 드라이브를 코랩에서 사용할 수 있도록 연결",
+    "/content/drive": "코랩에서 구글 드라이브에 접근하기 위한 경로",
+    "pandas": "표 형태의 데이터를 다루고 분석하기 위한 라이브러리",
+    "as": "가져온 것을 간단한 이름으로 부르게 하는 명령 (import A as B 의 가운데)",
+    "pd.read_csv": "CSV 파일을 읽어오는 pandas의 함수",
+    "index_col=0": "CSV 파일의 첫 번째 열을 데이터의 인덱스로 사용",
+    "columns": "데이터에 포함된 열(column)의 이름을 확인하는 기능",
+    "dtypes": "각 열의 데이터 타입(data type)을 확인하는 기능",
+    "astype": "열의 데이터 타입을 다른 타입으로 변경하는 함수",
+    "'category'": "\"hero\", \"villain\" 같은 범주형 문자열의 pandas 데이터 타입",
+    "pd.get_dummies": "범주형 값을 0과 1로 변환 (원핫인코딩)",
+    "tendency": "변수 X (특성, 입력 값)",
+    "suitability": "결과 Y (타깃, 적합도, 정답)",
+    "train_test_split": "전체 데이터를 학습 데이터와 평가 데이터로 분리",
+    "shuffle=True": "데이터를 섞은 후 분리",
+    "stratify=suitability": "클래스 비율이 비슷하게 유지되도록 분리 (층화 추출)",
+    "test_size=0.2": "학습 데이터 8 : 평가 데이터 2로 분리",
+    "tensorflow": "인공지능 모델을 만들고 학습시키기 위한 라이브러리",
+    "keras": "인공지능 신경망 모델을 쉽게 만들 수 있도록 지원하는 라이브러리",
+    "models.Sequential()": "신경망 층을 순서대로 연결하는 모델을 만드는 기능",
+    "model.add": "모델에 새로운 층(layer)을 추가",
+    "layers.Dense": "모든 뉴런이 앞뒤 층의 뉴런과 연결되는 완전연결층",
+    "input_dim=8": "입력 데이터 특성(feature)을 8개로 설정",
+    "activation='relu'": "ReLU(렐루) 활성화 함수를 사용",
+    "activation='softmax'": "softmax 활성화 함수를 사용"
+  };
+  // 답이 긴 16·18번은 따로
+  korDesc[blankById["16"].ans] = "encoding에서 특성 8개 열을 골라 담은 값 (name·label 제외, 대괄호 2개)";
+  korDesc[blankById["18"].ans] = "encoding에서 원핫인코딩된 정답(label) 열 2개를 골라 담은 값 (대괄호 2개)";
+  // 함정 보기: 코드 빈칸에는 안 쓰이는 것
+  const korDecoys = [
+    "데이터의 행(row)과 열(column)의 개수를 확인하는 기능",
+    "시그모이드 활성화 함수를 사용",
+    "신경망을 학습시키는 방법을 설정하는 기능",
+    "인공신경망의 구조를 확인"
+  ];
+  const KOR_MARKS = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ';
+  let korDecoyOn = false;
   const heroRows = [
     ["Captain America", 0.92, 0.9, 0.91, 0.94, 0.18, 0.88, 0.95, 0.15],
     ["Spider-Man", 0.86, 0.93, 0.72, 0.83, 0.15, 0.74, 0.91, 0.18],
@@ -916,14 +966,30 @@
   ];
   const featureNames = ["name", "justice", "empathy", "self_control", "teamwork", "power_desire", "rule_respect", "sacrifice", "revenge", "label", "hero", "villain"];
 
+  function korBoxHtml() {
+    // 같은 답(import 등)이 여러 칸이면 보기는 한 번만
+    let descs = [...new Set(activeBlankIds.map(id => korDesc[blankById[id].ans]))];
+    if (korDecoyOn) {
+      const unused = [...new Set(blanksData.map(b => korDesc[b.ans]))].filter(d => !descs.includes(d));
+      descs = descs.concat(shuffle([...korDecoys, ...unused]).slice(0, 3));
+    }
+    korOrder = shuffle(descs);
+    return `<h4>보기 <span style="font-weight:500;">(같은 보기를 여러 번 쓸 수도 있음)</span></h4>
+      <div class="kor-box">${korOrder.map((d, i) => `<div class="kor-opt"><b>${KOR_MARKS[i]}</b><span>${escapeHtml(d)}</span></div>`).join('')}</div>
+      <label class="kor-toggle"><input type="checkbox" id="kor-decoy" ${korDecoyOn ? 'checked' : ''}> 함정 보기 3개 섞기 (다시 출제)</label>`;
+  }
+  let korOrder = [];
+  const isKorMode = () => currentMode === 'kor' || currentMode === 'korweak';
+
   function renderExamSheet() {
     const words = hintWords.map(w => `<div class="word${decoyWords.includes(w) ? ' decoy' : ''}">${escapeHtml(w)}</div>`).join('');
+    const box = isKorMode() ? korBoxHtml() : `<h4>명령어 보기 <span style="font-weight:500;">(취소선 = 함정)</span></h4>
+      <div class="words">${words}</div>`;
     const heroHead = featureNames.slice(0, 10).map(f => `<th>${f.replace(/_/g, '_<br>').replace('teamwork', 'team<br>work')}</th>`).join('');
     const heroBody = heroRows.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}<td>hero</td></tr>`).join('');
     document.getElementById('exam-sheet').innerHTML = `
       <summary><span>시험지 1페이지 <span class="muted">시험 중 참고 가능</span></span><span class="chev">▾</span></summary>
-      <h4>명령어 보기 <span style="font-weight:500;">(취소선 = 함정)</span></h4>
-      <div class="words">${words}</div>
+      ${box}
       <h4>데이터 특성</h4>
       <div class="words" style="grid-template-columns:1fr 1fr 1fr;">${featureNames.map(f => `<div class="word">${f}</div>`).join('')}</div>
       <h4>데이터 타입</h4>
@@ -934,6 +1000,8 @@
       </tbody></table>
       <h4 style="margin-top:16px;">구글 드라이브 데이터 (일부 발췌)</h4>
       <table class="hero-table"><thead><tr>${heroHead}</tr></thead><tbody>${heroBody}</tbody></table>`;
+    const t = document.getElementById('kor-decoy');
+    if (t) t.addEventListener('change', () => { korDecoyOn = t.checked; startQuiz(currentMode); });
   }
 
   // 컴퓨터에서는 항상 펼침, 모바일에서는 접었다 폈다 (처음엔 접힘)
@@ -988,6 +1056,7 @@
       return `<span class="given">${highlight(item.ans)}</span>`;
     };
     document.getElementById('code-container').innerHTML = renderCodeHtml(codeSections, b, false);
+    renderExamSheet();
     document.getElementById('q-result').classList.remove('show');
     resetTimer();
     const inputs = [...document.querySelectorAll('#code-container .blank')];
@@ -1010,11 +1079,16 @@
     currentMode = mode;
     setSeg('quiz-seg', 'mode', mode);
     const allIds = blanksData.map(x => x.id);
-    if (mode === 'exam') activeBlankIds = shuffle(allIds).slice(0, 15);
+    if (mode === 'kor') activeBlankIds = shuffle(allIds).slice(0, 5);
+    else if (mode === 'korweak') activeBlankIds = weightedSample(allIds, 5, id => weakWeight('blanks', id));
+    else if (mode === 'exam') activeBlankIds = shuffle(allIds).slice(0, 15);
     else if (mode === 'weak') activeBlankIds = weightedSample(allIds, 15, id => weakWeight('blanks', id));
     else if (mode === 'back') activeBlankIds = blanksData.filter(x => x.part !== 1).map(x => x.id);
     else if (mode === 'front') activeBlankIds = blanksData.filter(x => x.part === 1).map(x => x.id);
     else activeBlankIds = [...allIds];
+    document.getElementById('quiz-desc').innerHTML = isKorMode()
+      ? '<b>소문 대비:</b> 45번까지 중 5칸만 채우고, 보기가 명령어가 아니라 <b>한글 설명</b>으로 나오는 방식. 설명을 보고 코드를 직접 쓰세요.'
+      : '지난 시험 방식: 46개 중 15개 랜덤, 보기는 명령어. 시험지 1페이지는 시험 중에도 볼 수 있어요.';
     renderCode();
   }
 
@@ -1043,7 +1117,8 @@
         badgeEl.innerHTML = '';
         correctCount++;
       } else {
-        badgeEl.innerHTML = `<span class="fix">${escapeHtml(item.ans)}</span>` + (item.trap ? `<span class="fix trap">${escapeHtml(item.trap)}</span>` : '');
+        badgeEl.innerHTML = `<span class="fix">${escapeHtml(item.ans)}</span>` + (item.trap ? `<span class="fix trap">${escapeHtml(item.trap)}</span>` : '') +
+          (isKorMode() ? `<span class="fix kor">보기 ${KOR_MARKS[korOrder.indexOf(korDesc[item.ans])]}: ${escapeHtml(korDesc[item.ans])}</span>` : '');
         wrongBlankIds.push(id);
       }
       record('blanks', id, ok);
@@ -1056,7 +1131,7 @@
     document.getElementById('q-total').textContent = `/ ${total}`;
     document.getElementById('q-score').style.color = pct === 100 ? 'var(--ok)' : pct >= 70 ? 'var(--accent)' : 'var(--ng)';
     const score80 = Math.round((correctCount / total) * 80 * 10) / 10;
-    document.getElementById('q-msg').textContent = `2과제 환산 ${score80}점 / 80 · ` + (
+    document.getElementById('q-msg').textContent = (isKorMode() ? '' : `2과제 환산 ${score80}점 / 80 · `) + (
       pct === 100 ? `완벽해요! ${document.getElementById('timer').textContent} 걸렸어요.` :
       `빨간 칸 옆에 정답과 함정 포인트가 표시돼요.`);
     document.getElementById('btn-retry').style.display = wrongBlankIds.length ? '' : 'none';
@@ -1991,7 +2066,7 @@
   renderExamSheet();
   syncSheet();
   renderTheory();
-  startQuiz('exam');
+  startQuiz('kor');
   startCards('unknown');
   showLearnHome();
   updateMastery();
