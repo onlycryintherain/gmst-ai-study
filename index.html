@@ -320,6 +320,34 @@
     .rank-row .r { color: var(--ink-3); font-size: .78rem; font-weight: 600; white-space: nowrap; }
     .empty { color: var(--ink-3); font-size: .9rem; padding: 8px 0; }
 
+    /* ---------- 단계 학습 ---------- */
+    .chunks { display: grid; gap: 8px; }
+    .chunk { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow); }
+    .chunk.next { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .chunk h4 { margin: 0; font-size: .95rem; }
+    .chunk .sub { font-size: .78rem; color: var(--ink-3); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chunk > div:first-child { min-width: 0; }
+    .steps-dots { display: flex; gap: 4px; }
+    .steps-dots i { width: 22px; height: 6px; border-radius: 99px; background: var(--line); display: block; }
+    .steps-dots i.on { background: var(--ok); }
+    .stepbar { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+    .stepbar button { flex: 1; min-width: 110px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-3); border-radius: 10px; padding: 8px 10px; font-size: .82rem; font-weight: 700; cursor: pointer; }
+    .stepbar button.done { color: var(--ok); border-color: var(--ok); }
+    .stepbar button.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+    .learn-item { padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .learn-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .learn-item .t { font-family: var(--mono); font-weight: 800; font-size: 1.05rem; color: var(--accent); word-break: break-all; }
+    .learn-item .d { margin-top: 2px; color: var(--ink); font-size: .93rem; }
+    .hook { margin-top: 6px; font-size: .84rem; color: var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 5px 10px; display: inline-block; }
+    .hintline { font-family: var(--mono); font-size: 1.25rem; font-weight: 700; letter-spacing: .06em; color: var(--accent-ink); background: var(--accent-soft); border-radius: 10px; padding: 8px 14px; margin-bottom: 14px; display: inline-block; word-break: break-all; }
+    .cmp { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+    .cmp-box { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+    .cmp-box h4 { margin: 0 0 8px; font-size: .9rem; }
+    .cmp-row { display: grid; grid-template-columns: minmax(100px, 42%) 1fr; gap: 10px; font-size: .84rem; padding: 5px 0; border-top: 1px dashed var(--line); }
+    .cmp-row:first-of-type { border-top: none; }
+    .cmp-row .a { font-family: var(--mono); font-weight: 700; color: var(--ink); word-break: break-all; }
+    .cmp-row .b { color: var(--ink-2); }
+
     @media (max-width: 980px) {
       .quiz-layout { grid-template-columns: 1fr; }
       .side { position: static; order: -1; max-height: none; overflow: visible; }
@@ -345,6 +373,9 @@
       .qcard { padding: 18px; }
       .qtext { font-size: 1.02rem; }
       .card { padding: 16px; }
+      .stepbar button { min-width: 0; padding: 8px 4px; font-size: .74rem; }
+      .chunk { grid-template-columns: 1fr auto; }
+      .chunk .steps-dots { display: none; }
     }
   </style>
 </head>
@@ -372,10 +403,11 @@
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab active" data-tab="tab-tquiz"><span class="n">01</span>실전 퀴즈</button>
+      <button class="tab active" data-tab="tab-learn"><span class="n">01</span>단계 학습</button>
       <button class="tab" data-tab="tab-cards"><span class="n">02</span>암기 카드</button>
-      <button class="tab" data-tab="tab-theory"><span class="n">03</span>활동지 정리</button>
-      <button class="tab" data-tab="tab-stats"><span class="n">04</span>오답노트</button>
+      <button class="tab" data-tab="tab-tquiz"><span class="n">03</span>실전 퀴즈</button>
+      <button class="tab" data-tab="tab-theory"><span class="n">04</span>활동지 정리</button>
+      <button class="tab" data-tab="tab-stats"><span class="n">05</span>오답노트</button>
       <button class="tab tab-done" data-tab="tab-study">2과제 암기장 ✓</button>
       <button class="tab tab-done" data-tab="tab-quiz">2과제 실전 ✓</button>
     </nav>
@@ -510,8 +542,37 @@
     <div id="theory-container"></div>
   </section>
 
-  <!-- ================= 04 이론 퀴즈 ================= -->
-  <section id="tab-tquiz" class="section active">
+  <!-- ================= 단계 학습 ================= -->
+  <section id="tab-learn" class="section active">
+    <div id="lr-home">
+      <div class="page-head">
+        <h2>단계 학습</h2>
+        <p>처음 외울 때는 여기부터. 단원 하나씩 <b>① 읽고 이해 → ② 힌트 보고 쓰기 → ③ 안 보고 쓰기</b> 순서로 넣고, 다 끝나면 실전 퀴즈로 확인하세요.</p>
+      </div>
+      <div class="toolbar">
+        <span class="muted" id="lr-summary"></span>
+        <button class="btn btn-ghost btn-sm" id="lr-review-btn" onclick="startLearnReview()">배운 단원 섞어서 복습</button>
+      </div>
+      <div class="chunks" id="lr-chunks"></div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">헷갈리는 것끼리 비교 <span class="muted">비슷한 것은 같이 외워야 안 섞여요</span></div>
+        <div class="cmp" id="lr-cmp"></div>
+      </div>
+    </div>
+
+    <div id="lr-play" class="play" style="display:none;">
+      <div class="play-top">
+        <button class="btn btn-ghost btn-sm" onclick="showLearnHome()">✕</button>
+        <div class="meter"><span id="lr-bar" style="width:0%"></span></div>
+        <span class="count" id="lr-count"></span>
+      </div>
+      <div class="stepbar" id="lr-steps"></div>
+      <div class="card qcard" id="lr-card"></div>
+    </div>
+  </section>
+
+  <!-- ================= 이론 퀴즈 ================= -->
+  <section id="tab-tquiz" class="section">
     <div id="tq-start">
       <div class="page-head">
         <h2>실전 퀴즈</h2>
@@ -1560,6 +1621,299 @@
     else if (e.key === '2' || e.key === 'ArrowRight') rateCard(true);
   });
 
+  /* ================= 단계 학습 ================= */
+  // 실전형(recall) 문제를 단원(sec)별로 묶어 ① 읽기 → ② 힌트(첫 글자) 보고 쓰기 → ③ 안 보고 쓰기
+  // 진행 단계는 stats.learn[sec] (0~3)에 저장. ③에서 첫 시도에 맞힌 것은 암기 카드 '외움'으로도 표시
+  const hooks = {
+    'csv': 'Comma(쉼표)-Separated(구분된) Values(값). 이름이 곧 설명',
+    'from ~ import': '"~에서(from) 가져와라(import)"',
+    'mount( )': '마운트 = 장착하기. 드라이브를 코랩에 끼워서 연결',
+    '/content/drive': 'mount(\'/content/drive\') 괄호 안에 넣는 그 경로',
+    'import A as B': 'as = "~라고 부르자". pandas를 pd라는 별명으로',
+    'pandas': '엑셀 같은 표 데이터 담당 라이브러리 (panel data에서 온 이름)',
+    'read_csv( )': 'read(읽다) + csv. 이름 그대로',
+    'index_col = 0': 'index(번호표)로 쓸 column(열) = 0번째, 즉 첫 번째 열',
+    '~.columns': 'column(열)의 복수형 → 열 이름들',
+    '~.dtypes': 'd(data) + types → 데이터 타입들',
+    "A[B].astype('C')": 'as type = "C 타입으로" 바꿔라',
+    'pd.get_dummies( )': 'dummy(더미) 변수 = 0/1로만 표시하는 변수를 get(만들어 줌)',
+    'tendency': '성향 → 영웅/악당의 성향 점수 8개 = 입력 X',
+    'suitability': '적합도 → hero인지 villain인지 = 정답 Y',
+    'encoding[ ]': '원핫인코딩 결과를 담은 변수 encoding에서 열을 꺼냄',
+    '~.shape': 'shape = 모양. 표의 모양 = (행 개수, 열 개수)',
+    'train_test_split( )': 'train(학습) / test(평가)로 split(나누기)',
+    'shuffle=True': '셔플 = 카드 섞기. 섞고 나서 나눔',
+    'stratify=suitability': 'strata(층) → 층화 추출. 정답(suitability) 비율을 유지',
+    'test_size=0.2': 'test(평가) 크기 0.2 = 20% → 학습 8 : 평가 2',
+    'tensorflow': 'tensor(데이터 덩어리)가 flow(흐르며) 학습 → 학습시키는 라이브러리',
+    'keras': '텐서플로 위에서 신경망을 "쉽게" 만들게 해주는 것',
+    'models': '이름 그대로 모델을 만들고 관리',
+    'layers': '이름 그대로 layer(층)를 만듦',
+    'models.Sequential( )': 'sequence = 순서 → 층을 순서대로 쌓는 모델',
+    'model.add( )': 'add = 추가. 모델에 층을 하나씩 추가',
+    'layers.Dense(A)': 'dense = 빽빽한 → 뉴런이 빽빽하게 전부 연결 = 완전연결층',
+    'input_dim=A': 'input dimension(입력 차원) = 특성 개수 (이 코드에선 8)',
+    "activation='relu'": 'ReLU = 음수는 0, 양수는 그대로. 입력층·은닉층에 사용',
+    "activation='softmax'": 'soft + max → 결과를 확률(합 1)로. 출력층에 사용',
+    'model.compile( )': '학습 방법 설정. 괄호 안에 optimizer · loss · metrics 3개',
+    "optimizer='adam'": 'optimizer = 최적화 도구 → 가중치를 조정',
+    "loss='categorical_crossentropy'": 'loss = 손실(틀린 정도). categorical = 범주형',
+    "metrics=['accuracy']": 'metric = 측정 지표 → accuracy(정확도)',
+    'model.summary( )': 'summary = 요약 → 신경망 구조를 한눈에',
+    '활성화 함수': '"활성화"시켜 신호를 변환 → 비선형성 → 복잡한 패턴 학습',
+    '시그모이드': 'S자(시그마 σ 모양), 0~1, 한계는 기울기 소실',
+    '렐루': 'max(0, x). 가장 많이 씀, 기울기 소실 해결',
+    '소프트맥스': '출력 합이 항상 1 = 확률. 다중 분류 출력층',
+    '탄젠트 하이퍼볼릭': 'tanh. -1~1, 0을 중심으로',
+    '기울기 소실': '입력층 쪽으로 갈수록 기울기가 작아지다 0으로 "사라짐"',
+    '원핫인코딩': 'one-hot = 하나만 1(hot), 나머지는 0',
+    '층화 추출': 'stratify의 한글 이름. 층(클래스) 비율 그대로 뽑기',
+    '완전연결층': 'Dense의 한글 이름. 모든 뉴런이 앞뒤 층과 전부 연결',
+    '입력층': '첫 층. input_dim이 붙는 층',
+    '은닉층': '입력과 출력 사이에 숨어(hidden) 있는 층',
+    '출력층': '마지막 층. softmax로 결과를 냄',
+    'category': '범주. "hero", "villain"처럼 종류를 나타내는 문자열',
+    'int64': 'int(정수) + 64비트',
+    'float64': 'float(실수) + 64비트'
+  };
+
+  // 비슷해서 섞이기 쉬운 것끼리 묶음. secs = 그 단원 ① 단계에서 같이 보여줄 곳
+  const compareGroups = [
+    { title: '데이터 확인 3총사', secs: ['#3', '#4', '#7'], rows: [
+      ['~.columns', '열 이름 확인'], ['~.dtypes', '각 열의 데이터 타입 확인'], ['~.shape', '행과 열의 개수 확인'] ] },
+    { title: '라이브러리 3개', secs: ['#3', '#9-1'], rows: [
+      ['pandas', '표 데이터 다루고 분석'], ['tensorflow', '모델 만들고 학습'], ['keras', '신경망 모델을 쉽게'] ] },
+    { title: 'models vs layers', secs: ['#9-1', '#9-2'], rows: [
+      ['models', '신경망 모델을 만들고 관리'], ['layers', '신경망의 층을 만듦'] ] },
+    { title: 'X와 Y', secs: ['#7'], rows: [
+      ['tendency', '변수 X · 특성 · 입력 값'], ['suitability', '결과 Y · 타깃 · 적합도 · 정답'] ] },
+    { title: 'train_test_split 옵션', secs: ['#8'], rows: [
+      ['shuffle=True', '섞은 후 분리'], ['stratify=suitability', '클래스 비율 유지 (층화 추출)'], ['test_size=0.2', '학습 8 : 평가 2'] ] },
+    { title: '층 구분', secs: ['#9-2'], rows: [
+      ['입력층', '첫 층, input_dim=8'], ['은닉층', '사이 층 (Dense 12, 4)'], ['출력층', '마지막 층, softmax'] ] },
+    { title: 'compile( ) 안의 3개', secs: ['#9-3'], rows: [
+      ["optimizer='adam'", '가중치 조정'], ["loss='categorical_crossentropy'", '예측과 정답의 차이 계산'], ["metrics=['accuracy']", '정확도 확인'] ] },
+    { title: '활성화 함수 4개', secs: ['활성화 함수', '#9-2'], rows: [
+      ['시그모이드', '0~1 · S자 · 기울기 소실'], ['렐루', 'max(0,x) · 가장 많이 씀 · 은닉층'], ['소프트맥스', '0~1, 합 1 · 확률 · 출력층'], ['tanh', '-1~1 · 0 중심 · S자'] ] }
+  ];
+
+  if (!stats.learn) stats.learn = {};
+  const learnChunks = [...theorySections.map(s => ({ sec: s.title.split(' ')[0], title: s.title })),
+    { sec: '활성화 함수', title: '딥러닝의 핵심, 활성화 함수' }]
+    .map(c => ({ ...c, items: cardPool.filter(q => q.sec === c.sec) }))
+    .filter(c => c.items.length);
+
+  const STEP_NAMES = ['', '① 읽고 이해', '② 힌트 보고 쓰기', '③ 안 보고 쓰기'];
+  let lr = null; // { chunk, step, queue, total, cur, wrongKeys, review }
+
+  // 정답의 각 단어 첫 글자만 남기고 나머지 글자는 • 로 (기호·괄호·따옴표는 그대로)
+  function hintOf(answer) {
+    return answer.replace(/[A-Za-z0-9가-힣]+/g, w => w[0] + '•'.repeat(w.length - 1));
+  }
+
+  function showLearnHome() {
+    lr = null;
+    document.getElementById('lr-home').style.display = '';
+    document.getElementById('lr-play').style.display = 'none';
+    renderLearnHome();
+  }
+
+  function renderLearnHome() {
+    const nextIdx = learnChunks.findIndex(c => (stats.learn[c.sec] || 0) < 3);
+    const doneCount = learnChunks.filter(c => (stats.learn[c.sec] || 0) >= 3).length;
+    document.getElementById('lr-summary').textContent = `단원 ${learnChunks.length}개 중 ${doneCount}개 완료`;
+    document.getElementById('lr-review-btn').style.display = doneCount ? '' : 'none';
+    document.getElementById('lr-chunks').innerHTML = learnChunks.map((c, i) => {
+      const done = stats.learn[c.sec] || 0;
+      const label = done >= 3 ? '다시 하기' : done ? `${STEP_NAMES[done + 1].slice(0, 1)}부터 이어서` : '시작';
+      return `<div class="chunk${i === nextIdx ? ' next' : ''}">
+        <div><h4>${escapeHtml(c.title)} <span class="muted">${c.items.length}개</span></h4>
+          <div class="sub">${c.items.map(q => escapeHtml(q.answer)).join(' · ')}</div></div>
+        <div class="steps-dots">${[1, 2, 3].map(s => `<i class="${done >= s ? 'on' : ''}"></i>`).join('')}</div>
+        <button class="btn ${i === nextIdx ? 'btn-primary' : 'btn-ghost'} btn-sm" onclick="startLearn(${i})">${label}</button>
+      </div>`;
+    }).join('');
+    document.getElementById('lr-cmp').innerHTML = compareGroups.map(renderCompare).join('');
+  }
+
+  function renderCompare(g) {
+    return `<div class="cmp-box"><h4>${escapeHtml(g.title)}</h4>${g.rows.map(([a, b]) =>
+      `<div class="cmp-row"><span class="a">${escapeHtml(a)}</span><span class="b">${escapeHtml(b)}</span></div>`).join('')}</div>`;
+  }
+
+  function startLearn(idx, step) {
+    const chunk = learnChunks[idx];
+    const done = stats.learn[chunk.sec] || 0;
+    lr = { idx, chunk, review: false };
+    document.getElementById('lr-home').style.display = 'none';
+    document.getElementById('lr-play').style.display = '';
+    setLearnStep(step || (done >= 3 ? 1 : done + 1));
+  }
+
+  // 배운 단원 전체에서 약한 것 위주로 10개, ③ 방식으로
+  function startLearnReview() {
+    const pool = learnChunks.filter(c => (stats.learn[c.sec] || 0) >= 3).flatMap(c => c.items);
+    if (!pool.length) return;
+    const items = weightedSample(pool, Math.min(10, pool.length), q => weakWeight('theory', q.key));
+    lr = { review: true, chunk: { title: '배운 단원 섞어서 복습', items } };
+    document.getElementById('lr-home').style.display = 'none';
+    document.getElementById('lr-play').style.display = '';
+    setLearnStep(3);
+  }
+
+  function setLearnStep(step) {
+    lr.step = step;
+    lr.queue = shuffle(lr.chunk.items);
+    lr.total = lr.queue.length;
+    lr.wrongKeys = new Set();
+    lr.cur = null;
+    lr.answered = false;
+    renderLearn();
+  }
+
+  function renderLearnSteps() {
+    const el = document.getElementById('lr-steps');
+    if (lr.review) { el.innerHTML = ''; return; }
+    const done = stats.learn[lr.chunk.sec] || 0;
+    el.innerHTML = [1, 2, 3].map(s =>
+      `<button class="${s === lr.step ? 'active' : done >= s ? 'done' : ''}" onclick="setLearnStep(${s})">${STEP_NAMES[s]}</button>`).join('');
+  }
+
+  function renderLearn() {
+    renderLearnSteps();
+    const card = document.getElementById('lr-card');
+    const bar = document.getElementById('lr-bar');
+    const count = document.getElementById('lr-count');
+
+    if (lr.step === 1) {
+      bar.style.width = '0%';
+      count.textContent = `${lr.chunk.items.length}개`;
+      const sec = theorySections.find(s => s.title.split(' ')[0] === lr.chunk.sec);
+      const groups = compareGroups.filter(g => g.secs.includes(lr.chunk.sec));
+      card.innerHTML = `<div class="qmeta"><span class="tag type">${STEP_NAMES[1]}</span><span class="tag">${escapeHtml(lr.chunk.title)}</span></div>
+        <p class="muted" style="margin-top:0;">소리 내어 읽으면서, 노란 팁으로 "왜 이 이름인지" 연결해 두세요.</p>
+        ${sec && sec.code ? snippet(sec.code) : ''}
+        <div style="margin-top:8px;">${lr.chunk.items.map(q => `<div class="learn-item">
+          <div class="t">${escapeHtml(q.answer)}</div>
+          <div class="d">${escapeHtml(q.desc)}</div>
+          ${hooks[q.answer] ? `<div class="hook">💡 ${escapeHtml(hooks[q.answer])}</div>` : ''}
+        </div>`).join('')}</div>
+        ${groups.length ? `<div class="cmp" style="margin-top:14px;">${groups.map(renderCompare).join('')}</div>` : ''}
+        <div class="play-actions"><button class="btn btn-primary" id="lr-go">다 읽었어요 → ② 힌트 보고 쓰기 <span class="kbd">Enter</span></button></div>`;
+      document.getElementById('lr-go').addEventListener('click', () => { markLearn(1); setLearnStep(2); });
+      document.getElementById('lr-go').focus();
+      return;
+    }
+
+    if (!lr.queue.length) { renderLearnDone(); return; }
+    const q = lr.cur = lr.queue[0];
+    const finished = lr.total - lr.queue.length;
+    bar.style.width = `${(finished / lr.total) * 100}%`;
+    count.textContent = `${finished} / ${lr.total}`;
+    card.innerHTML = `<div class="qmeta"><span class="tag type">${lr.review ? '복습 · 안 보고 쓰기' : STEP_NAMES[lr.step]}</span><span class="tag">${escapeHtml(q.sec)}</span></div>
+      <div class="qtext">설명에 해당하는 명령어 또는 개념은?<span class="quote">${escapeHtml(q.desc)}</span></div>
+      ${lr.step === 2 ? `<div class="hintline">${escapeHtml(hintOf(q.answer))}</div>` : ''}
+      <div class="answer-row">
+        <input id="lr-input" placeholder="${lr.step === 2 ? '힌트를 보고 전부 써보기' : '명령어 또는 개념'}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button class="btn btn-primary" id="lr-submit">확인</button>
+        <button class="btn btn-ghost" id="lr-skip">모르겠어요</button>
+      </div>
+      <div class="feedback" id="lr-feedback"></div>
+      <div class="play-actions"><button class="btn btn-primary" id="lr-next" style="display:none;">다음 <span class="kbd">Enter</span></button></div>`;
+    const inp = document.getElementById('lr-input');
+    inp.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || e.isComposing) return;
+      // preventDefault: 같은 Enter가 새로 포커스된 '다음' 버튼까지 눌러서 피드백을 건너뛰는 것 방지
+      e.preventDefault();
+      e.stopPropagation();
+      answerLearn(false);
+    });
+    document.getElementById('lr-submit').addEventListener('click', () => answerLearn(false));
+    document.getElementById('lr-skip').addEventListener('click', () => answerLearn(true));
+    document.getElementById('lr-next').addEventListener('click', nextLearn);
+    inp.focus();
+  }
+
+  function answerLearn(giveUp) {
+    if (!lr || !lr.cur || lr.answered) return;
+    const q = lr.cur;
+    const inp = document.getElementById('lr-input');
+    if (!giveUp && !inp.value.trim()) return;
+    const ok = !giveUp && [q.answer, ...q.accept].some(a => normTerm(a) === normTerm(inp.value));
+    lr.answered = true;
+    inp.disabled = true;
+    inp.classList.add(ok ? 'ok' : 'ng');
+    document.getElementById('lr-submit').style.display = 'none';
+    document.getElementById('lr-skip').style.display = 'none';
+    // ③ 단계 · 복습만 실전 기록으로 남김 (② 는 힌트가 있어서 제외)
+    if (lr.step === 3 && !lr.wrongKeys.has(q.key)) record('theory', q.key, ok);
+    if (!ok) lr.wrongKeys.add(q.key);
+    const fb = document.getElementById('lr-feedback');
+    fb.className = `feedback ${ok ? 'ok' : 'ng'}`;
+    fb.innerHTML = (ok ? '<b>정답!</b>' : `<b>정답: ${escapeHtml(q.answer)}</b> <span class="muted">— 조금 뒤에 다시 나와요</span>`) +
+      (hooks[q.answer] ? `<div class="exp">💡 ${escapeHtml(hooks[q.answer])}</div>` : '');
+    lr.lastOk = ok;
+    const next = document.getElementById('lr-next');
+    next.style.display = '';
+    next.focus();
+  }
+
+  function nextLearn() {
+    if (!lr || !lr.cur || !lr.answered) return;
+    const q = lr.queue.shift();
+    lr.answered = false;
+    // 틀린 것은 2문제 뒤에 다시 끼워 넣어서 맞힐 때까지 반복
+    if (!lr.lastOk) lr.queue.splice(Math.min(2, lr.queue.length), 0, q);
+    lr.cur = null;
+    renderLearn();
+  }
+
+  function markLearn(step) {
+    if (lr.review) return;
+    stats.learn[lr.chunk.sec] = Math.max(stats.learn[lr.chunk.sec] || 0, step);
+    saveStats();
+  }
+
+  function renderLearnDone() {
+    document.getElementById('lr-bar').style.width = '100%';
+    document.getElementById('lr-count').textContent = `${lr.total} / ${lr.total}`;
+    const firstTry = lr.total - lr.wrongKeys.size;
+    if (lr.step === 3) {
+      // 첫 시도에 맞힌 것 = 암기 카드에서도 '외움'
+      lr.chunk.items.filter(q => !lr.wrongKeys.has(q.key)).forEach(q => { stats.cards[q.key] = true; });
+      saveStats();
+      updateMastery();
+    }
+    markLearn(lr.step);
+    renderLearnSteps();
+    const card = document.getElementById('lr-card');
+    const nextIdx = learnChunks.findIndex(c => (stats.learn[c.sec] || 0) < 3);
+    let msg, actions;
+    if (lr.step === 2) {
+      msg = `힌트 보고 ${lr.total}개 모두 썼어요. 이제 힌트 없이 써볼게요.`;
+      actions = `<button class="btn btn-primary" id="lr-go">③ 안 보고 쓰기 <span class="kbd">Enter</span></button>`;
+    } else {
+      msg = `${lr.total}개 중 ${firstTry}개를 한 번에 맞혔어요.` + (lr.wrongKeys.size ? ' 틀린 건 맞힐 때까지 반복했어요.' : ' 완벽해요!');
+      actions = (lr.wrongKeys.size ? `<button class="btn btn-ghost" onclick="setLearnStep(3)">한 번 더</button>` : '') +
+        (!lr.review && nextIdx >= 0 ? `<button class="btn btn-primary" id="lr-go">다음 단원: ${escapeHtml(learnChunks[nextIdx].title)} <span class="kbd">Enter</span></button>`
+          : `<button class="btn btn-primary" id="lr-go">배운 단원 섞어서 복습 <span class="kbd">Enter</span></button>`);
+    }
+    card.innerHTML = `<div class="score-hero" style="padding:16px 0;">
+        <div class="big">${lr.step === 2 ? '✍️' : '🎉'}</div><p>${msg}</p>
+        <div class="actions"><button class="btn btn-ghost" onclick="showLearnHome()">단원 목록</button>${actions}</div></div>`;
+    const go = document.getElementById('lr-go');
+    if (lr.step === 2) go.addEventListener('click', () => setLearnStep(3));
+    else if (!lr.review && nextIdx >= 0) go.addEventListener('click', () => startLearn(nextIdx));
+    else go.addEventListener('click', startLearnReview);
+    go.focus();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!lr || !document.getElementById('tab-learn').classList.contains('active')) return;
+    if (e.key !== 'Enter' || e.isComposing) return;
+    if (lr.cur && lr.answered) { e.preventDefault(); nextLearn(); }
+  });
+
   /* ================= 오답노트 ================= */
   function renderStats() {
     const tKeys = Object.values(stats.theory);
@@ -1608,17 +1962,18 @@
 
   function resetStats() {
     if (!confirm('풀이 기록을 모두 지울까요?')) return;
-    stats = { blanks: {}, theory: {}, cards: {} };
+    stats = { blanks: {}, theory: {}, cards: {}, learn: {} };
     saveStats();
     renderStats();
+    showLearnHome();
     startCards('unknown');
     renderStudyBlocks();
     updateMastery();
   }
 
   /* ================= 탭 ================= */
-  // 2과제 시험이 끝나서 1과제 탭으로 시작하도록 새 키 사용
-  const TAB_KEY = STORE_KEY + '-tab-task1';
+  // 새로 추가한 단계 학습 탭으로 시작하도록 새 키 사용
+  const TAB_KEY = STORE_KEY + '-tab-learn';
   function switchTab(tabId) {
     document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === tabId));
     document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tabId));
@@ -1638,6 +1993,7 @@
   renderTheory();
   startQuiz('exam');
   startCards('unknown');
+  showLearnHome();
   updateMastery();
   try {
     const lastTab = localStorage.getItem(TAB_KEY);
