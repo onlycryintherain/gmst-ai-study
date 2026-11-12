@@ -88,6 +88,20 @@
     .tab { flex: none; border: none; background: none; padding: 10px 14px 12px; font-size: .92rem; font-weight: 600; color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s; }
     .tab:hover { color: var(--ink-2); }
     .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab.tab-done { font-size: .8rem; font-weight: 500; opacity: .7; }
+    .tab:not(.tab-done) + .tab-done { margin-left: auto; }
+
+    /* ---------- 암기 카드 ---------- */
+    .flash { min-height: 260px; padding: 28px; cursor: pointer; display: flex; flex-direction: column; user-select: none; }
+    .flash-desc { font-size: 1.15rem; font-weight: 600; line-height: 1.7; letter-spacing: -.01em; flex: 1; }
+    .flash-back { display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+    .flash-back .ans { font-family: var(--mono); font-size: 1.35rem; font-weight: 800; color: var(--accent); word-break: break-all; }
+    .flash-back .alt { font-size: .84rem; color: var(--ink-3); margin-top: 4px; }
+    .flash.flipped .flash-back { display: block; }
+    .flash-hint { margin-top: 14px; font-size: .8rem; color: var(--ink-3); text-align: center; }
+    .flash.flipped .flash-hint { display: none; }
+    .flash-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .flash-actions .btn { justify-content: center; }
     .tab .n { font-size: .72rem; font-weight: 700; color: var(--ink-3); margin-right: 4px; }
     .tab.active .n { color: var(--accent); }
 
@@ -343,33 +357,34 @@
         <div class="logo">AI</div>
         <div>
           <h1>인공지능 일반 수행평가</h1>
-          <p>1과제 개념 20점 · 2과제 빈칸 15문항 80점</p>
+          <p>1과제 개념 확인 20점 · 설명 보고 명령어·개념 쓰기</p>
         </div>
       </div>
       <div class="mastery">
         <div class="mastery-item">
-          <div class="label"><span>빈칸 마스터</span><b id="m-blank">0/46</b></div>
-          <div class="meter"><span id="m-blank-bar" style="width:0%"></span></div>
+          <div class="label"><span>카드 외움</span><b id="m-card">0/0</b></div>
+          <div class="meter"><span id="m-card-bar" style="width:0%"></span></div>
         </div>
         <div class="mastery-item">
-          <div class="label"><span>이론 마스터</span><b id="m-theory">0%</b></div>
+          <div class="label"><span>실전 마스터</span><b id="m-theory">0%</b></div>
           <div class="meter"><span id="m-theory-bar" style="width:0%"></span></div>
         </div>
       </div>
     </div>
     <nav class="tabs">
-      <button class="tab active" data-tab="tab-study"><span class="n">01</span>빈칸 암기장</button>
-      <button class="tab" data-tab="tab-quiz"><span class="n">02</span>빈칸 실전</button>
-      <button class="tab" data-tab="tab-theory"><span class="n">03</span>이론 정리</button>
-      <button class="tab" data-tab="tab-tquiz"><span class="n">04</span>이론 퀴즈</button>
-      <button class="tab" data-tab="tab-stats"><span class="n">05</span>오답노트</button>
+      <button class="tab active" data-tab="tab-tquiz"><span class="n">01</span>실전 퀴즈</button>
+      <button class="tab" data-tab="tab-cards"><span class="n">02</span>암기 카드</button>
+      <button class="tab" data-tab="tab-theory"><span class="n">03</span>활동지 정리</button>
+      <button class="tab" data-tab="tab-stats"><span class="n">04</span>오답노트</button>
+      <button class="tab tab-done" data-tab="tab-study">2과제 암기장 ✓</button>
+      <button class="tab tab-done" data-tab="tab-quiz">2과제 실전 ✓</button>
     </nav>
   </div>
 </header>
 
 <main>
   <!-- ================= 01 빈칸 암기장 ================= -->
-  <section id="tab-study" class="section active">
+  <section id="tab-study" class="section">
     <div class="page-head">
       <h2>빈칸 암기장</h2>
       <p>최종본 코드의 빈칸 46개(1~45, 22-1·22-2). 박스를 눌러 가리고, 떠올린 다음 다시 눌러 확인하세요.</p>
@@ -496,10 +511,10 @@
   </section>
 
   <!-- ================= 04 이론 퀴즈 ================= -->
-  <section id="tab-tquiz" class="section">
+  <section id="tab-tquiz" class="section active">
     <div id="tq-start">
       <div class="page-head">
-        <h2>이론 퀴즈</h2>
+        <h2>실전 퀴즈</h2>
         <p>1과제(20점)는 <b>설명을 보고 해당하는 명령어나 핵심 개념을 쓰는 주관식</b>이에요. 실전형으로 연습하고, 막히면 워밍업부터.</p>
       </div>
       <div class="modes">
@@ -546,7 +561,48 @@
     </div>
   </section>
 
-  <!-- ================= 05 오답노트 ================= -->
+  <!-- ================= 암기 카드 ================= -->
+  <section id="tab-cards" class="section">
+    <div class="page-head">
+      <h2>암기 카드</h2>
+      <p>설명을 보고 답을 떠올린 다음 카드를 뒤집으세요. 모르는 카드는 조금 뒤에 다시 나와요.</p>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="card-seg">
+        <button class="active" data-deck="unknown">못 외운 것</button>
+        <button data-deck="all">전체</button>
+        <button data-deck="cmd">명령어만</button>
+        <button data-deck="concept">개념만</button>
+      </div>
+      <span class="muted"><span class="kbd">Space</span> 뒤집기 · <span class="kbd">1</span> 몰라요 · <span class="kbd">2</span> 알아요</span>
+    </div>
+    <div class="play">
+      <div class="play-top">
+        <div class="meter"><span id="fc-bar" style="width:0%"></span></div>
+        <span class="count" id="fc-count">0 / 0</span>
+      </div>
+      <div class="card flash" id="fc-card">
+        <div class="qmeta"><span class="tag type">설명</span><span class="tag" id="fc-sec"></span></div>
+        <div class="flash-desc" id="fc-desc"></div>
+        <div class="flash-back" id="fc-back"></div>
+        <div class="flash-hint" id="fc-hint">눌러서 정답 보기</div>
+      </div>
+      <div class="flash-actions" id="fc-actions">
+        <button class="btn btn-ghost btn-lg" id="fc-no">몰라요 <span class="kbd">1</span></button>
+        <button class="btn btn-primary btn-lg" id="fc-yes">알아요 <span class="kbd">2</span></button>
+      </div>
+      <div class="card score-hero" id="fc-done" style="display:none;">
+        <div class="big">🎉</div>
+        <p id="fc-done-msg"></p>
+        <div class="actions">
+          <button class="btn btn-ghost" onclick="resetCards()">카드 기록 초기화</button>
+          <button class="btn btn-primary" onclick="switchTab('tab-tquiz'); startTheoryQuiz('random')">실전 10문제 풀기</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 오답노트 ================= -->
   <section id="tab-stats" class="section">
     <div class="page-head">
       <h2>오답노트</h2>
@@ -554,23 +610,22 @@
     </div>
     <div class="stat-cards" id="stat-cards"></div>
     <div class="card">
-      <div class="card-title">빈칸별 정답률 <span class="muted">마우스를 올리면 정답</span></div>
-      <div class="heat" id="stats-heat"></div>
-      <div class="legend">
-        <span><i style="background:var(--surface-2)"></i>안 풀어봄</span>
-        <span><i style="background:var(--ok)"></i>안 틀림</span>
-        <span><i style="background:var(--warn)"></i>가끔 틀림</span>
-        <span><i style="background:var(--ng)"></i>절반 이상 틀림</span>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">자주 틀린 빈칸</div>
-      <div class="rank" id="stats-blanks"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">자주 틀린 이론 개념</div>
+      <div class="card-title">자주 틀린 1과제 개념</div>
       <div class="rank" id="stats-theory"></div>
     </div>
+    <details class="card">
+      <summary class="card-title" style="cursor:pointer; margin:0;">2과제 빈칸 기록 <span class="muted">시험 완료</span></summary>
+      <div style="margin-top:14px;">
+        <div class="heat" id="stats-heat"></div>
+        <div class="legend">
+          <span><i style="background:var(--surface-2)"></i>안 풀어봄</span>
+          <span><i style="background:var(--ok)"></i>안 틀림</span>
+          <span><i style="background:var(--warn)"></i>가끔 틀림</span>
+          <span><i style="background:var(--ng)"></i>절반 이상 틀림</span>
+        </div>
+        <div class="rank" id="stats-blanks" style="margin-top:14px;"></div>
+      </div>
+    </details>
     <button class="btn btn-ghost" onclick="resetStats()">기록 초기화</button>
   </section>
 </main>
@@ -678,6 +733,7 @@
     const saved = JSON.parse(localStorage.getItem(STORE_KEY));
     if (saved && saved.blanks && saved.theory) stats = saved;
   } catch (e) {}
+  if (!stats.cards) stats.cards = {};
 
   function saveStats() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(stats)); } catch (e) {}
@@ -730,10 +786,11 @@
   /* ================= 상단 마스터 게이지 ================= */
   // 마지막 풀이에서 맞힌 것을 '마스터'로 봄
   function updateMastery() {
-    const blankDone = blanksData.filter(b => stats.blanks[b.id] && stats.blanks[b.id].last).length;
-    document.getElementById('m-blank').textContent = `${blankDone}/${blanksData.length}`;
-    document.getElementById('m-blank-bar').style.width = `${(blankDone / blanksData.length) * 100}%`;
-    const keys = [...new Set(theoryPool.map(q => q.key))];
+    const cards = theoryPool.filter(q => q.kind === 'recall');
+    const known = cards.filter(q => stats.cards[q.key]).length;
+    document.getElementById('m-card').textContent = `${known}/${cards.length}`;
+    document.getElementById('m-card-bar').style.width = `${(known / cards.length) * 100}%`;
+    const keys = [...new Set(cards.map(q => q.key))];
     const theoryDone = keys.filter(k => stats.theory[k] && stats.theory[k].last).length;
     const pct = Math.round((theoryDone / keys.length) * 100);
     document.getElementById('m-theory').textContent = `${pct}%`;
@@ -1174,7 +1231,7 @@
     allItems.forEach(it => {
       const desc = plain(it.desc);
       const exp = `${it.term} : ${desc}`;
-      pool.push({ key: it.term, sec: it.sec, type: 'text', kind: 'recall', exp,
+      pool.push({ key: it.term, sec: it.sec, type: 'text', kind: 'recall', desc, exp,
         q: recallQ(desc), answer: it.term, accept: it.accept || [] });
       pool.push({ key: it.term, sec: it.sec, type: 'mc', kind: 'mc', exp,
         q: `<span class="mono">${escapeHtml(it.term)}</span> 의 의미로 옳은 것은?`,
@@ -1189,7 +1246,7 @@
     });
 
     concepts.forEach(c => {
-      pool.push({ key: c.answer, sec: c.sec, type: 'text', kind: 'recall', exp: `${c.answer} : ${c.desc}`,
+      pool.push({ key: c.answer, sec: c.sec, type: 'text', kind: 'recall', desc: c.desc, exp: `${c.answer} : ${c.desc}`,
         q: recallQ(c.desc), answer: c.answer, accept: c.accept });
     });
 
@@ -1422,20 +1479,100 @@
     if (s.q.type === 'mc' && !s.done && /^[1-4]$/.test(e.key) && Number(e.key) <= s.choices.length) answerMc(Number(e.key) - 1);
   });
 
-  /* ================= 05 오답노트 ================= */
+  /* ================= 암기 카드 ================= */
+  // 실전형(설명 → 답) 문제를 카드로. 알아요 = stats.cards[key] 저장, 몰라요 = 덱 뒤쪽에 다시 끼워 넣기
+  const cardPool = theoryPool.filter(q => q.kind === 'recall');
+  const conceptKeys = new Set(concepts.map(c => c.answer));
+  let fcDeck = [];
+  let fcDeckName = 'unknown';
+  let fcTotal = 0;
+
+  function startCards(deck) {
+    fcDeckName = deck;
+    setSeg('card-seg', 'deck', deck);
+    let list = cardPool;
+    if (deck === 'unknown') list = cardPool.filter(q => !stats.cards[q.key]);
+    else if (deck === 'cmd') list = cardPool.filter(q => !conceptKeys.has(q.key));
+    else if (deck === 'concept') list = cardPool.filter(q => conceptKeys.has(q.key));
+    fcDeck = shuffle(list);
+    fcTotal = fcDeck.length;
+    renderCard();
+  }
+
+  function renderCard() {
+    const done = fcDeck.length === 0;
+    document.getElementById('fc-card').style.display = done ? 'none' : '';
+    document.getElementById('fc-actions').style.display = done ? 'none' : '';
+    document.getElementById('fc-done').style.display = done ? '' : 'none';
+    const finished = fcTotal - fcDeck.length;
+    document.getElementById('fc-count').textContent = `${finished} / ${fcTotal}`;
+    document.getElementById('fc-bar').style.width = fcTotal ? `${(finished / fcTotal) * 100}%` : '100%';
+    if (done) {
+      const known = cardPool.filter(q => stats.cards[q.key]).length;
+      document.getElementById('fc-done-msg').textContent = fcTotal
+        ? `이 덱을 다 외웠어요! 전체 ${cardPool.length}장 중 ${known}장 외움.`
+        : `못 외운 카드가 없어요. 전체 ${cardPool.length}장 다 외웠어요!`;
+      return;
+    }
+    const q = fcDeck[0];
+    const card = document.getElementById('fc-card');
+    card.classList.remove('flipped');
+    document.getElementById('fc-sec').textContent = q.sec;
+    document.getElementById('fc-desc').textContent = q.desc;
+    document.getElementById('fc-back').innerHTML = `<div class="ans">${escapeHtml(q.answer)}</div>` +
+      (q.accept.length ? `<div class="alt">이렇게 써도 정답: ${q.accept.map(escapeHtml).join(', ')}</div>` : '');
+  }
+
+  function flipCard() {
+    if (fcDeck.length) document.getElementById('fc-card').classList.toggle('flipped');
+  }
+
+  function rateCard(known) {
+    if (!fcDeck.length) return;
+    const q = fcDeck.shift();
+    if (known) {
+      stats.cards[q.key] = true;
+    } else {
+      delete stats.cards[q.key];
+      fcDeck.splice(Math.min(3, fcDeck.length), 0, q);
+      fcTotal = Math.max(fcTotal, fcDeck.length);
+    }
+    saveStats();
+    updateMastery();
+    renderCard();
+  }
+
+  function resetCards() {
+    stats.cards = {};
+    saveStats();
+    updateMastery();
+    startCards('unknown');
+  }
+
+  document.getElementById('fc-card').addEventListener('click', flipCard);
+  document.getElementById('fc-yes').addEventListener('click', () => rateCard(true));
+  document.getElementById('fc-no').addEventListener('click', () => rateCard(false));
+  document.querySelectorAll('#card-seg button').forEach(btn => btn.addEventListener('click', () => startCards(btn.dataset.deck)));
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('tab-cards').classList.contains('active')) return;
+    if (e.key === ' ') { e.preventDefault(); flipCard(); }
+    else if (e.key === '1' || e.key === 'ArrowLeft') rateCard(false);
+    else if (e.key === '2' || e.key === 'ArrowRight') rateCard(true);
+  });
+
+  /* ================= 오답노트 ================= */
   function renderStats() {
-    const tried = blanksData.filter(b => stats.blanks[b.id]);
-    const totalN = tried.reduce((t, b) => t + stats.blanks[b.id].n, 0);
-    const totalW = tried.reduce((t, b) => t + stats.blanks[b.id].w, 0);
     const tKeys = Object.values(stats.theory);
     const tN = tKeys.reduce((t, s) => t + s.n, 0);
     const tW = tKeys.reduce((t, s) => t + s.w, 0);
     const pct = (n, w) => n ? `${Math.round(((n - w) / n) * 100)}%` : '–';
+    const known = cardPool.filter(q => stats.cards[q.key]).length;
+    const wrongKeys = Object.values(stats.theory).filter(s => s.last === false).length;
     document.getElementById('stat-cards').innerHTML = `
-      <div class="stat-card"><div class="l">풀어본 빈칸</div><div class="v">${tried.length}<span class="muted"> / ${blanksData.length}</span></div></div>
-      <div class="stat-card"><div class="l">빈칸 정답률</div><div class="v">${pct(totalN, totalW)}</div></div>
-      <div class="stat-card"><div class="l">이론 풀이 수</div><div class="v">${tN}</div></div>
-      <div class="stat-card"><div class="l">이론 정답률</div><div class="v">${pct(tN, tW)}</div></div>`;
+      <div class="stat-card"><div class="l">외운 카드</div><div class="v">${known}<span class="muted"> / ${cardPool.length}</span></div></div>
+      <div class="stat-card"><div class="l">퀴즈 풀이 수</div><div class="v">${tN}</div></div>
+      <div class="stat-card"><div class="l">퀴즈 정답률</div><div class="v">${pct(tN, tW)}</div></div>
+      <div class="stat-card"><div class="l">최근에 틀린 개념</div><div class="v">${wrongKeys}</div></div>`;
 
     document.getElementById('stats-heat').innerHTML = blanksData.map(b => {
       const s = stats.blanks[b.id];
@@ -1471,19 +1608,22 @@
 
   function resetStats() {
     if (!confirm('풀이 기록을 모두 지울까요?')) return;
-    stats = { blanks: {}, theory: {} };
+    stats = { blanks: {}, theory: {}, cards: {} };
     saveStats();
     renderStats();
+    startCards('unknown');
     renderStudyBlocks();
     updateMastery();
   }
 
   /* ================= 탭 ================= */
+  // 2과제 시험이 끝나서 1과제 탭으로 시작하도록 새 키 사용
+  const TAB_KEY = STORE_KEY + '-tab-task1';
   function switchTab(tabId) {
     document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === tabId));
     document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tabId));
     if (tabId === 'tab-stats') renderStats();
-    try { localStorage.setItem(STORE_KEY + '-tab', tabId); } catch (e) {}
+    try { localStorage.setItem(TAB_KEY, tabId); } catch (e) {}
   }
 
   document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
@@ -1497,9 +1637,10 @@
   syncSheet();
   renderTheory();
   startQuiz('exam');
+  startCards('unknown');
   updateMastery();
   try {
-    const lastTab = localStorage.getItem(STORE_KEY + '-tab');
+    const lastTab = localStorage.getItem(TAB_KEY);
     if (lastTab && document.getElementById(lastTab)) switchTab(lastTab);
   } catch (e) {}
 </script>
