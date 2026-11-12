@@ -1019,6 +1019,8 @@
   let activeBlankIds = [];
   // id → 같은 답 묶음의 대표 id (묶음이 없으면 자기 자신). 대표 칸만 입력, 나머지는 따라 채워짐
   let blankLead = {};
+  // 한글 보기 모드에서 한 문제로 묶이는 중복 답 (#9 신경망 부분)
+  const GROUPED_ANS = new Set(['model.add', 'layers.Dense', "activation='relu'"]);
   const leadIds = () => activeBlankIds.filter(id => blankLead[id] === id);
   const groupOf = lead => activeBlankIds.filter(id => blankLead[id] === lead);
   let wrongBlankIds = [];
@@ -1095,7 +1097,12 @@
     blankLead = {};
     if (mode === 'kor' || mode === 'korweak') {
       // 실제 시험: 같은 답이 여러 번 나오면(예: layers.Dense 34·38·41·44) 한 문제로 출제 → 답 단위로 5개 뽑기
-      const groups = Object.values(blanksData.reduce((g, b) => ((g[b.ans] = g[b.ans] || []).push(b.id), g), {}));
+      // import·from·as·keras 같은 import 줄 빈칸은 묶지 않고 각각 한 칸 (시험에서도 따로 나옴)
+      const groups = Object.values(blanksData.reduce((g, b) => {
+        const key = GROUPED_ANS.has(b.ans) ? b.ans : `#${b.id}`;
+        (g[key] = g[key] || []).push(b.id);
+        return g;
+      }, {}));
       const picked = mode === 'kor' ? shuffle(groups).slice(0, 5)
         : weightedSample(groups, 5, ids => Math.max(...ids.map(id => weakWeight('blanks', id))));
       picked.forEach(ids => ids.forEach(id => { blankLead[id] = ids[0]; }));
